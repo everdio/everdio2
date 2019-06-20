@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
+
+try {
+    $cli = new \Components\Core\Controller\Model\Cli($_SERVER, new \Components\Parser\Ini);
+    $cli->root = __DIR__;
+    $cli->path = $cli->root;
+    echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
+    flush();
+    echo (string) $cli->execute($cli->execute) . PHP_EOL;
+} catch (\Components\Event $event) {
+    echo (string) sprintf("everdio screwed up: %s\n\n%s\n", $event->getMessage(), $event->getTraceAsString());
+}
+exit;
