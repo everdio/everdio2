@@ -2,7 +2,7 @@
 namespace Components\Core\Controller {
     use \Components\Validation;
     use \Components\Validator;
-    class Model extends \Components\Core\Controller {    
+    abstract class Model extends \Components\Core\Controller {    
         public function __construct(\Components\Parser $parser) {
             parent::__construct();
             $this->add("parser", new Validation($parser, array(new Validator\IsObject\Of("Components\Parser"))));

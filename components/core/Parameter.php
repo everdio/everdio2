@@ -17,7 +17,7 @@ namespace Components\Core {
             }
             
             if ($this->mandatory === false) {
-                $validators[] = new Validator\IsEmpty;
+                $validators[] = new Validator\IsNull;
                 $validate = Validation::NORMAL;
             } elseif (!$validate && sizeof($validators) > 0) {
                 $validate = Validation::STRICT;

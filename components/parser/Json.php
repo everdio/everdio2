@@ -1,6 +1,6 @@
 <?php
 namespace Components\Parser {
-    class Json extends \Components\Parser {
+    final class Json extends \Components\Parser {
         const EXTENSION = ".json";
         
         static public function parse(string $content) : array {

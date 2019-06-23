@@ -1,6 +1,6 @@
 <?php
 namespace Components\Parser {
-    class Csv extends \Components\Parser {
+    final class Csv extends \Components\Parser {
         const EXTENSION = ".csv";  
         
         /*

@@ -1,0 +1,7 @@
+*.cache
+*.log
+*.xml
+*.json
+*.csv
+application/
+library/
