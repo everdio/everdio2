@@ -15,7 +15,7 @@ namespace Components {
                 return (object) $this->parameters[$parameter];
             }
             
-            throw new Event(sprintf("unknown parameter `%s`", $parameter));
+            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }            
 
         public function __isset(string $parameter) : bool {
@@ -27,7 +27,7 @@ namespace Components {
                 return (bool) $this->parameters[$parameter]->set((is_array($value) && is_array($this->parameters[$parameter]->get()) ? array_merge($this->parameters[$parameter]->get(), $value) : $this->hydrate($value)));
             }
             
-            throw new Event(sprintf("unknown parameter `%s`", $parameter));
+            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }
 
         public function __get(string $parameter) {
@@ -39,12 +39,16 @@ namespace Components {
                 }
             }
             
-            throw new Event(sprintf("unknown parameter `%s`", $parameter));
+            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }
 
         public function __unset(string $parameter) : bool {
             return (bool) ($this->exists($parameter) && $this->parameters[$parameter]->set(false));
         }      
+        
+        public function invoke(string $parameter) : Validation {
+            return (object) $this($parameter);
+        }
         
         public function exists($parameter) : bool {
             return (bool) array_key_exists($parameter, $this->parameters);
@@ -92,12 +96,12 @@ namespace Components {
             return (array) $return;
         }
 
-        public function validate(array $parameters, array $validations = []) : bool { 
-            foreach ($parameters as $parameter) {
+        public function validate(array $parameters = [], bool $validate = false, array $validations = []) : bool { 
+            foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
             }
 
-            return (bool) !in_array(false, $validations);
+            return (bool) in_array($validate, $validations);
         }
         
         public function feed($querystring, array $values = []) {

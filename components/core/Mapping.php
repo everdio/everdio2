@@ -13,7 +13,7 @@ namespace Components\Core {
         }
 
         public function getField(string $parameter) : string {
-            if (isset($this->mapping) && in_array($parameter, $this->mapping)) {
+            if (isset($this->mapping) && $this->exists($parameter)) {
                 return (string) array_search($parameter, $this->mapping);
             }
             
@@ -29,7 +29,7 @@ namespace Components\Core {
         }       
         
         public function hasMapping() : bool{
-            return (bool) (isset($this->mapping) && parent::validate($this->mapping));
+            return (bool) (isset($this->mapping) && $this->validate($this->mapping, true));
         }
         
         public function __call($name, $arguments) {

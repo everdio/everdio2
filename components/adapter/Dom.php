@@ -1,10 +1,7 @@
 <?php
 namespace Components\Adapter {
     abstract class Dom extends \DOMDocument {
-        use \Components\Dryer;
-        use \Components\Helpers;
         use \Components\Adapter;
-        
         public function __construct(string $version = null, string $encoding = null) {
             parent::__construct($version, $encoding);
             $this->preserveWhiteSpace = false;

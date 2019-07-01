@@ -32,6 +32,7 @@ namespace Modules\Everdio {
             try {
                 $redirect = new ECms\Redirect;
                 unset ($redirect->Status);
+                unset ($redirect->Hits);
                 $redirect->Redirect = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $this->arguments);
                 $redirect->find();
                 if (isset($redirect->RedirectId)) {        
@@ -39,8 +40,9 @@ namespace Modules\Everdio {
                     $redirect->save();
                     return (string) header("Location:" . $redirect->Routing, true, $redirect->Status);
                 }            
-
+                
                 $document = new ECms\Documents;
+                $document->reset($document->mapping);
                 $this->add((string) $document, new Validation(false, array(new Validator\IsArray)));
                 $document->EnvironmentId = $environment->EnvironmentId;
                 $document->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $this->arguments);
@@ -87,8 +89,9 @@ namespace Modules\Everdio {
                     //404 not found
                     $document = new ECms\Documents;
                     $this->add((string) $document, new Validation(false, array(new Validator\IsArray)));
+                    $document->reset($document->mapping);
                     $document->EnvironmentId = $environment->EnvironmentId;
-                    $document->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment->PageNotFound;
+                    $document->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment->PageNotFound;                    
                     $document->find();
                     $document->Content = sprintf($document->Content, $this->scheme, $this->host, implode(DIRECTORY_SEPARATOR, $this->arguments));    
 
@@ -107,10 +110,10 @@ namespace Modules\Everdio {
                 //500 error
                 $document = new ECms\Documents;
                 $this->add((string) $document, new Validation(false, array(new Validator\IsArray)));
+                $document->reset($document->mapping);
                 $document->EnvironmentId = $environment->EnvironmentId;
                 $document->Routing = $environment->Scheme . $environment->Host . DIRECTORY_SEPARATOR . $environment->PageEvent;
                 $document->find();
-
                 $document->Content = sprintf($document->Content, $event->getMessage(), $event->getTraceAsString());
                 
                 $this->{(string) $document} = $document->restore($document->mapping);

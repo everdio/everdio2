@@ -14,12 +14,11 @@ namespace Modules\Node {
             } elseif (isset($this->mapper->parent)) {
                 return (string) sprintf("[%s/%s]", $this->mapper->parent, $this->mapper->tag);
             } else {
-                if ($this->mapper->hasMapping() || isset($this->mapper->Text)) {
+                if ($this->mapper->hasMapping()) {
                     foreach ($this->mapper->restore($this->mapper->mapping) as $parameter => $value) {
                         $operators[] = sprintf("@%s%s\"%s\"", $this->mapper->getField($parameter), $this->expression, $value);                                  
                     }                    
                 }
-                
                 if (isset($this->mapper->Text)) {
                     $operators[] = sprintf("%s(.,\"%s\")", $this->match, trim($this->mapper->Text));
                 }   

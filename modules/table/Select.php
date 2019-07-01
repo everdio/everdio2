@@ -2,16 +2,20 @@
 namespace Modules\Table {
     use \Components\Validator;
     class Select extends \Components\Validation {
-        public function __construct(array $tables, array $values = []) {
-            foreach ($tables as $table) {
-                if ($table instanceof \Modules\Table) {
-                    foreach ($table->mapping as $parameter) {
-                        $values[$parameter] = sprintf("`%s`.`%s`.`%s` AS `%s`", $table->database, $table->table, $table->getField($parameter) , $parameter);
+        public function __construct(array $mappers, array $select = []) {
+            try {
+                foreach ($mappers as $mapper) {               
+                    if ($mapper instanceof \Modules\Table && isset($mapper->mapping)) {
+                        foreach ($mapper->mapping as $parameter) {
+                            $select[$parameter] = sprintf("%sAS`%s`", $mapper->getColumn($parameter), $parameter);
+                        }
                     }
-                }
+                }                
+            } catch (\Components\Event $event) {
+                throw new Event($event->getMessage());
             }
-            
-            parent::__construct(implode(",", $values), array(new Validator\IsString));
+                        
+            parent::__construct(implode(",", $select), [new Validator\IsString]);
         }
     }
 }

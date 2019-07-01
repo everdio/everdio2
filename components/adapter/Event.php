@@ -1,5 +1,5 @@
 <?php
-namespace Components\Resource {
+namespace Components\Adapter {
     final class Event extends \Components\Event {
          
     }

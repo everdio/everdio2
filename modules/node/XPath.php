@@ -10,7 +10,21 @@ namespace Modules\Node {
                 $xpath .= $operator->execute();
             }
             
-            $event = new Event($xpath);
+            /*
+            foreach ($operators as $operator) {
+                if ($operator instanceof XOperator && $operator->mapper->path !== implode(DIRECTORY_SEPARATOR, $xpath)) {
+                    if (isset($operator->mapper->current)) {
+                        $xpath .= sprintf("[%s]", $operator->mapper->current);
+                    } elseif (isset($operator->mapper->parent)) {
+                        $xpath .= sprintf("[%s]", $operator->mapper->parent);
+                    } elseif ($operator->mapper->hasMapping()) {
+                        $xpath .= sprintf("[%s]", $operator->mapper->path . $operator->execute());
+                    }
+                }
+            }    
+             * 
+             */
+
 
             parent::__construct($xpath, [new Validator\IsString\IsPath]);
         }

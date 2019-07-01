@@ -1,8 +1,7 @@
+
 <?php
 namespace Components\Adapter {   
     final class MongoDb {
-        use \Components\Dryer;
-        use \Components\Helpers;
         use \Components\Adapter;
         
         private $manager = false;

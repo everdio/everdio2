@@ -1,8 +1,6 @@
 <?php
 namespace Components\Adapter {   
     final class Pdo extends \PDO {
-        use \Components\Dryer;
-        use \Components\Helpers;
         use \Components\Adapter;
         
         private $dsn, $username, $password;      

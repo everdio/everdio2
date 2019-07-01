@@ -37,6 +37,7 @@ namespace Modules\Node {
                     $this->mapping = array($attr->field => $attr->parameter);
                 }
             }            
+            
             $this->remove("node");
         }
     }
