@@ -17,42 +17,30 @@ namespace Modules {
             return (string) $this->display($node);            
         }
         
-        public function xpath(array $operators = [], string $operator = "and", string $expression = "=") : string {
-            $xpath = new Node\XPath($this, $operators, $operator, $expression);
-            return (string) $xpath->execute();
-        }
-        
-        public function isParent(Node $mapper) : bool {
-            return (bool) (implode(DIRECTORY_SEPARATOR, array_intersect_assoc(explode(DIRECTORY_SEPARATOR, $mapper->path), explode(DIRECTORY_SEPARATOR, $this->path))) === $mapper->path);
-        }
-        
-        public function isChild(Node $mapper) : bool {
-            return (bool) (implode(DIRECTORY_SEPARATOR, array_intersect_assoc(explode(DIRECTORY_SEPARATOR, $this->path), explode(DIRECTORY_SEPARATOR, $mapper->path))) === $this->path);            
-        }
-        
         public function find(array $operators = [], string $query = NULL) {
-            $list = $this->execute($this->xpath($operators) . $query);
+            $xpath = new Node\XPath2($this->path, array_merge([new Node\XOperator($this)], $operators));
+            $list = $this->execute($xpath->execute() . $query);
             if (($length = $list->length - 1) >= 0) {    
                 return (string) $this->create($list->item($length));
-            }
+            }            
         }
         
         public function findAll(array $operators = [], string $query = NULL) : array {
             $records = [];
-            
-            foreach ($this->execute($this->xpath($operators) . $query) as $index => $node) { 
+            $xpath = new Node\XPath2($this->path, array_merge([new Node\XOperator($this)], $operators));
+            foreach ($this->execute($xpath->execute() . $query) as $index => $node) { 
                 $mapper = new $this;
                 $mapper->create($node);
                 $records[$index + 1] = $mapper->restore(array("current", "parent") + (isset($mapper->mapping) ? $mapper->mapping : []));
             }
             
             return (array) array_reverse($records);
-        }
-        
+        }        
+  
         public function save() {            
             $node = (isset($this->current) ? $this->execute($this->current)->item(0) : $this->createElement($this->tag));
             
-            if (isset($this->Text)) {
+            if (isset($this->Text)) {        
                 $node->appendChild($this->createCDATASection($this->Text));
             }
             

@@ -9,7 +9,6 @@ namespace Modules\Table {
                         if ($thatOperator instanceof Operator && (string) $thisOperator->mapper !== (string) $thatOperator->mapper && (isset($thisOperator->mapper->relations) && in_array((string) $thatOperator->mapper, $thisOperator->mapper->relations))) {
                             $join = new Join2($thatOperator->mapper, $thisOperator->mapper);
                             $query .= $join->execute();
-
                             if ($thatOperator->mapper->hasMapping()) {
                                 $query .= strtoupper($thatOperator->operator) . $thatOperator->execute();
                             }

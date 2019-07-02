@@ -30,6 +30,7 @@ namespace Modules {
         public function findAll(array $operators = [], string $query = NULL) : array {           
             try {
                 $find = new Table\Find(new Table\Select([$this]), array_merge($operators, [new Table\Operator($this)]), $query);
+                echo $find->execute() . PHP_EOL . PHP_EOL;
                 return (array) $this->execute($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
             } catch (\Modules\Table\Event $event) {
                 throw new Event("error executing findAll %s", $event->getMessage());
