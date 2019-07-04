@@ -11,29 +11,28 @@ namespace Modules {
 
         public function count(array $operators = []) : int {
             try {
-                $find = new Table\Find(new Table\Select([$this]), array_merge($operators, [new Table\Operator($this)]));
+                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
                 return (int) $this->execute($find->execute())->rowCount();
-            } catch (\Modules\Table\Event $event) {
-                throw new Event("error executing count %s", $event->getMessage());
-            }            
+            } catch (\Components\Adapter\Event $event) {
+                throw new Event(sprintf("error executing count %s", $event->getMessage()));
+            }   
         }
         
         public function find(array $operators = [], string $query = NULL) {
             try {
-                $find = new Table\Find(new Table\Select([$this]), array_merge($operators, [new Table\Operator($this)]));
+                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
                 $this->store((array) $this->execute($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC));                
-            } catch (\Modules\Table\Event $event) {
-                throw new Event("error executing find %s", $event->getMessage());
-            }
+            } catch (\Components\Adapter\Event $event) {
+                throw new Event(sprintf("error executing find %s", $event->getMessage()));
+            }   
         }
         
         public function findAll(array $operators = [], string $query = NULL) : array {           
             try {
-                $find = new Table\Find(new Table\Select([$this]), array_merge($operators, [new Table\Operator($this)]), $query);
-                echo $find->execute() . PHP_EOL . PHP_EOL;
+                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
                 return (array) $this->execute($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
-            } catch (\Modules\Table\Event $event) {
-                throw new Event("error executing findAll %s", $event->getMessage());
+            } catch (\Components\Adapter\Event $event) {
+                throw new Event(sprintf("error executing findAll %s", $event->getMessage()));
             }            
         }
         
@@ -44,9 +43,9 @@ namespace Modules {
             
             try {
                 $this->execute(sprintf("INSERT INTO%s(%s)VALUES(%s)ON DUPLICATE KEY UPDATE%s", $this->getTable(), $insert->execute(), $values->execute(), $update->execute()));    
-            } catch (\Modules\Table\Event $event) {
-                throw new Event("error saving %s", $event->getMessage());
-            }
+            } catch (\Components\Adapter\Event $event) {
+                throw new Event(sprintf("error save %s", $event->getMessage()));
+            }  
 
             if (isset($this->keys) && !sizeof($this->restore($this->keys)) && sizeof($this->keys) === 1) {      
                 $this->store(array_fill_keys($this->keys, $this->lastInsertId()));
@@ -59,9 +58,9 @@ namespace Modules {
                 try {
                     $this->execute(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
                     $this->reset($this->keys);
-                } catch (\Modules\Table\Event $event) {
-                    throw new Event("error deleting %s", $event->getMessage());
-                }
+                } catch (\Components\Adapter\Event $event) {
+                    throw new Event(sprintf("error delete %s", $event->getMessage()));
+                }  
             }
         }        
     }

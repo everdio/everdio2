@@ -5,8 +5,7 @@ namespace Components {
         use Dryer;           
         
         public function __dry() : string {
-            $traces = $this->getTrace();
-            return (string) sprintf("[%s] [%s] [%s(%s)]\n", date("Y-m-d H:i:s"), $this->getMessage(), $traces[0]["file"], $traces[0]["line"]);
+            return (string) sprintf("[%s] [%s] [%s]\n", date("Y-m-d H:i:s"), get_class($this), $this->getMessage());
         }
         
         public function __destruct() {

@@ -67,11 +67,11 @@ namespace Modules\Everdio {
                         $properties = new ECms\Properties;
                         $properties->DocumentId = $document->DocumentId;
                         $properties->EnvironmentId = $environment->EnvironmentId;
+                        
                         foreach ($properties->findAll() as $row) {
                             $property = new ECMs\Properties($row);
                             $tpl->{$property->Property} = $property->Content;                        
                         }                    
-
                         $translations = new ECms\Translations;
                         $translations->LanguageId = $document->LanguageId;
                         $translations->EnvironmentId = $environment->EnvironmentId;

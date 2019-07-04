@@ -95,15 +95,15 @@ namespace Components {
             
             return (array) $return;
         }
-
-        public function validate(array $parameters = [], bool $validate = false, array $validations = []) : bool { 
+        
+        public function validate(array $parameters = [], array $validations = []) { 
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
-            }
-
-            return (bool) in_array($validate, $validations);
+            }        
+            
+            return (array) $validations;
         }
-        
+
         public function feed($querystring, array $values = []) {
             parse_str($querystring, $values);
             if (array_key_exists((string) $this, $values)) {

@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Table {
     use \Components\Validator;
-    class Values extends \Components\Validation {
+    final class Values extends \Components\Validation {
         public function __construct(\Modules\Table $mapper, array $values = []) {
             foreach ($mapper->mapping as $parameter) {
                 if (isset($mapper->{$parameter})) {

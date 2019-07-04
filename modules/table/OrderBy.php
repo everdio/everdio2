@@ -1,7 +1,7 @@
 <?php 
 namespace Modules\Table {
     use \Components\Validator;
-    class OrderBy extends \Components\Validation {
+    final class OrderBy extends \Components\Validation {
         public function __construct(\Modules\Table $table, array $orderby, array $values = []) {
             foreach ($orderby as $order => $parameters) {
                 foreach ($parameters as $parameter) {

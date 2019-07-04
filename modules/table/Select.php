@@ -1,7 +1,7 @@
 <?php 
 namespace Modules\Table {
     use \Components\Validator;
-    class Select extends \Components\Validation {
+    final class Select extends \Components\Validation {
         public function __construct(array $mappers, array $select = []) {
             try {
                 foreach ($mappers as $mapper) {               

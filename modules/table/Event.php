@@ -1,6 +1,6 @@
 <?php
 namespace Modules\Table {
-    class Event extends \Modules\Event {
+    final class Event extends \Modules\Event {
         
     }
 }

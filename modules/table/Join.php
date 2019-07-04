@@ -1,7 +1,7 @@
 <?php 
 namespace Modules\Table {
     use \Components\Validator;
-    class Join extends \Components\Validation {
+    final class Join extends \Components\Validation {
         public function __construct(\Modules\Table $thatTable, \Modules\Table $thisTable, string $join = NULL) {
             parent::__construct(sprintf("%s JOIN %sON%s", $join, $thatTable->getTable(), $this->getRelation($thisTable, $thatTable)), [new Validator\IsString]);
         }

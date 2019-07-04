@@ -1,6 +1,5 @@
 <?php
 namespace Modules\Node {
-    class Event extends \Modules\Event {
-        
+    final class Event extends \Modules\Event {
     }
 }

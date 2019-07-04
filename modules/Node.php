@@ -18,7 +18,7 @@ namespace Modules {
         }
         
         public function find(array $operators = [], string $query = NULL) {
-            $xpath = new Node\XPath2($this->path, array_merge([new Node\XOperator($this)], $operators));
+            $xpath = new Node\XPath($this->path, array_merge([new Node\XOperator($this)], $operators));
             $list = $this->execute($xpath->execute() . $query);
             if (($length = $list->length - 1) >= 0) {    
                 return (string) $this->create($list->item($length));
@@ -27,7 +27,7 @@ namespace Modules {
         
         public function findAll(array $operators = [], string $query = NULL) : array {
             $records = [];
-            $xpath = new Node\XPath2($this->path, array_merge([new Node\XOperator($this)], $operators));
+            $xpath = new Node\XPath($this->path, array_merge([new Node\XOperator($this)], $operators));
             foreach ($this->execute($xpath->execute() . $query) as $index => $node) { 
                 $mapper = new $this;
                 $mapper->create($node);

@@ -29,7 +29,7 @@ namespace Components\Core {
         }       
         
         public function hasMapping() : bool{
-            return (bool) (isset($this->mapping) && $this->validate($this->mapping, true));
+            return (bool) (isset($this->mapping) && in_array(true, $this->validate($this->mapping)));
         }
         
         public function __call($name, $arguments) {
