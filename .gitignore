@@ -5,4 +5,4 @@
 *.csv
 application/
 library/
-modules/everdio/generate/database.ini
+modules/everdio/generate/*.ini
