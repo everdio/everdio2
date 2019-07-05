@@ -1,8 +1,9 @@
 <?php
 namespace Components\Adapter\Dom\Xml {
     final class File extends \Components\Adapter\Dom\Xml {  
-        public function __construct(string $file, string $version = NULL, string $encoding = NULL, int $options = NULL) {
-            parent::__construct(file_get_contents($file), $version, $encoding, $options);
+        use \Components\Adapter\Dom\File;
+        public function __dry() : string {
+            return (string) sprintf("new \Components\Adapter\Dom\Xml\File((\"%s\"), \"%s\", \"%s\", LIBXML_HTML_NOIMPLIED | LIBXML_NOCDATA | LIBXML_NOERROR | LIBXML_NONET | LIBXML_NOWARNING)", $this->file, $this->xmlVersion, $this->xmlEncoding);            
         }
     }
 }

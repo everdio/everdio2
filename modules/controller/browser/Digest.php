@@ -6,8 +6,8 @@ namespace Modules\Controller\Browser {
     abstract class Digest extends \Modules\Controller\Browser {   
         public function __construct(array $server, array $request, \Components\Parser $parser, array $matches = []) {
             parent::__construct($server, $request, $parser);
-            $this->add("auth", new Validation($server, array(new Validator\IsArray\Intersect\Key(array("PHP_AUTH_DIGEST")))));
-            $this->add("digest", new Validation(false, array(new Validator\IsArray\Intersect\Key(array("nonce", "nc", "cnonce", "qop", "username", "uri", "response")))));
+            $this->add("auth", new Validation($server, [new Validator\IsArray\Intersect\Key(["PHP_AUTH_DIGEST"])]));
+            $this->add("digest", new Validation(false, [new Validator\IsArray\Intersect\Key(["nonce", "nc", "cnonce", "qop", "username", "uri", "response"])]));
             
             if (isset($this->auth)) {
                 preg_match_all('@(\w+)=(?:(?:\'([^\']+)\'|"([^"]+)")|([^\s,]+))@', $this->auth["PHP_AUTH_DIGEST"], $matches, PREG_SET_ORDER);

@@ -2,7 +2,6 @@
 namespace Components\Adapter {   
     final class Pdo extends \PDO {
         use \Components\Adapter;
-        
         private $dsn, $username, $password;      
         public function __construct($dsn, $username, $password) {
             $this->dsn = $dsn;

@@ -11,7 +11,7 @@ namespace Components\Adapter\Dom {
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \Components\Adapter\Dom\Xml(\"%s\", \"%s\", \"%s\", LIBXML_NOCDATA | LIBXML_NOERROR | LIBXML_NONET | LIBXML_NOWARNING)", addslashes($this->display()), $this->xmlVersion, $this->xmlEncoding);
+            return (string) sprintf("new \Components\Adapter\Dom\Xml(stripslashes(\"%s\"), \"%s\", \"%s\", LIBXML_NOCDATA | LIBXML_NOERROR | LIBXML_NONET | LIBXML_NOWARNING)", addslashes($this->display()), $this->xmlVersion, $this->xmlEncoding);
         }        
     }
 }

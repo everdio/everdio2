@@ -17,6 +17,11 @@ namespace Modules {
             return (string) $this->display($node);            
         }
         
+        public function count(array $operators = [], string $query = NULL) : int { 
+            $xpath = new Node\XPath($this->path, array_merge([new Node\XOperator($this)], $operators));
+            return (int) $this->execute($xpath->execute() . $query)->length;
+        }
+        
         public function find(array $operators = [], string $query = NULL) {
             $xpath = new Node\XPath($this->path, array_merge([new Node\XOperator($this)], $operators));
             $list = $this->execute($xpath->execute() . $query);

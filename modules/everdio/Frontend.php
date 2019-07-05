@@ -125,6 +125,7 @@ namespace Modules\Everdio {
                 } 
 
                 http_response_code(500);                    
+                
                 return (string) $this->execute($document->Route);
             }            
         }
