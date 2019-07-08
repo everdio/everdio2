@@ -37,7 +37,7 @@ namespace Components\Core\Mapping {
             return (string) $tpl->display($file->restore());                
         }        
         
-        public function create() {
+        public function __destruct() {
             $path = new Path($this->root . DIRECTORY_SEPARATOR . strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));            
             $file = new File($path->getPath() . DIRECTORY_SEPARATOR . $this->mapper . ".php", "w+");
             $file->store($this->__dry());

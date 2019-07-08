@@ -5,29 +5,17 @@ namespace Components\Core {
     use \Components\Validation;
     use \Components\Validator;
     
-    class Library extends \Components\Core {   
+    abstract class Library extends \Components\Core {   
         public function __construct($adapter) {
             $this->add("id", new Validation(false, [new Validator\IsString]));                    
             $this->add("adapter", new Validation($adapter, [new Validator\IsObject]));   
             $this->add("namespace", new Validation(false, [new Validator\IsString]));
             $this->add("extend", new Validation(false, [new Validator\IsString]));
-            $this->add("root", new Validation(false, [new Validator\IsString\IsDir]));            
-            $this->add("model", new Validation(__DIR__ . DIRECTORY_SEPARATOR . "Library.tpl", [new Validator\IsString\IsFile]));            
-        }
-        
-        public function __dry() : string {
-            $file = new File($this->model);
+            $this->add("root", new Validation(false, [new Validator\IsString\IsDir]));
+            $this->add("model", new Validation(__DIR__ . DIRECTORY_SEPARATOR . "Library.tpl", [new Validator\IsString\IsFile]));
+            $this->add("mappers", new Validation(false, [new Validator\IsArray]));
             
-            $index = new \Components\Index($this->id);
-            $index->store($this->adapter);
-            
-            $tpl = new \Components\Core\Template;            
-            $tpl->namespace = $this->namespace;
-            $tpl->class = $this->labelize($this->id);
-            $tpl->extend = $this->extend;
-            $tpl->index = $index->__dry();
-            return (string) $tpl->display($file->restore());                
-        }
+        }        
         
         public function getNamespace() : string {
             return (string) sprintf("%s\%s", $this->namespace, $this->labelize($this->id));
@@ -35,12 +23,27 @@ namespace Components\Core {
         
         public function getExtend() : string {
             return (string) sprintf("\%s", $this->getNamespace());
-        }
+        }        
         
-        public function create() {
+        abstract public function setup();
+        
+        public function __dry() : string {
+            $index = new \Components\Index($this->id);
+            $index->store($this->adapter);
+            
+            $file = new File($this->model);
+            $tpl = new \Components\Core\Template;            
+            $tpl->namespace = $this->namespace;
+            $tpl->class = $this->labelize($this->id);
+            $tpl->extend = $this->extend;
+            $tpl->index = $index->__dry();
+            return (string) $tpl->display($file->restore());                
+        }        
+        
+        public function __destruct() {
             $library = new Path($this->root . DIRECTORY_SEPARATOR . strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));            
             $file = new File($library->getPath() . DIRECTORY_SEPARATOR . $this->labelize($this->id) . ".php", "w+");
             $file->store($this->__dry());
-        } 
+        }        
     }
 }

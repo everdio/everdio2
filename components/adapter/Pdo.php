@@ -26,7 +26,7 @@ namespace Components\Adapter {
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(\"%s\", \"%s\", \"%s\")", get_class($this), $this->dsn, $this->username, $this->password);
+            return (string) sprintf("new \Components\Adapter\Pdo(\"%s\", \"%s\", \"%s\")", $this->dsn, $this->username, $this->password);
         }        
     }
 }
