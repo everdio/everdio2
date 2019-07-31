@@ -1,6 +1,6 @@
 <?php
 namespace @namespace@ {
-    class @class@ extends @extend@ implements \Components\Core\Mapping\Base {
+    class @class@ extends @extend@ implements \Components\Core\Mapping\Mapper {
         public function __construct(array $values = []) {
             @model@
             $this->store($values);

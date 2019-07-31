@@ -111,7 +111,7 @@ namespace Components {
             }
         }
 
-        final public function query(array $parameters = []) : string {
+        final public function querystring(array $parameters = []) : string {
             return (string) http_build_query(array((string) $this => $this->restore($parameters)), true);
         }        
         

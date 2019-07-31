@@ -1,9 +1,7 @@
 <?php
-namespace Components {
-    interface Adapter {
+namespace Components\Core {
+    interface Instance {
         public function execute(string $query);
     }
 }
-
-
 
