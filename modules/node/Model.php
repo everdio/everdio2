@@ -2,27 +2,25 @@
 namespace Modules\Node {
     use Components\Validator;
     use Components\Validation;
-    
-    final class Model extends \Components\Core\Mapping\Model {
-        public function __construct($adapter) {
-            parent::__construct($adapter);
+    final class Model extends \Components\Core\Mapper\Model {
+        public function __construct(\Components\Index $index) {
+            parent::__construct($index);
+            $this->extends = "\Modules\Node";
             $this->add("node", new Validation(false, [new Validator\IsObject\Of("\DOMElement")]));
             $this->add("tag", new Validation(false, array(new Validator\IsString)));
             $this->add("path", new Validation(false, array(new Validator\IsString\IsPath)));
             $this->add("current", new Validation(false, array(new Validator\IsString)));
             $this->add("parent", new Validation(false, array(new Validator\IsString)));
             $this->add("Text", new Validation(false, array(new Validator\IsNumeric, new Validator\IsString)));
-            $this->add("relations", new Validation(false, array(new Validator\IsArray)));
         }
         
         public function setup() {
-            $this->tag = $this->node->tagName;
-            $this->mapper = ucFirst($this->node->tagName);
             $this->path = preg_replace('/\[(.*?)\]/', false, $this->node->getNodePath());  
+            $this->class = ucFirst($this->node->tagName);
+            $this->tag = $this->node->tagName;
             
             if ($this->node->parentNode->nodeName !== "#document") {
                 $this->namespace = $this->namespace . implode("\\", array_map("ucFirst", explode(DIRECTORY_SEPARATOR, dirname($this->path))));
-                $this->relations = array("parent" => $this->namespace);
             }            
             
             foreach ($this->node->attributes as $attribute) {

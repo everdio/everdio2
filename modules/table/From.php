@@ -2,17 +2,13 @@
 namespace Modules\Table {
     use \Components\Validator;
     final class From extends \Components\Validation {
-        public function __construct(array $mappers, array $from = []) {
-            try {
-                foreach ($mappers as $as => $mapper) {               
-                    if ($mapper instanceof \Modules\Table) {
-                        $from[] = $mapper->getTable();
-                    }
-                }                
-            } catch (\Components\Event $event) {
-                throw new Event($event->getMessage());
-            }
-                        
+        public function __construct(array $tables, array $from = []) {
+            foreach ($tables as $table) {               
+                if ($table instanceof \Modules\Table) {
+                    $from[] = $table->getTable();
+                }
+            }                
+            
             parent::__construct(implode(",", $from), [new Validator\IsString]);
         }
     }

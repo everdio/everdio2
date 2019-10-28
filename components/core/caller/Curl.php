@@ -6,7 +6,7 @@ namespace Components\Core\Caller {
             $this->resource = $this->init();
         }
         
-        public function execute() : string {
+        final public function execute() : string {
             if (($response = $this->exec()) === false) {
                 return (string) $this->error();
             }

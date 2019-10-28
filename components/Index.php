@@ -15,11 +15,13 @@ namespace Components {
         public function __construct(string $_key) {
             $this->_key = $_key;
         }
+        
+        static public function construct(string $_key) : Index {
+            return (object) new Index($_key);
+        }
 
         public function restore() {
-            if ($this->exists()) {
-                return self::$_index[$this->_key];
-            }        
+            return ($this->exists() ? self::$_index[$this->_key] : false);
         }
 
         public function store($value) {
@@ -31,11 +33,7 @@ namespace Components {
         }
         
         public function __dry() : string {
-            return (string) sprintf("
-            \$index = new \Components\Index(\"%s\");
-            if (!\$index->exists()) {
-                \$index->store(%s);
-            }", $this->_key, $this->dehydrate($this->restore()));                    
+            return (string) sprintf("\Components\Index::construct(\"%s\")->restore()", $this->_key);
         }
     }
 }

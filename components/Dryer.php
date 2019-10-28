@@ -28,7 +28,7 @@ namespace Components {
                         }       
                         return (string) sprintf("new \%s(%s)", $reflection->getName(), implode(", ", $output));            
                     } else {
-                        throw new Event(sprintf("not reflectable; %s", get_class($data)));
+                        return (string) "false";
                     }
                 }
             } elseif (is_bool($data) || is_double($data)) {

@@ -3,28 +3,27 @@ namespace Components {
     class Core {
         use Dryer;
         use Helpers;
+        private $_parameters = [];
         
-        private $parameters = [];
-
         public function __toString() : string {
             return (string) get_class($this);
         }
 
         public function __invoke($parameter) : Validation {
             if ($this->exists($parameter)) {
-                return (object) $this->parameters[$parameter];
+                return (object) $this->_parameters[$parameter];
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }            
 
         public function __isset(string $parameter) : bool {
-            return (bool) ($this->exists($parameter) && $this->parameters[$parameter]->validate());
+            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }        
         
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->parameters[$parameter]->set((is_array($value) && is_array($this->parameters[$parameter]->get()) ? array_merge($this->parameters[$parameter]->get(), $value) : $this->hydrate($value)));
+                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $this->hydrate($value)));
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
@@ -33,7 +32,7 @@ namespace Components {
         public function __get(string $parameter) {
             if ($this->exists($parameter)) {
                 try {
-                    return $this->parameters[$parameter]->execute();    
+                    return $this->_parameters[$parameter]->execute();    
                 } catch (\Components\Event $event) {
                     throw new Event(sprintf("invalid parameter `%s`; %s", $parameter, $event->getMessage()));
                 }
@@ -43,39 +42,39 @@ namespace Components {
         }
 
         public function __unset(string $parameter) : bool {
-            return (bool) ($this->exists($parameter) && $this->parameters[$parameter]->set(false));
+            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->set(false));
         }      
-        
+
         final public function invoke(string $parameter) : Validation {
             return (object) $this($parameter);
         }
         
         final public function exists($parameter) : bool {
-            return (bool) array_key_exists($parameter, $this->parameters);
+            return (bool) array_key_exists($parameter, $this->_parameters);
         }
         
         final public function add($parameter, Validation $validation, $reset = false) {
             if (!$this->exists($parameter) || $reset) {
-                return (bool) $this->parameters[$parameter] = $validation;
+                return (bool) $this->_parameters[$parameter] = $validation;
             }
         }
  
         final public function remove($parameter) {
             if ($this->exists($parameter)) {
-                unset ($this->parameters[$parameter]);
+                unset ($this->_parameters[$parameter]);
             }
         }
-        
+                
         final public function inter(array $parameters) : array {
             if (sizeof($parameters)) {
-                return (array) array_diff(array_keys($this->parameters), $this->diff($parameters));
+                return (array) array_diff(array_keys($this->_parameters), $this->diff($parameters));
             }
             
-            return (array) array_keys($this->parameters);
+            return (array) array_keys($this->_parameters);
         }
         
         final public function diff(array $parameters = []) : array {
-            return (array) array_diff(array_keys($this->parameters), $parameters);
+            return (array) array_diff(array_keys($this->_parameters), $parameters);
         }
 
         final public function store(array $values) {
@@ -103,6 +102,14 @@ namespace Components {
             
             return (array) $validations;
         }
+        
+        final public function isStrict(array $parameters = []) : bool {
+            return (bool) !in_array(false, $this->validate($parameters));
+        }
+        
+        final public function isNormal(array $parameters = []) : bool {
+            return (bool) in_array(true, $this->validate($parameters));
+        }
 
         final public function feed($querystring, array $values = []) {
             parse_str($querystring, $values);
@@ -121,20 +128,14 @@ namespace Components {
             }
         }
         
-        final public function import(Core $core, array $parameters) {
-            foreach ($parameters as $parameter) {
-                $this->add($parameter, $core($parameter));
-            }
-        }
-        
         public function __dry() : string {
             $output = [];     
             
-            foreach ($this->parameters as $parameter => $validation) {
+            foreach ($this->_parameters as $parameter => $validation) {
                 $output[] = sprintf("\$this->add(\"%s\", %s);", $parameter, $validation->__dry());
             }
             
             return (string) implode(PHP_EOL, $output);
-        }   
+        }
     }
 }

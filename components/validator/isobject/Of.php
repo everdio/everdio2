@@ -1,6 +1,8 @@
 <?php
 namespace Components\Validator\IsObject {
     class Of extends \Components\Validator\IsObject {
+        const MESSAGE = "INVALID_OBJECT_OF";
+        
         protected $instance = false;
         
         public function __construct($instance) {
@@ -13,6 +15,6 @@ namespace Components\Validator\IsObject {
         
         public function __dry() : string {
             return (string) sprintf("new \%s(\"%s\")", (string) $this, $this->instance);
-        }        
+        }
     }
 }

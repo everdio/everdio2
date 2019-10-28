@@ -1,6 +1,6 @@
 <?php
 namespace Modules {
-    abstract class Table extends \Components\Core\Mapping {          
+    abstract class Table extends \Components\Core\Mapper implements \Components\Core\Mapper\Base {          
         public function getTable() : string {
             return (string) sprintf("`%s`.`%s`", $this->database, $this->table);
         }
@@ -8,32 +8,24 @@ namespace Modules {
         public function getColumn($parameter) : string {
             return (string) sprintf("%s.`%s`", $this->getTable(), $this->getField($parameter));
         }
-
-        public function count(array $operators = []) : int {
-            try {
-                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
-                return (int) $this->execute($find->execute())->rowCount();
-            } catch (\Components\Adapter\Event $event) {
-                throw new Event(sprintf("error executing count %s", $event->getMessage()));
-            }   
+        
+        public function find(array $tables = [], string $query = NULL) {
+            $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($tables, [$this]));
+            $stm = $this->prepare($find->execute() . $query);
+            if ($stm && $stm->execute()) {
+                $this->store((array) $stm->fetch(\PDO::FETCH_ASSOC));                
+            }
         }
         
-        public function find(array $operators = [], string $query = NULL) {
-            try {
-                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
-                $this->store((array) $this->execute($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC));                
-            } catch (\Components\Adapter\Event $event) {
-                throw new Event(sprintf("error executing find %s", $event->getMessage()));
-            }   
-        }
-        
-        public function findAll(array $operators = [], string $query = NULL) : array {           
-            try {
-                $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [new Table\Operator($this)]));
-                return (array) $this->execute($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
-            } catch (\Components\Adapter\Event $event) {
-                throw new Event(sprintf("error executing findAll %s", $event->getMessage()));
-            }            
+        public function findAll(array $operators = [], string $query = NULL, array $records = []) : array {           
+            $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [$this]));               
+       
+            $stm = $this->prepare($find->execute() . $query);
+            if ($stm && $stm->execute()) {
+                $records = (array) $stm->fetchAll(\PDO::FETCH_ASSOC);
+            }
+            
+            return (array) $records;
         }
         
         public function save() {
@@ -41,11 +33,7 @@ namespace Modules {
             $values = new Table\Values($this);
             $update = new Table\Update($this);
             
-            try {
-                $this->execute(sprintf("INSERT INTO%s(%s)VALUES(%s)ON DUPLICATE KEY UPDATE%s", $this->getTable(), $insert->execute(), $values->execute(), $update->execute()));    
-            } catch (\Components\Adapter\Event $event) {
-                throw new Event(sprintf("error save %s", $event->getMessage()));
-            }  
+            $this->query(sprintf("INSERT INTO%s(%s)VALUES(%s)ON DUPLICATE KEY UPDATE%s", $this->getTable(), $insert->execute(), $values->execute(), $update->execute()));    
 
             if (isset($this->keys) && !sizeof($this->restore($this->keys)) && sizeof($this->keys) === 1) {      
                 $this->store(array_fill_keys($this->keys, $this->lastInsertId()));
@@ -55,14 +43,10 @@ namespace Modules {
         public function delete() {            
             if (sizeof($this->restore($this->mapping))) {
                 $operator = new Table\Operator($this);
-                try {
-                    $this->execute(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
-                    $this->reset($this->keys);
-                } catch (\Components\Adapter\Event $event) {
-                    throw new Event(sprintf("error delete %s", $event->getMessage()));
-                }  
+                $this->query(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
+                $this->reset($this->keys);
             }
-        }        
+        }    
     }
 }
 

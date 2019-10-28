@@ -3,6 +3,7 @@ namespace Components {
     class Validation {
         use Dryer;
         use Helpers;
+        
         const NORMAL = "normal";
         const STRICT = "strict";        
 
@@ -55,8 +56,12 @@ namespace Components {
         public function get() { 
             return $this->value;
         }
-
-        public function validate() : bool {
+        
+        public function hasType(string $type) : bool {
+            return (bool) in_array($type, $this->types);
+        }
+        
+        public function isValid() : bool {
             foreach ($this->validators as $validator) {
                 $this->validated[(string) $validator] = $validator->execute($this->value);
             }
@@ -65,11 +70,11 @@ namespace Components {
         }        
 
         public function execute() {
-            if ($this->validate()) {
+            if ($this->isValid()) {
                 return $this->value;
             }
             
-            throw new Event(sprintf("%s validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
+            throw new Event(sprintf("%s: `%s` validation for value %s (%s)", get_class($this), $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
         }
 
         public function __dry() : string {

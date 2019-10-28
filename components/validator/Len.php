@@ -1,7 +1,7 @@
 <?php
 namespace Components\Validator {
     abstract class Len extends \Components\Validator {
-        const TYPE = "LEN";
+        const TYPE = "IS_LENGTH";
         const MESSAGE = "INVALID_LENGTH";
         
         protected $len = 0;

@@ -11,7 +11,7 @@ namespace Components\Core {
             $this->add("mandatory", new Validation(false, array(new Validator\IsBool)));
         }
 
-        public function getValidation(array $validators = [], string $validate = NULL) : Validation {
+        final public function getValidation(array $validators = [], string $validate = NULL) : Validation {
             if (isset($this->length)) {
                 $validators[] = new Validator\Len\Smaller($this->length);
             }

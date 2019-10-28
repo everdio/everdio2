@@ -1,0 +1,25 @@
+<?php 
+namespace Modules\Table {
+    use \Components\Validator;
+    final class Relation extends \Components\Validation {
+        public function __construct(\Modules\Table $thisTable, \Modules\Table $thatTable, string $join = null) {
+            parent::__construct(sprintf("%sJOIN%sON%s", $join, $thatTable->getTable(), $this->getRelation($thisTable, $thatTable)), [new Validator\IsString\Contains(["="])]);
+        }
+        
+        private function hasRelation(\Modules\Table $thisTable, \Modules\Table $thatTable) : bool {
+            return (bool) (isset($thisTable->relations) && array_search(get_class($thatTable), $thisTable->relations));
+        }           
+        
+        private function getRelation(\Modules\Table $thisTable, \Modules\Table $thatTable) {
+            if ($this->hasRelation($thisTable, $thatTable)) {
+                return (string) sprintf("%s=%s", $thisTable->getColumn(array_search(get_class($thatTable), $thisTable->relations)), $thatTable->getColumn(array_search(get_class($thatTable), $thisTable->relations)));                            
+            }
+            
+            /*
+                return (string) sprintf("%s=%s", $thisTable->getColumn(array_search(get_class($thisTable), $thatTable->relations)), $thisTable->getColumn(array_search(get_class($thisTable), $thatTable->relations)));
+            }
+             * 
+             */
+        }
+    }
+}

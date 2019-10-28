@@ -1,11 +1,11 @@
 <?php
 namespace Modules\Everdio {
     use \Modules\Everdio\Library\ECms;
-    class File extends \Modules\Everdio\Library\ECms\File {
+    class File extends ECms\File {
         public function find(array $thatMappers = [], string $query = NULL) {
             parent::find($thatMappers, $query);
             try {
-                $file = new \Components\File($this->File, "r");
+                new \Components\File($this->File, "r");
             } catch (\RuntimeException $ex) {
                 $this->delete();
             }
@@ -23,15 +23,9 @@ namespace Modules\Everdio {
         }
         
         public function delete() {
-            foreach (ImageFile::construct(array("FileId" => $this->FileId))->findAll() as $row) {
-                $imagefile = new ImageFile($row);
-                
-                $imagefilegallery = new ECms\ImageFileGallery($row);
-                unset($imagefilegallery->Order);
-                
-                $imagefilegallery->delete();
-                $imagefile->delete();
-            }
+            $imagefile = new ImageFile;
+            $imagefile->FileId = $this->FileId;
+            $imagefile->delete();
             
             parent::delete();
         }

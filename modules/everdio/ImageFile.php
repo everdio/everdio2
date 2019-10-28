@@ -3,12 +3,12 @@ namespace Modules\Everdio {
     use \Modules\Image;
     class ImageFile extends \Modules\Everdio\Library\ECms\ImageFile {
         public function generate() : string {
-            $environment = new Library\ECms\Environment;
+            $environment = new Library\Environment;
             $environment->EnvironmentId = $this->EnvironmentId;
             $environment->Status = "active";
             $environment->find();
 
-            $image = new Library\ECms\Image;
+            $image = new Library\Image;
             $image->ImageId = $this->ImageId;
             $image->find();
 
@@ -86,6 +86,14 @@ namespace Modules\Everdio {
             } else {
                 throw new Event(sprintf("file %s removed", $file->File));
             }
+        }
+        
+        public function delete() {
+            $imagefilegallery = new ECms\ImageFileGallery;
+            $imagefilegallery->ImageFileId = $this->ImageFileId;
+            unset($imagefilegallery->Order);
+            $imagefilegallery->delete();
+            parent::delete();
         }
     }
 }

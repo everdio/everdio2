@@ -8,13 +8,13 @@ namespace Components\Core {
             $this->add("resource", new Validation(false, [new Validator\IsResource]));
         }
         
-        public function __toString() : string {
+        final public function __toString() : string {
             return (string) $this->caller;
         }
         
         abstract public function execute() : string;
         
-        public function __call($name, $arguments) {
+        final public function __call($name, $arguments) {
             if (function_exists(sprintf("%s_%s", $this->caller, $name))) {
                 if (isset($this->resource)) {
                     array_unshift($arguments, $this->resource); 
