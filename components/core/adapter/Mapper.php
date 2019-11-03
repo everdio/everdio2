@@ -1,6 +1,6 @@
 <?php
-namespace Components\Core {
-    abstract class Mapper extends \Components\Core {       
+namespace Components\Core\Adapter {
+    abstract class Mapper extends \Components\Core\Adapter {       
         final public function hasField(string $field) : bool {
             return (bool) isset($this->mapping) &&  array_key_exists($field, $this->mapping);
         }
@@ -20,11 +20,5 @@ namespace Components\Core {
             
             throw new Event(sprintf("unknown field %s", $field));
         }       
-        
-        final public function __call($name, $arguments) {
-            if (!method_exists($this, $name)) {
-                return call_user_func_array(array($this->instance, $name), $arguments);            
-            }
-        }        
     }
 }

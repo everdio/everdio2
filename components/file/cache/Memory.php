@@ -9,7 +9,7 @@ namespace Components\File\Cache {
             $this->ftok = ftok($this->getRealPath(), "t");        
         }
         
-        private function open($size, $flag = "c", $permission = 0755) {
+        private function _open($size, $flag = "c", $permission = 0755) {
             if ($this->exists()) {
                 return shmop_open($this->ftok, $flag, $permission, $size);
             }
@@ -18,19 +18,19 @@ namespace Components\File\Cache {
         }
 
         public function store($content) : int {       
-            if (($key = $this->open(parent::store($content)))) {
+            if (($key = $this->_open(parent::store($content)))) {
                 return (int) shmop_write($key, serialize($content), 0);
             }
         }
 
         public function restore() {        
-            if (($key = $this->open($this->getSize()))) {
+            if (($key = $this->_open($this->getSize()))) {
                 return unserialize(shmop_read($key, 0, $this->getSize()));
             }        
         }    
 
         public function delete() : bool {
-            if (($key = $this->open($this->getSize()))) {
+            if (($key = $this->_open($this->getSize()))) {
                 return (bool) (shmop_delete($key) && shmop_close($key) && parent::delete());
             }
         }

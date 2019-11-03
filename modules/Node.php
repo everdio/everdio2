@@ -1,22 +1,7 @@
 <?php
 namespace Modules {
-    abstract class Node extends \Components\Core\Mapper implements \Components\Core\Mapper\Base {
-        public function getXPath() : \DOMXPath {
-            $index = new \Components\Index($this->instance->documentURI);
-            if (!$index->exists()) {
-                $index->store(new \DOMXPath($this->instance));
-            }
-            
-            return (object) $index->restore();
-        }
-        
-        public function getDocument(\DomElement $node) {
-            $dom = new \DOMDocument;
-            $dom->appendChild($dom->importNode($node, true));
-            return (object) $dom;
-        }
-        
-        public function addNode(\DOMElement $node) : \DOMElement {
+    abstract class Node extends \Components\Core\Adapter\Mapper implements \Components\Core\Adapter\Mapper\Base {
+        public function reverse(\DOMElement $node) : \DOMElement {
             $this->current = $node->getNodePath();          
             $this->parent = $node->parentNode->getNodePath();                
             $this->Text = $node->textContent;
@@ -33,7 +18,6 @@ namespace Modules {
         
         public function count(array $filters = [], string $query = NULL) : int { 
             $path = new Node\Path($this->path, array_merge([new Node\Filter($this)], $filters));
-            
             $xpath = new \DOMXPath($this->instance);
             return (int) $xpath->query($path->execute() . $query)->length;
         }
@@ -43,7 +27,7 @@ namespace Modules {
             $xpath = new \DOMXPath($this->instance);
             $list = $xpath->query($path->execute() . $query);
             if (($length = $list->length - 1) >= 0) {    
-                return (object) $this->addNode($list->item($length));
+                return (object) $this->reverse($list->item($length));
             }
         }
         
@@ -52,16 +36,17 @@ namespace Modules {
             $xpath = new \DOMXPath($this->instance);
             foreach ($xpath->query($path->execute() . $query) as $index => $node) { 
                 $mapper = new $this;
-                $mapper->addNode($node);
-                $records[$index + 1] = $mapper->restore(array("current", "parent") + (isset($mapper->mapping) ? $mapper->mapping : []));
+                $mapper->reverse($node);
+                
+                $records[$index + 1] = $mapper->restore(["current", "parent", "Text"] + (isset($mapper->mapping) ? $mapper->mapping : []));
             }
             
             return (array) array_reverse($records);
         }        
   
-        public function save() : \DomElement {            
-            $node = (isset($this->current) ? $this->getXPath()->query($this->current)->item(0) : $this->createElement($this->tag));
-            
+        public function save() : \DomElement {       
+            $xpath = new \DOMXPath($this->instance);
+            $node = (isset($this->current) ? $xpath->query($this->current)->item(0) : $this->createElement($this->tag));
             if (isset($this->Text)) {        
                 $node->appendChild($this->createCDATASection($this->Text));
             }
@@ -75,17 +60,18 @@ namespace Modules {
             }            
             
             if (!isset($this->current) && isset($this->parent)) {                        
-                $this->getXPath()->query($this->parent)->item(0)->appendChild($node);
+                $xpath->query($this->parent)->item(0)->appendChild($node);
             } elseif (!isset($this->current) && !isset($this->parent) && isset($this->path)) {
-                $this->getXPath()->query(implode(DIRECTORY_SEPARATOR, array_slice(explode(DIRECTORY_SEPARATOR, $this->path), 0, -1)))->item(0)->appendChild($node);
+                $xpath->query(implode(DIRECTORY_SEPARATOR, array_slice(explode(DIRECTORY_SEPARATOR, $this->path), 0, -1)))->item(0)->appendChild($node);
             }
             
-            return (object) $this->addNode($node);
+            return (object) $this->reverse($node);
         }
         
         public function delete() {
-            if (isset($this->current) && isset($this->parent) && $this->getXPath()->query($this->current)->item(0)) {
-                $this->getXPath()->query($this->parent)->item(0)->removeChild($this->getXPath()->query($this->current)->item(0));
+            $xpath = new \DOMXPath($this->instance);
+            if (isset($this->current) && isset($this->parent) && $xpath->query($this->current)->item(0)) {
+                $xpath->query($this->parent)->item(0)->removeChild($xpath->query($this->current)->item(0));
                 unset ($this->current);
             }
         }

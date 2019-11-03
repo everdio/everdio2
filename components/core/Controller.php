@@ -32,6 +32,8 @@ namespace Components\Core {
                 require_once $validation->execute();
                 return (string) ob_get_clean();                                                            
             }
+            
+            throw new Event(sprintf("unknown dispatch %s", $validation->get()));
         }        
 
         public function execute($path, string $route = NULL) {  

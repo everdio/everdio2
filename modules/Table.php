@@ -1,6 +1,6 @@
 <?php
 namespace Modules {
-    abstract class Table extends \Components\Core\Mapper implements \Components\Core\Mapper\Base {          
+    abstract class Table extends \Components\Core\Adapter\Mapper implements \Components\Core\Adapter\Mapper\Base {          
         public function getTable() : string {
             return (string) sprintf("`%s`.`%s`", $this->database, $this->table);
         }
@@ -19,7 +19,6 @@ namespace Modules {
         
         public function findAll(array $operators = [], string $query = NULL, array $records = []) : array {           
             $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [$this]));               
-       
             $stm = $this->prepare($find->execute() . $query);
             if ($stm && $stm->execute()) {
                 $records = (array) $stm->fetchAll(\PDO::FETCH_ASSOC);
@@ -42,9 +41,9 @@ namespace Modules {
         
         public function delete() {            
             if (sizeof($this->restore($this->mapping))) {
-                $operator = new Table\Operator($this);
-                $this->query(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
-                $this->reset($this->keys);
+                //$operator = new Table\Operator($this);
+                //$this->query(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
+                //$this->reset($this->keys);
             }
         }    
     }

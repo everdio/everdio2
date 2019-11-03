@@ -1,7 +1,7 @@
 <?php
 namespace Components\Core {
     use \Components\Validation;
-    use \Components\Validator;            
+    use \Components\Validator;
     abstract class Caller extends \Components\Core {
         public function __construct($caller) {
             $this->add("caller", new Validation($caller, [new Validator\IsString]));
@@ -12,7 +12,7 @@ namespace Components\Core {
             return (string) $this->caller;
         }
         
-        abstract public function execute() : string;
+        abstract public function execute();
         
         final public function __call($name, $arguments) {
             if (function_exists(sprintf("%s_%s", $this->caller, $name))) {

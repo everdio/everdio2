@@ -2,7 +2,7 @@
 namespace Modules\Node {
     use \Components\Validator;
     final class Filter extends \Components\Validation {
-        public function __construct(\Modules\Node $node, string $operator = "and", string $expression = "=", string $match = "contains(.,\"%s\")", array $operators = []) {
+        public function __construct(\Modules\Node $node, string $operator = "and", string $expression = "=", string $match = "text()=\"%s\"", array $operators = []) {
             if (isset($node->mapping) || isset($node->Text)) {
                 if (isset($node->mapping)) {
                     foreach ($node->restore($node->mapping) as $parameter => $value) {

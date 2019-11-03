@@ -42,7 +42,7 @@ namespace Modules {
         /*
          * resamples image with new dimensions
          */
-        private function resample(int $width, int $height) : bool {
+        private function _resample(int $width, int $height) : bool {
             $image = imagecreatetruecolor((int) $width, (int) $height);
             imagecopyresampled($image, $this->image, (int) $this->left, (int) $this->top, 0, 0, (int) $this->width, (int) $this->height, (int) imagesx($this->image), (int) imagesy($this->image));
             return (bool) $this->image = $image;
@@ -63,7 +63,7 @@ namespace Modules {
             $this->left = $left - ($this->width - $width) / 2;        
             $this->top = $top - ($this->height - $height) / 2;        
 
-            return (bool) $this->resample($width, $height);
+            return (bool) $this->_resample($width, $height);
         }    
 
         /*
@@ -72,7 +72,7 @@ namespace Modules {
         public function resize(int $width = NULL, int $height = NULL) : bool {        
             $this->height = ($width && !$height ? imagesy($this->image) * ($width / imagesx($this->image)) : $height);
             $this->width = (!$width && $height ? imagesx($this->image) * ($height / imagesy($this->image)) : $width);                                            
-            return (bool) $this->resample($this->width, $this->height);
+            return (bool) $this->_resample($this->width, $this->height);
         }        
         
         /*

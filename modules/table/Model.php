@@ -2,10 +2,11 @@
 namespace Modules\Table {
     use Components\Validation;
     use Components\Validator;
-    final class Model extends \Components\Core\Mapper\Model {
-        public function __construct(\Components\Index $index) {
-            parent::__construct($index);
+    final class Model extends \Components\Core\Adapter\Mapper\Model {
+        public function __construct($key) {
+            parent::__construct($key);
             $this->extends = "\Modules\Table";
+            $this->add("instance", new Validation(false, [new Validator\IsObject]));
             $this->add("database", new Validation(false, array(new Validator\IsString)));
             $this->add("table", new Validation(false, array(new Validator\IsString)));                
             $this->add("keys", new Validation(false, array(new Validator\IsArray)));
@@ -34,7 +35,7 @@ namespace Modules\Table {
             $keys->execute();
             
             foreach ($keys->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $this->keys = [$this->getParameter($row["COLUMN_NAME"])];
+                $this->keys = [$this->mapping[$row["COLUMN_NAME"]]];
             }
             
             $relations = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
@@ -42,7 +43,7 @@ namespace Modules\Table {
             
             foreach($relations->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 if ($row["REFERENCED_COLUMN_NAME"]) {
-                    $this->relations = array($this->getParameter($row["COLUMN_NAME"]) => $this->namespace . "\\" . $this->labelize($row["REFERENCED_TABLE_NAME"]));    
+                    $this->relations = array($this->mapping[$row["COLUMN_NAME"]] => $this->namespace . "\\" . $this->labelize($row["REFERENCED_TABLE_NAME"]));    
                 }
             }
         }

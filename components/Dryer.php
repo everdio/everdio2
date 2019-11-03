@@ -8,7 +8,7 @@ namespace Components {
                 return (string) sprintf("\"%s\"", $data);    
             } elseif (is_array($data)) {
                 foreach ($data as $key => $value) {
-                    $output[] = (is_integer($key) ? false : "\"" . $key . "\" => ") . ($this->dehydrate($value));
+                    $output[] = (is_integer($key) ?  $key . " => " : "\"" . $key . "\" => ") . ($this->dehydrate($value));
                 }
                 return (string) sprintf("[%s]", implode(", ", $output));                
             } elseif (is_object($data)) {
@@ -16,7 +16,7 @@ namespace Components {
                     return (string) $data->__dry();
                 } else {
                     $reflection = new \ReflectionClass($data);
-                    if ($reflection->isInstantiable()) {
+                    if ($reflection->isInstantiable() && $reflection->hasMethod("__construct")) {
                         $output = [];
                         foreach ($reflection->getConstructor()->getParameters() as $parameter) {
                             foreach ($reflection->getProperties() as $property) {

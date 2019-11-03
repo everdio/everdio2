@@ -23,7 +23,7 @@ namespace Components {
         
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $this->hydrate($value)));
+                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? $this->_parameters[$parameter]->get() + $value : $this->hydrate($value)));
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
