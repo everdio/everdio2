@@ -7,7 +7,7 @@ namespace Modules\Node {
                 if (isset($node->mapping)) {
                     foreach ($node->restore($node->mapping) as $parameter => $value) {
                         if (!empty($value)) {
-                            $operators[] = sprintf("@%s%s\"%s\"", $node->getField($parameter), $expression, $value);
+                            $operators[] = sprintf("@%s %s \"%s\"", $node->getField($parameter), $expression, $value);
                         }
                     }                    
                 }

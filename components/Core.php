@@ -77,7 +77,7 @@ namespace Components {
             return (array) array_diff(array_keys($this->_parameters), $parameters);
         }
 
-        final public function store(array $values) {
+        public function store(array $values) {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {
                     $this->{$parameter} = (!is_array($value) && in_array(\Components\Validator\IsArray::TYPE, $this($parameter)->types) ? explode(",", $value) : $value);
@@ -85,7 +85,7 @@ namespace Components {
             }
         }
         
-        final public function restore(array $parameters = [], array $return = []) : array {
+        public function restore(array $parameters = [], array $return = []) : array {
             foreach ($this->inter($parameters) as $parameter) {
                 if (isset($this->{$parameter})) {
                     $return[$parameter] = $this->{$parameter};

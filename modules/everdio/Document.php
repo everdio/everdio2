@@ -4,6 +4,10 @@ namespace Modules\Everdio {
     class Document extends \Modules\Everdio\Library\ECms\Document {
         public function save(array $keywords = []) {
             $this->DocumentSlug = $this->slug($this->Document);
+            if (empty($this->Description)) {
+                $this->Description = $this->substring(implode(" ", $this->phrases($this->Content)), 0, 252, false, "...");
+            }         
+            
             if (empty($this->Keywords)) {
                 $account = new ECms\Account;
                 $account->AccountId = $this->AccountId;
@@ -20,15 +24,12 @@ namespace Modules\Everdio {
                         }
                     }
                 }
+                
                 $this->Keywords = $this->substring(implode(",", array_unique(array_merge($keywords, array_unique($this->words($this->Title, 4, 3) + $this->words($this->Description, 4, 1) + $this->words(strip_tags($this->desanitize($this->Content)), 4, 8))))), 0, 255);
-            }
-            
-            if (empty($this->Description)) {
-                $this->Description = $this->substring(implode(" ", $this->phrases($this->Content)), 0, 252, false, "...");
-            }         
+            }            
             
             if (empty($this->Order) && !empty($this->ParentId)) {
-                $this->Order = ECms\Document::construct(array("EnvironmentId" => $this->EnvironmentId, "ParentId" => $this->ParentId))->count() + 1;
+                $this->Order = count(ECms\Document::construct(array("EnvironmentId" => $this->EnvironmentId, "ParentId" => $this->ParentId))->findAll()) + 1;
             }         
             
             parent::save();

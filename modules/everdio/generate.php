@@ -19,7 +19,7 @@ foreach ($this->pdo["databases"] as $database) {
         $model->namespace = sprintf($this->library["namespace"], $this->labelize($database));
         $model->setup();
 
-        echo (string) sprintf("Mapper %s", $model->__dry()) . PHP_EOL;    
+        echo (string) sprintf("Mapper %s", $model->namespace) . PHP_EOL;    
         ob_flush();                    
     }
 }

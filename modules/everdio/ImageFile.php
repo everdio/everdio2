@@ -5,7 +5,7 @@ namespace Modules\Everdio {
         public function generate() : string {
             $environment = new Library\Environment;
             $environment->EnvironmentId = $this->EnvironmentId;
-            $environment->Status = "active";
+            unset($environment->Status);
             $environment->find();
 
             $image = new Library\Image;

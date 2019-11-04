@@ -3,7 +3,7 @@ namespace Modules\Node {
     use \Components\Validator;
     final class Path extends \Components\Validation {
         public function __construct(string $xpath, array $filters = []) {
-            $xparts = $parts = explode(DIRECTORY_SEPARATOR, preg_replace('/\[(.*?)\]/', false, $xpath));
+            $xparts = $parts = explode(DIRECTORY_SEPARATOR, $xpath);
             
             foreach ($filters as $filter) {
                 if ($filter instanceof Filter && $filter->isValid()) {                   
