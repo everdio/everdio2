@@ -4,6 +4,6 @@ namespace Modules\Everdio {
         public function save() {
             $this->GallerySlug = $this->slug($this->Gallery);
             parent::save();
-        }
+        }        
     }
 }

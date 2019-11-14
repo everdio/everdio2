@@ -1,14 +1,13 @@
 <?php
 namespace Modules\Everdio {
-    use \Modules\Image;
     class ImageFile extends \Modules\Everdio\Library\ECms\ImageFile {
         public function generate() : string {
-            $environment = new Library\Environment;
+            $environment = new Environment;
             $environment->EnvironmentId = $this->EnvironmentId;
             unset($environment->Status);
             $environment->find();
 
-            $image = new Library\Image;
+            $image = new Image;
             $image->ImageId = $this->ImageId;
             $image->find();
 
@@ -23,16 +22,16 @@ namespace Modules\Everdio {
                     switch (strtolower($file->Extension)) {
                         case "jpg":
                         case "jpeg":                
-                            $input = new Image\Jpeg;
+                            $input = new \Modules\Image\Jpeg;
                             break;
                         case "png":
-                            $input = new Image\Png;
+                            $input = new \Modules\Image\Png;
                             break;
                         case "gif":
-                            $input = new Image\Gif;
+                            $input = new \Modules\Image\Gif;
                             break;
                         case "webp":
-                            $input = new Image\Webp;
+                            $input = new \Modules\Image\Webp;
                             break;
                         default:
                             throw new Event(sprintf("unknown input %s", strtolower($file->Extension)));
@@ -57,16 +56,16 @@ namespace Modules\Everdio {
                     switch ($image->Output) {
                         case "jpg":
                         case "jpeg":                
-                            $output = new Image\Jpeg;
+                            $output = new \Modules\Image\Jpeg;
                             break;
                         case "png":
-                            $output = new Image\Png;
+                            $output = new \Modules\Image\Png;
                             break;
                         case "gif":
-                            $output = new Image\Gif;
+                            $output = new \Modules\Image\Gif;
                             break;
                         case "webp":
-                            $output = new Image\Webp;
+                            $output = new \Modules\Image\Webp;
                             break;
                         default:
                             throw new Event("unknown output");
@@ -78,18 +77,18 @@ namespace Modules\Everdio {
                         $this->save();
                         return (string) sprintf("%s (%sx%s %s)", $this->Source, $image->Width, $image->Height, $this->formatsize($imagefile->getSize())); 
                     } else {
-                        throw new Event("export failed");
+                        throw new Event("export failed %s", $file->File);
                     }
                 } else {
-                    throw new Event("invalid input");
+                    throw new Event("invalid input %s", $file->File);
                 }
             } else {
-                throw new Event(sprintf("file %s removed", $file->File));
+                throw new Event(sprintf("invalid file %s", $file->File));
             }
         }
         
         public function delete() {
-            $imagefilegallery = new ECms\ImageFileGallery;
+            $imagefilegallery = new Library\ECms\ImageFileGallery;
             $imagefilegallery->ImageFileId = $this->ImageFileId;
             unset($imagefilegallery->Order);
             $imagefilegallery->delete();

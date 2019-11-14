@@ -1,25 +1,35 @@
 <?php
 namespace Modules {
     abstract class Table extends \Components\Core\Adapter\Mapper implements \Components\Core\Adapter\Mapper\Base {          
-        public function getTable() : string {
+        final public function getTable() : string {
             return (string) sprintf("`%s`.`%s`", $this->database, $this->table);
         }
         
-        public function getColumn($parameter) : string {
+        final public function getColumn($parameter) : string {
             return (string) sprintf("%s.`%s`", $this->getTable(), $this->getField($parameter));
         }
         
-        public function find(array $tables = [], string $query = NULL) {
-            $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($tables, [$this]));
-            $stm = $this->prepare($find->execute() . $query);
+        final public function getQuery(array $tables = [], array $relations = [], array $filters = []) : string {
+            foreach ($tables as $table) {
+                if ($table instanceof Table) {
+                    $relations[] = new Table\Relation($this, $table);
+                    $filters[] = new Table\Filter($table);
+                }
+            }            
+            
+            $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), $relations, array_merge($filters, [new Table\Filter($this)]));            
+            return (string) $find->execute();
+        }
+        
+        public function find(array $tables = [], string $query = NULL,  array $records = [], array $relations = [], array $filters = []) {
+            $stm = $this->prepare($this->getQuery($tables) . $query);
             if ($stm && $stm->execute()) {
                 $this->store((array) $stm->fetch(\PDO::FETCH_ASSOC));                
             }
         }
         
-        public function findAll(array $operators = [], string $query = NULL, array $records = []) : array {           
-            $find = new Table\Find(new Table\Select([$this]), new Table\From([$this]), array_merge($operators, [$this]));               
-            $stm = $this->prepare($find->execute() . $query);
+        public function findAll(array $tables = [], string $query = NULL, array $records = [], array $relations = [], array $filters = []) : array {
+            $stm = $this->prepare($this->getQuery($tables) . $query);
             if ($stm && $stm->execute()) {
                 $records = (array) $stm->fetchAll(\PDO::FETCH_ASSOC);
             }
@@ -31,7 +41,6 @@ namespace Modules {
             $insert = new Table\Insert($this);
             $values = new Table\Values($this);
             $update = new Table\Update($this);
-            
             $this->query(sprintf("INSERT INTO%s(%s)VALUES(%s)ON DUPLICATE KEY UPDATE%s", $this->getTable(), $insert->execute(), $values->execute(), $update->execute()));    
 
             if (isset($this->keys) && !sizeof($this->restore($this->keys)) && sizeof($this->keys) === 1) {      
@@ -41,9 +50,9 @@ namespace Modules {
         
         public function delete() {            
             if (sizeof($this->restore($this->mapping))) {
-                //$operator = new Table\Operator($this);
-                //$this->query(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $operator->execute()));
-                //$this->reset($this->keys);
+                $filter = new Table\Filter($this);
+                $this->query(sprintf("DELETE FROM%sWHERE%s", $this->getTable(), $filter->execute()));
+                $this->reset($this->keys);
             }
         }    
     }

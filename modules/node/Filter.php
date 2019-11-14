@@ -2,22 +2,18 @@
 namespace Modules\Node {
     use \Components\Validator;
     final class Filter extends \Components\Validation {
-        public function __construct(\Modules\Node $node, string $operator = "and", string $expression = "=", string $match = "text()=\"%s\"", array $operators = []) {
-            if (isset($node->mapping) || isset($node->Text)) {
-                if (isset($node->mapping)) {
-                    foreach ($node->restore($node->mapping) as $parameter => $value) {
-                        if (!empty($value)) {
-                            $operators[] = sprintf("@%s %s \"%s\"", $node->getField($parameter), $expression, $value);
-                        }
-                    }                    
+        public function __construct(\Modules\Node $node, array $conditions = [], string $operator = "and", array $filters = []) {
+            if (isset($node->current)) {
+                parent::__construct($node->current, [new Validator\IsString\IsPath]);
+            } else {
+                foreach ($conditions as $condition) {
+                    if ($condition instanceof Condition && $condition->isValid()) {
+                        $filters[] = $condition->execute();
+                    }
                 }
-
-                if (isset($node->Text)) {
-                    $operators[] = sprintf($match, trim($node->Text));
-                }   
+                
+                parent::__construct(sprintf("%s[%s]", $node->path, implode(sprintf(" %s ", $operator), $filters)), [new Validator\IsString\Contains(["@", "contains", "text", "=", ">", "<", "!=", "and", "or", "min", "max", "last", "first"])]);
             }
-            
-            parent::__construct(sprintf("%s[%s]", $node->path, implode(sprintf(" %s ", strtolower($operator)), $operators)), [new Validator\IsString\Contains(["@", "contains", "text", "=", ">", "<", "!=", "and", "or"])]);
         }
     }
 }

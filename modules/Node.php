@@ -23,7 +23,7 @@ namespace Modules {
         }
         
         public function find(array $filters = [], string $query = NULL) {
-            $path = new Node\Path($this->path, array_merge([new Node\Filter($this)], $filters));
+            $path = new Node\Path($this->path, array_merge([new Node\Filter($this, [new Node\Condition($this)])], $filters));
             $xpath = new \DOMXPath($this->instance);
             $list = $xpath->query($path->execute() . $query);
             if (($length = $list->length - 1) >= 0) {    
@@ -32,7 +32,7 @@ namespace Modules {
         }
         
         public function findAll(array $filters = [], string $query = NULL, array $records = []) : array {
-            $path = new Node\Path($this->path, array_merge([new Node\Filter($this)], $filters));
+            $path = new Node\Path($this->path, array_merge([new Node\Filter($this, [new Node\Condition($this)])], $filters));
             $xpath = new \DOMXPath($this->instance);
             foreach ($xpath->query($path->execute() . $query) as $index => $node) { 
                 $mapper = new $this;

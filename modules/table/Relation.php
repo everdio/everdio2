@@ -7,19 +7,13 @@ namespace Modules\Table {
         }
         
         private function _hasRelation(\Modules\Table $thisTable, \Modules\Table $thatTable) : bool {
-            return (bool) (isset($thisTable->relations) && array_search(get_class($thatTable), $thisTable->relations));
+            return (bool) (isset($thisTable->relations) && $thatTable !== $thisTable && array_search(get_class($thatTable), $thisTable->relations));
         }           
         
         private function _getRelation(\Modules\Table $thisTable, \Modules\Table $thatTable) {
             if ($this->_hasRelation($thisTable, $thatTable)) {
                 return (string) sprintf("%s=%s", $thisTable->getColumn(array_search(get_class($thatTable), $thisTable->relations)), $thatTable->getColumn(array_search(get_class($thatTable), $thisTable->relations)));                            
-            }
-            
-            /*
-                return (string) sprintf("%s=%s", $thisTable->getColumn(array_search(get_class($thisTable), $thatTable->relations)), $thisTable->getColumn(array_search(get_class($thisTable), $thatTable->relations)));
-            }
-             * 
-             */
+            } 
         }
     }
 }

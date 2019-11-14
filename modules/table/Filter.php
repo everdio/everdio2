@@ -3,7 +3,7 @@ namespace Modules\Table {
     use \Components\Validator;
     final class Filter extends \Components\Validation {
         public function __construct(\Modules\Table $table, string $operator = "and", string $expression = "=", array $operators = []) {
-            if (isset($table->keys) && $table->isStrict($table->keys)) {
+            if (isset($table->keys) && $table->isNormal($table->keys)) {
                 foreach($table->restore($table->keys) as $parameter => $value) {
                     $operators[] = sprintf("%s%s ", $table->getColumn($parameter) . $expression, $value);
                 }

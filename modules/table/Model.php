@@ -31,21 +31,27 @@ namespace Modules\Table {
                 $this->mapping = [$column->field => $column->parameter];
             }
             
-            $keys = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`CONSTRAINT_NAME`='PRIMARY'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
-            $keys->execute();
+            $keys = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`CONSTRAINT_NAME`='PRIMARY'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));            $keys->execute();
             
             foreach ($keys->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $this->keys = [$this->mapping[$row["COLUMN_NAME"]]];
+                $this->keys = [$row["COLUMN_NAME"] => $this->mapping[$row["COLUMN_NAME"]]];
             }
             
-            $relations = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
-            $relations->execute();
+            $foreign = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
+            $foreign->execute();
             
-            foreach($relations->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            foreach($foreign->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 if ($row["REFERENCED_COLUMN_NAME"]) {
                     $this->relations = array($this->mapping[$row["COLUMN_NAME"]] => $this->namespace . "\\" . $this->labelize($row["REFERENCED_TABLE_NAME"]));    
                 }
             }
+            
+            $relations = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`REFERENCED_TABLE_NAME`='%s'", $this->database, $this->table));
+            $relations->execute();            
+
+            foreach($relations->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+                $this->relations = array($this->mapping[$row["COLUMN_NAME"]] => $this->namespace . "\\" . $this->labelize($row["TABLE_NAME"]));    
+            }            
         }
     }
 }

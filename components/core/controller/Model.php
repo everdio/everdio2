@@ -8,9 +8,9 @@ namespace Components\Core\Controller {
             $this->add("parser", new Validation($parser, array(new Validator\IsObject\Of("Components\Parser"))));
         }
         
-        final protected function dispatch() {   
+        protected function dispatch(string $path) {   
             if (isset($this->parser)) {
-                $validation = new Validation($this->dispatch . $this->parser::EXTENSION, array(new Validator\IsString\IsFile));
+                $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . $this->parser::EXTENSION, array(new Validator\IsString\IsFile));
                 if ($validation->isValid()) {
                     $file = new \Components\File($validation->execute(), "r");                   
                     foreach ($this->parser::parse($file->restore()) as $parameter => $value) {
@@ -19,7 +19,7 @@ namespace Components\Core\Controller {
                 }
             }
             
-            return (string) parent::dispatch();
+            return (string) parent::dispatch($path);
         }       
     }
 }

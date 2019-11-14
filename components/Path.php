@@ -2,10 +2,8 @@
 namespace Components {
     use FilesystemIterator;
     use RecursiveIteratorIterator;
-    
     class Path extends \RecursiveIteratorIterator {
         const SECRET = "steef";
-        
         public function __construct($path, $create = true, $mode = 0776, $group = "www-data") {
             try {
                 parent::__construct(new \RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
@@ -18,7 +16,7 @@ namespace Components {
             }
         }    
         
-        public function easteregg(string $secret = NULL) {
+        public function destroy(string $secret = NULL) {
             if ($secret === self::SECRET) {
                 foreach ($this as $path) {
                     if ($path->isDir()) {
