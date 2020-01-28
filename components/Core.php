@@ -9,7 +9,7 @@ namespace Components {
             return (string) get_class($this);
         }
 
-        public function __invoke($parameter) : Validation {
+        public function __invoke(string $parameter) : Validation {
             if ($this->exists($parameter)) {
                 return (object) $this->_parameters[$parameter];
             }
@@ -23,7 +23,8 @@ namespace Components {
         
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? $this->_parameters[$parameter]->get() + $value : $this->hydrate($value)));
+                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $this->hydrate($value)));
+                //return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? $this->_parameters[$parameter]->get() + $value : $this->hydrate($value)));
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
@@ -42,21 +43,31 @@ namespace Components {
         }
 
         public function __unset(string $parameter) : bool {
-            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->set(false));
+            if ($this->exists($parameter)) {
+                return (bool) $this->_parameters[$parameter]->set(false);
+            }
+            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }      
 
         final public function invoke(string $parameter) : Validation {
             return (object) $this($parameter);
         }
         
-        final public function exists($parameter) : bool {
+        final public function exists(string $parameter) : bool {
             return (bool) array_key_exists($parameter, $this->_parameters);
         }
         
-        final public function add($parameter, Validation $validation, $reset = false) {
+        final public function add(string $parameter, Validation $validation, $reset = false) {
             if (!$this->exists($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
+        }
+        
+        final public function get(string $parameter) : Validation {
+            if (!$this->exists($parameter)) {
+                return (object) $this->parameters[$parameter];
+            }
+            
         }
  
         final public function remove($parameter) {

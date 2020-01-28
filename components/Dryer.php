@@ -34,7 +34,7 @@ namespace Components {
             } elseif (is_bool($data) || is_double($data)) {
                 return (string) ($data === true ? "true" : "false");
             } elseif ($data === NULL) {
-                return (string) "NULL";
+                return (string) "false";
             } elseif (is_resource($data)) {
                 return (string) get_resource_type($data);
             } else {

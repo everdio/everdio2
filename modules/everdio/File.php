@@ -12,10 +12,15 @@ namespace Modules\Everdio {
         }
         
         public function delete() {
-            $imagefile = new ImageFile;
-            $imagefile->FileId = $this->FileId;
-            $imagefile->delete();
-            
+            if (isset($this->File)) {
+                try {
+                    $file = new \Components\File($this->File, "r");
+                    $file->delete();                         
+                } catch (\RuntimeException $ex) {
+                    new Event(sprintf("%s %s", $this->File, $ex->getMessage()));
+                }
+            }
+
             parent::delete();
         }
     }

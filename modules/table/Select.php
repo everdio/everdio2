@@ -6,6 +6,7 @@ namespace Modules\Table {
             foreach ($tables as $table) {               
                 if ($table instanceof \Modules\Table && isset($table->mapping)) {
                     foreach ($table->mapping as $parameter) {
+                        //$select[$parameter] = $table->getColumn($parameter);
                         $select[$parameter] = sprintf("%sAS`%s`", $table->getColumn($parameter), $parameter);
                     }
                 }

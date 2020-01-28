@@ -20,5 +20,25 @@ namespace Components\Core\Adapter {
             
             throw new Event(sprintf("unknown field %s", $field));
         }       
+        /*
+        final public function store(array $values) {
+            foreach ($values as $field => $value) {
+                if ($this->hasField($field)) {
+                    $this->{$this->getParameter($field)} = (!is_array($value) && (isset($this($this->getParameter($field))->{"\Components\Validator\IsArray"})) ? explode(",", $value) : $value);
+                }
+            }
+        }        
+        
+        public function restore(array $parameters = [], array $return = []) : array {
+            foreach ($this->inter($parameters) as $parameter) {
+                if (isset($this->{$parameter})) {
+                    $return[$this->getField($parameter)] = $this->{$parameter};
+                }
+            }
+            
+            return (array) $return;
+        }        
+         * 
+         */
     }
 }

@@ -4,7 +4,7 @@ namespace Modules {
         public function reverse(\DOMElement $node) : \DOMElement {
             $this->current = $node->getNodePath();          
             $this->parent = $node->parentNode->getNodePath();                
-            $this->Text = $node->textContent;
+            $this->{$this->tag} = trim($node->nodeValue);
             if (isset($this->mapping)) {                
                 foreach ($this->mapping as $attribute => $parameter) {
                     if ($this->exists($parameter)) {
@@ -38,17 +38,18 @@ namespace Modules {
                 $mapper = new $this;
                 $mapper->reverse($node);
                 
-                $records[$index + 1] = $mapper->restore(["current", "parent", "Text"] + (isset($mapper->mapping) ? $mapper->mapping : []));
+                $records[$index + 1] = $mapper->restore(["current", "parent", $this->tag] + (isset($mapper->mapping) ? $mapper->mapping : []));
             }
             
             return (array) array_reverse($records);
         }        
   
-        public function save() : \DomElement {       
+        public function save() : \DomElement {      
             $xpath = new \DOMXPath($this->instance);
             $node = (isset($this->current) ? $xpath->query($this->current)->item(0) : $this->createElement($this->tag));
-            if (isset($this->Text)) {        
-                $node->appendChild($this->createCDATASection($this->Text));
+            if (isset($this->{$this->tag})) {        
+                $node->nodeValue = false;
+                $node->appendChild($this->createCDATASection($this->{$this->tag}));
             }
             
             if (isset($this->mapping)) {

@@ -68,7 +68,7 @@ namespace Modules\Everdio {
                             $output = new \Modules\Image\Webp;
                             break;
                         default:
-                            throw new Event("unknown output");
+                            throw new Event(sprintf("unknown output for %s", strtolower($file->Extension)));
                     }
 
                     if ($output->export($input, $imagefile, $image->Compression)) {
@@ -91,7 +91,8 @@ namespace Modules\Everdio {
             $imagefilegallery = new Library\ECms\ImageFileGallery;
             $imagefilegallery->ImageFileId = $this->ImageFileId;
             unset($imagefilegallery->Order);
-            $imagefilegallery->delete();
+            $imagefilegallery->delete();           
+            
             parent::delete();
         }
     }

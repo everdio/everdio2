@@ -10,30 +10,33 @@ namespace Modules\Node {
             $this->add("tag", new Validation(false, array(new Validator\IsString)));
             $this->add("path", new Validation(false, array(new Validator\IsString\IsPath)));
             $this->add("current", new Validation(false, array(new Validator\IsString)));
-            $this->add("parent", new Validation(false, array(new Validator\IsString)));
-            $this->add("Text", new Validation(false, array(new Validator\IsNumeric, new Validator\IsString)));
+            $this->add("parent", new Validation(false, array(new Validator\IsString)));           
         }
         
         public function setup() {
             $this->path = preg_replace('/\[(.*?)\]/', false, $this->node->getNodePath());  
             $this->class = ucFirst($this->node->tagName);
-            $this->tag = $this->node->tagName;
+            $this->tag = ucFirst($this->node->tagName);
             
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
                 $this->namespace = $this->namespace . implode("\\", array_map("ucFirst", explode(DIRECTORY_SEPARATOR, dirname($this->path))));
-            }            
+            }    
             
-            foreach ($this->node->attributes as $attribute) {
-                $attr = new Attribute;
-                $attr->parameter = $this->labelize($attribute->nodeName);
-                $attr->field = $attribute->nodeName;
-                $attr->mandatory = true;
-                $attr->length = 255;
-                $attr->default = false;                    
-                $this->add($attr->parameter, $attr->getValidation($attr->getValidators(), Validation::NORMAL));
-                $this->mapping = array($attr->field => $attr->parameter);
-            }            
+            if ($this->node->hasAttributes()) {
+                foreach ($this->node->attributes as $attribute) {
+                    $parameter = new \Components\Core\Parameter($attribute->nodeName);
+                    $parameter->mandatory = true;
+
+                    if (!empty(trim($attribute->value))) {
+                        $parameter->sample = trim($attribute->value);
+                    }
+
+                    $this->add($parameter->parameter, $parameter->getValidation($parameter->getValidators()));
+                    $this->mapping = array($attribute->nodeName => $parameter->parameter);
+                }            
+            }
             
+            $this->add($this->tag, new Validation(false, array(new Validator\IsInteger, new Validator\IsString)));            
             $this->remove("node");
         }
     }

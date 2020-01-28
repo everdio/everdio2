@@ -9,7 +9,7 @@ namespace Components\Core {
             $this->add("instance", new Validation($this->_initialize(), [new Validator\IsObject]));            
         }
         
-        private function _initialize() {
+        final private function _initialize() {
             if (array_key_exists($this->key, self::$instances)) {
                 return (object) self::$instances[$this->key];
             }

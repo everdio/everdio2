@@ -1,7 +1,11 @@
 <?php
 namespace Components {
     class Event extends \Exception {
-        use Helpers;        
+        use Helpers;    
+        
+        public function getEvent() {
+
+        }
         
         public function __destruct() {
             $file = new \Components\File("event.log", "a");

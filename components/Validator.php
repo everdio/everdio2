@@ -10,6 +10,7 @@ namespace Components {
             return (string) get_class($this);
         }
         
+        
         public function __dry() : string {
             return (string) sprintf("new \%s", (string) $this);
         }

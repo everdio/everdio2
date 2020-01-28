@@ -9,12 +9,12 @@ namespace Components\Core {
             $this->add("root", new Validation(false, [new Validator\IsString\IsPath]));
             $this->add("path", new Validation(false, [new Validator\IsString\IsPath]));
             $this->add("arguments", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add("request", new Validation(false, [new Validator\IsArray]));
+            $this->add("request", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
             $this->add("token", new Validation(bin2hex(openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]));
         }
         
         final public function hasRequest(string $request) : bool {
-            return (bool) (array_key_exists($request, $this->request) && !empty($this->request[$request]));
+            return (bool) (isset($this->request) && array_key_exists($request, $this->request) && !empty($this->request[$request]));
         }
         
         final public function getRequest(string $request) {
@@ -42,6 +42,10 @@ namespace Components\Core {
                 return (string) ob_get_clean();                                                            
             }
         }        
+        
+        final public function time(int $decimals = 4) : float {
+            return (float) round(microtime(true) - $this->time, $decimals);
+        }
 
         public function execute($path, string $route = NULL) {  
             if ($this->isRouted($route)) {     

@@ -1,6 +1,6 @@
 <?php
-namespace Components\Validator {
-    class IsDatetime extends \Components\Validator {
+namespace Components\Validator\IsString {
+    class IsDatetime extends \Components\Validator\IsString {
         const TYPE = "IS_DATETIME";
         const MESSAGE = "INVALID_DATETIME";
         
@@ -15,8 +15,12 @@ namespace Components\Validator {
         }
         
         public function execute($value) : bool {
-            $datetime = \DateTime::createFromFormat($this->format, $value);
-            return (bool) ($datetime && $datetime->format($this->format) == $value);
+            if (parent::execute($value)) {
+                $datetime = \DateTime::createFromFormat($this->format, $value);
+                return (bool) ($datetime && $datetime->format($this->format) == $value);
+            }
+            
+            return (bool) false;
         }
         
         public function __dry() : string {

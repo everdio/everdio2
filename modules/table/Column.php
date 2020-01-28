@@ -3,8 +3,8 @@ namespace Modules\Table {
     use \Components\Validation;
     use \Components\Validator;    
     final class Column extends \Components\Core\Parameter {
-        public function __construct() {
-            parent::__construct();
+        public function __construct(string $parameter) {
+            parent::__construct($parameter);
             $this->add("options", new Validation(false, array(new \Components\Validator\IsString)));
             $this->add("type", new Validation(false, array(new \Components\Validator\IsString)));
         }
@@ -26,8 +26,6 @@ namespace Modules\Table {
                 case "text":
                 case "char":
                 case "varchar":
-                    $validators[] = new Validator\IsString;
-                    break;
                 case "point":
                 case "mediumtext":
                 case "longtext":                          
@@ -43,11 +41,14 @@ namespace Modules\Table {
                     $validators[] = new Validator\IsDatetime\IsDate("Y-m-d");
                     break;
                 case "enum":
-                    $validators[] = new Validator\IsString\InArray(explode(",", end($options)));
+                    $validators[] = new Validator\IsString\InArray(explode(",", end($options)));                    
                     unset($this->length);
                     break;
                 case "set":
                     $validators[] = new Validator\IsArray\Intersect(explode(",", end($options)));
+                    if (isset($this->default)) {
+                        $this->default = explode(",", $this->default);
+                    }
                     unset($this->length);
                     break;
                 case "longblob":         

@@ -57,6 +57,10 @@ namespace Components {
             return $this->value;
         }
         
+        public function validated() : array {
+            return (array) array_intersect_key($this->validators, array_flip(array_keys($this->validated, true)));
+        }
+        
         public function hasType(string $type) : bool {
             return (bool) in_array($type, $this->types);
         }

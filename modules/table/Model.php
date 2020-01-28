@@ -16,21 +16,24 @@ namespace Modules\Table {
         public function setup() {
             $columns = $this->prepare(sprintf("SELECT * FROM`information_schema`.`COLUMNS`WHERE`information_schema`.`COLUMNS`.`TABLE_SCHEMA`='%s'AND`information_schema`.`COLUMNS`.`TABLE_NAME`='%s'", $this->database, $this->table));
             $columns->execute();
-            
+
             foreach ($columns->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $column = new Column;
-                $column->parameter = $this->labelize($row["COLUMN_NAME"]);
-                $column->field = $row["COLUMN_NAME"];
+                $column = new Column($row["COLUMN_NAME"]);
                 $column->mandatory = (($row["IS_NULLABLE"] === "YES") ? false : true);
                 $column->length = $row["CHARACTER_MAXIMUM_LENGTH"];
                 $column->default = $this->hydrate(($row["COLUMN_DEFAULT"] === "CURRENT_TIMESTAMP" ? false : $row["COLUMN_DEFAULT"]));
                 $column->type = $row["DATA_TYPE"];
-                $column->options = $row["COLUMN_TYPE"];                
-                
+                $column->options = $row["COLUMN_TYPE"];
+
+                $sample = $this->prepare(sprintf("SELECT `%s` FROM `%s`.`%s`", $row["COLUMN_NAME"], $this->database, $this->table));
+                if ($sample && $sample->execute()) {
+                    $column->sample = $sample->fetchColumn();
+                }                                        
+
                 $this->add($column->parameter, $column->getValidation($column->getValidators()));
-                $this->mapping = [$column->field => $column->parameter];
+                $this->mapping = [$row["COLUMN_NAME"] => $column->parameter];
             }
-            
+                
             $keys = $this->prepare(sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`CONSTRAINT_NAME`='PRIMARY'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));            $keys->execute();
             
             foreach ($keys->fetchAll(\PDO::FETCH_ASSOC) as $row) {

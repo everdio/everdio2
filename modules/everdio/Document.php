@@ -3,9 +3,19 @@ namespace Modules\Everdio {
     use \Modules\Everdio\Library\ECms;
     class Document extends \Modules\Everdio\Library\ECms\Document {
         public function save(array $keywords = []) {
-            $this->DocumentSlug = $this->slug($this->Document);
+            if (!isset($this->DocumentId)) {
+                $document = new $this;
+                $document->reset($document->mapping);
+                $document->DocumentSlug = $this->slug($this->Document);
+                $results = $document->findAll();
+
+                $this->DocumentSlug = (sizeof($results) ? sprintf("%s-%s", $this->slug($this->Document), count($results) + 1) : $this->slug($this->Document));
+            } else {
+                $this->DocumentSlug = $this->slug($this->Document);
+            }
+            
             if (empty($this->Description)) {
-                $this->Description = $this->substring(implode(" ", $this->phrases($this->Content)), 0, 252, false, "...");
+                $this->Description = $this->substring(implode(". ", $this->phrases($this->Content)), 0, 250, false, "...");
             }         
             
             if (empty($this->Keywords)) {
