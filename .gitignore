@@ -6,3 +6,4 @@
 application/
 library/
 modules/everdio/generate/*.ini
+modules/
