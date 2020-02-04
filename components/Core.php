@@ -23,7 +23,7 @@ namespace Components {
         
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $this->hydrate($value)));
+                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $value));
                 //return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? $this->_parameters[$parameter]->get() + $value : $this->hydrate($value)));
             }
             
@@ -96,14 +96,14 @@ namespace Components {
             }
         }
         
-        public function restore(array $parameters = [], array $return = []) : array {
+        public function restore(array $parameters = [], array $values = []) : array {
             foreach ($this->inter($parameters) as $parameter) {
                 if (isset($this->{$parameter})) {
-                    $return[$parameter] = $this->{$parameter};
+                    $values[$parameter] = $this->{$parameter};
                 }
             }
             
-            return (array) $return;
+            return (array) $values;
         }
         
         final public function validate(array $parameters = [], array $validations = []) { 

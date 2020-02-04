@@ -9,19 +9,19 @@ namespace Components\Core {
             $this->add("length", new Validation(false, array(new Validator\IsNumeric)));
             $this->add("mandatory", new Validation(false, array(new Validator\IsBool)));
             $this->add("sample", new Validation(false, [new Validator\IsArray, 
-                                                              new Validator\IsFloat, 
-                                                              new Validator\IsResource,
-                                                              new Validator\IsObject, 
-                                                              new Validator\IsNumeric,
-                                                              new Validator\IsNumeric\Decimal, 
-                                                              new Validator\IsString, 
-                                                              new Validator\IsString\IsPath,
-                                                              new Validator\IsString\IsDir,  
-                                                              new Validator\IsString\IsFile,
-                                                              new Validator\IsString\IsUrl,
-                                                              new Validator\IsString\IsDatetime, 
-                                                              new Validator\IsString\IsDatetime\IsDate,                
-                                                              new Validator\IsInteger]));
+                                                        new Validator\IsFloat, 
+                                                        new Validator\IsDouble, 
+                                                        new Validator\IsResource,
+                                                        new Validator\IsObject, 
+                                                        new Validator\IsNumeric,
+                                                        new Validator\IsNumeric\Decimal, 
+                                                        new Validator\IsString, 
+                                                        new Validator\IsString\IsPath,
+                                                        new Validator\IsString\IsDir,  
+                                                        new Validator\IsString\IsFile,
+                                                        new Validator\IsString\IsUrl,
+                                                        new Validator\IsString\IsDatetime, 
+                                                        new Validator\IsString\IsDatetime\IsDate]));
             //$this->add("options", new Validation(false, [new Validator\IsArray]));
         }
         

@@ -3,27 +3,11 @@ namespace Modules {
     use \Modules\Node;    
     use \Components\Validation;
     use \Components\Validator;    
-    class BaseX extends \Components\Core\Adapter {
+    abstract class BaseX extends \Components\Core\Adapter {
         public function __construct($key) {
             parent::__construct($key);
             $this->add("root", new Validation(false, array(new Validator\IsString)));
         }
-        
-        public function query(string $query, array $filters = [], string $wrap = "%s") {
-            if (isset($this->keys) && isset($this->filters)) {
-                foreach ($this->filters as $key => $mapper) {                    
-                    if (array_key_exists($key, $this->keys)) {
-                        $node = new $mapper;
-                        $node->store($this->restore($this->keys[$key]));
-                        $filters[] = new Node\Filter($node, [new Node\Condition($node)]);
-                    }
-                }                
-            }
-                        
-            $path = new Node\Path($query, $filters, $wrap);
-            $this->query = $path->execute();
-            $this->prepare();            
-        }        
 
         public function prepare() {
             $this->setopt_array([CURLOPT_URL => sprintf("%s?query=%s", $this->host, urlencode($this->query)), CURLOPT_USERPWD => sprintf("%s:%s", $this->username, $this->password)]);
@@ -40,6 +24,16 @@ namespace Modules {
             }
         }      
 
+        public function query(string $xpath, $wrap = "%s", array $filters = []) {
+            foreach ($this->filters as $filter => $node) {
+                if (class_exists($node) && isset($this->{$filter})) {
+                    $filters[] = new Node\Filter($node::construct()->path, $this->{$filter});
+                }
+            }
+            $path = new Node\Path($xpath, $filters, $wrap);
+            $this->query = $path->execute();
+            $this->prepare();        
+        }
     }
 }
 

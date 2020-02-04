@@ -17,30 +17,27 @@ namespace Modules {
         }        
         
         public function count(array $filters = [], string $query = NULL) : int { 
-            $path = new Node\Path($this->path, array_merge([new Node\Filter($this)], $filters));
+            $path = new Node\Path($this->path, array_merge([new Node\Filter($this->path)], $filters));
             $xpath = new \DOMXPath($this->instance);
             return (int) $xpath->query($path->execute() . $query)->length;
         }
         
         public function find(array $filters = [], string $query = NULL) {
-            $path = new Node\Path($this->path, array_merge([new Node\Filter($this, [new Node\Condition($this)])], $filters));
+            $path = new Node\Path($this->path, array_merge([new Node\Filter($this->path, [new Node\Condition($this)])], $filters));
             $xpath = new \DOMXPath($this->instance);
-            $list = $xpath->query($path->execute() . $query);
-            if (($length = $list->length - 1) >= 0) {    
+            if (($list = $xpath->query($path->execute() . $query)) && ($length = $list->length - 1) >= 0) {    
                 return (object) $this->reverse($list->item($length));
             }
         }
         
         public function findAll(array $filters = [], string $query = NULL, array $records = []) : array {
-            $path = new Node\Path($this->path, array_merge([new Node\Filter($this, [new Node\Condition($this)])], $filters));
+            $path = new Node\Path($this->path, array_merge([new Node\Filter($this->path, [new Node\Condition($this)])], $filters));
             $xpath = new \DOMXPath($this->instance);
             foreach ($xpath->query($path->execute() . $query) as $index => $node) { 
                 $mapper = new $this;
                 $mapper->reverse($node);
-                
                 $records[$index + 1] = $mapper->restore(["current", "parent", $this->tag] + (isset($mapper->mapping) ? $mapper->mapping : []));
             }
-            
             return (array) array_reverse($records);
         }        
   

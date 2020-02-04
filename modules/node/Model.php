@@ -26,11 +26,9 @@ namespace Modules\Node {
                 foreach ($this->node->attributes as $attribute) {
                     $parameter = new \Components\Core\Parameter($attribute->nodeName);
                     $parameter->mandatory = true;
-
                     if (!empty(trim($attribute->value))) {
                         $parameter->sample = trim($attribute->value);
                     }
-
                     $this->add($parameter->parameter, $parameter->getValidation($parameter->getValidators()));
                     $this->mapping = array($attribute->nodeName => $parameter->parameter);
                 }            

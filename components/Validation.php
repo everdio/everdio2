@@ -20,7 +20,7 @@ namespace Components {
         private $validators = [];
         
         public function __construct($value, array $validators, $validate = self::NORMAL) {
-            $this->value = $value;
+            $this->set($value);
             
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
@@ -50,7 +50,7 @@ namespace Components {
         }
         
         public function set($value) : bool { 
-            return (bool) $this->value = $value;
+            return (bool) $this->value = $this->hydrate($value);
         }
         
         public function get() { 
