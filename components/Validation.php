@@ -50,7 +50,7 @@ namespace Components {
         }
         
         public function set($value) : bool { 
-            return (bool) $this->value = $this->hydrate($value);
+            return (bool) ($this->value = $this->hydrate($value));
         }
         
         public function get() { 

@@ -55,6 +55,9 @@ namespace Components {
             } elseif (is_string($data)) {
                 return (string) $data;
             } elseif (is_array($data)) {
+                foreach ($data as $key => $value) {
+                    $data[$key] = $this->hydrate($value);
+                }
                 return (array) $data;
             } else {
                 return $data;

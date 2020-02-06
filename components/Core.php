@@ -2,6 +2,7 @@
 namespace Components {
     class Core {
         use Helpers;
+        use Dryer;
         private $_parameters = [];
         
         public function __toString() : string {
@@ -83,7 +84,7 @@ namespace Components {
         public function store(array $values) {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {
-                    $this->{$parameter} = (!is_array($value) && in_array(\Components\Validator\IsArray::TYPE, $this($parameter)->types) ? explode(",", $value) : $value);
+                    $this->{$parameter} = (!is_array($value) && in_array(\Components\Validator\IsArray::TYPE, $this->get($parameter)->types) ? explode(",", $value) : $value);
                 }
             }
         }
@@ -137,21 +138,30 @@ namespace Components {
         }
         
         final public function match(array $values) {
-            $this->store($values);
+            return (bool) ($values === $this->restore(array_keys($values)));
         }
         
-        final public function search(string $path, array $matches = [], array $values = []) {            
+        public function search(string $path, array $matches = [], array $values = []) {            
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $part) {   
                 $parameter = $part;
                 if (preg_match_all("/\[([^\]]*)\]/", $part, $matches)) {
                     $parameter = str_replace($matches[0][0], false, $part);
                     parse_str($matches[1][0], $values);
                 }
-                
-                if (array_key_exists($parameter, $this->_parameters)) {
+                if (array_key_exists($parameter, $this->_parameters) && $this->match($this->hydrate($values))) {
                     return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$part]))) : $this->{$part});
                 }
             }
+        }
+        
+        public function __dry(): string {
+            $validations = false;
+            
+            foreach ($this->_parameters as $parameter => $validation) {
+                $validations .= sprintf("\$this->add(\"%s\", %s);", $parameter, $validation->__dry()) . PHP_EOL;
+            }
+            
+            return (string) $validations;
         }
     }
 }
