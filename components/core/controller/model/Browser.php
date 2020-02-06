@@ -17,6 +17,15 @@ namespace Components\Core\Controller\Model {
             $this->add("default", new Validation("index.html", array(new Validator\IsString)));
             $this->arguments = array_filter(explode(DIRECTORY_SEPARATOR, str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
             $this->request = $request;
+            
+            foreach ($request as $parameter => $value) {
+                $parameter = new \Components\Core\Parameter($parameter);
+                $parameter->sample = $value;
+                $parameter->mandatory = true;
+                $parameter->length = strlen($value);
+                $parameter->default = $value;
+                $this->input->add($parameter->parameter, $parameter->getValidation());
+            }            
         }
         
         final protected function isReturned(string $host) : bool {

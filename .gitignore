@@ -3,7 +3,8 @@
 *.xml
 *.json
 *.csv
+*.txt
 application/
 library/
-modules/everdio/generate/*.ini
+*.ini
 modules/

@@ -1,10 +1,10 @@
 <?php
 namespace Components\Core\Adapter {
+    use \Components\File;        
     use \Components\Validation;
     use \Components\Validator;    
-    use \Components\Path;
-    use \Components\File;    
     abstract class Model extends \Components\Core\Adapter {
+        use \Components\Dryer;
         public function __construct($key) {
             parent::__construct($key);            
             $this->add("model", new Validation(sprintf("%s/Model.tpl", __DIR__), [new Validator\IsString\IsFile]));
@@ -13,11 +13,11 @@ namespace Components\Core\Adapter {
             $this->add("class", new Validation(false, [new Validator\IsString]));
             $this->add("extends", new Validation(false, [new Validator\IsString]));
         }        
-
-        public function __destruct() {
-            $path = new Path($this->root . DIRECTORY_SEPARATOR . strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));
+        
+        public function __dry() : string {
+            $path = new \Components\Path($this->root . DIRECTORY_SEPARATOR . strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));
             $file = new File($path->getPath() . DIRECTORY_SEPARATOR . $this->class . ".php", "w+");                                    
-            $model = new \Components\File($this->model);
+            $model = new File($this->model);
 
             $tpl = new \Components\Core\Template;    
             $tpl->namespace = $this->namespace;
@@ -32,9 +32,17 @@ namespace Components\Core\Adapter {
             $this->remove("root");
             $this->remove("instance");
             $this->remove("key");
-
-            $tpl->model = parent::__dry();
+            
+            $validations = false;
+            foreach ($this->parameters() as $parameter) {
+                $validations .= sprintf("\$this->add(\"%s\", %s);", $parameter, $this->get($parameter)->__dry()) . PHP_EOL;
+            }
+            
+            $tpl->model = $validations;
+            
             $file->store($tpl->display($model->restore()));
+            
+            return (string) $file->getPath() . DIRECTORY_SEPARATOR . $file->getBasename();
         }        
     }
 }

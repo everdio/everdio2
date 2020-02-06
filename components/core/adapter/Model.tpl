@@ -1,14 +1,14 @@
 <?php
-namespace @namespace@ {
-    class @class@ extends @extends@ {
-        public function __construct(array $values = [], $key = "@key@") {
+namespace @Namespace@ {
+    class @Class@ extends @Extends@ {
+        public function __construct(array $values = [], $key = "@Key@") {
             parent::__construct($key);
-            @model@
+            @Model@
             $this->store($values);
         }
         
         static public function construct(array $values = []) : self {
-            return (object) new @class@($values);
+            return (object) new @Class@($values);
         }        
     }
 }

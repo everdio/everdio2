@@ -19,6 +19,6 @@ namespace Components\Core {
             if (!method_exists($this, $name)) {
                 return call_user_func_array(array($this->instance, $name), $arguments);            
             }
-        }        
+        }       
     }
 }

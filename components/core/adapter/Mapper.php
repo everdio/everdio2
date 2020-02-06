@@ -19,7 +19,7 @@ namespace Components\Core\Adapter {
             }
             
             throw new Event(sprintf("unknown field %s", $field));
-        }       
+        }
         
         /*
         final public function store(array $values) {

@@ -26,20 +26,17 @@ namespace Components\Core {
         }
         
         public function getValidators(array $validators = []) : array {
-            if (isset($this->sample)) {
-                if ($this("sample")->isValid()) {
-                    foreach ($this("sample")->validated() as $validator) {
-                        $validators[] = $validator;
-                    }
-                } else {
-                    $validators[] = new Validator\IsEmpty;
+            if (isset($this->sample) && $this("sample")->isValid()) {
+                foreach ($this("sample")->validated() as $validator) {
+                    $validators[] = $validator;
                 }
             } else {
                 $validators[] = new Validator\IsEmpty;
             }
+            
             return (array) $validators;
         }        
-        
+
         final public function getValidation(array $validators = [], string $validate = NULL) : Validation {
             if (isset($this->length)) {
                 $validators[] = new Validator\Len\Smaller($this->length);
@@ -55,7 +52,6 @@ namespace Components\Core {
             }
                         
             return new Validation((isset($this->default) ? $this->default : false), array_unique($validators), $validate);            
-            
         }
     }
 }

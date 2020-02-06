@@ -1,7 +1,6 @@
 <?php
 namespace Components {
     class Core {
-        use Dryer;
         use Helpers;
         private $_parameters = [];
         
@@ -10,11 +9,7 @@ namespace Components {
         }
 
         public function __invoke(string $parameter) : Validation {
-            if ($this->exists($parameter)) {
-                return (object) $this->_parameters[$parameter];
-            }
-            
-            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
+            return (object) $this->get($parameter);
         }            
 
         public function __isset(string $parameter) : bool {
@@ -49,10 +44,6 @@ namespace Components {
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }      
 
-        final public function invoke(string $parameter) : Validation {
-            return (object) $this($parameter);
-        }
-        
         final public function exists(string $parameter) : bool {
             return (bool) array_key_exists($parameter, $this->_parameters);
         }
@@ -64,24 +55,25 @@ namespace Components {
         }
         
         final public function get(string $parameter) : Validation {
-            if (!$this->exists($parameter)) {
-                return (object) $this->parameters[$parameter];
+            if ($this->exists($parameter)) {
+                return (object) $this->_parameters[$parameter];
             }
             
+            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }
- 
+        
         final public function remove($parameter) {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
         }
+        
+        final public function parameters() : array {
+            return (array) array_keys($this->_parameters);
+        }
                 
         final public function inter(array $parameters) : array {
-            if (sizeof($parameters)) {
-                return (array) array_diff(array_keys($this->_parameters), $this->diff($parameters));
-            }
-            
-            return (array) array_keys($this->_parameters);
+            return (array) array_diff(array_keys($this->_parameters), $this->diff($parameters));
         }
         
         final public function diff(array $parameters = []) : array {
@@ -122,16 +114,21 @@ namespace Components {
             return (bool) in_array(true, $this->validate($parameters));
         }
 
-        final public function feed($querystring, array $values = []) {
+        final public function feed(string $querystring, array $values = []) {
             parse_str($querystring, $values);
             if (array_key_exists((string) $this, $values)) {
                 $this->store($values[(string) $this]);
             }
         }
+        
+        final public function import(string $querystring, array $values = []) {
+            parse_str($querystring, $values);
+            $this->store($values);
+        }
 
         final public function querystring(array $parameters = []) : string {
-            return (string) http_build_query(array((string) $this => $this->restore($parameters)), true);
-        }        
+            return (string) http_build_query($this->restore($parameters), true);
+        }
         
         final public function reset(array $parameters = []) {
             foreach ($this->inter($parameters) as $parameter) {
@@ -139,14 +136,22 @@ namespace Components {
             }
         }
         
-        public function __dry() : string {
-            $output = [];     
-            
-            foreach ($this->_parameters as $parameter => $validation) {
-                $output[] = sprintf("\$this->add(\"%s\", %s);", $parameter, $validation->__dry());
+        final public function match(array $values) {
+            $this->store($values);
+        }
+        
+        final public function search(string $path, array $matches = [], array $values = []) {            
+            foreach (explode(DIRECTORY_SEPARATOR, $path) as $part) {   
+                $parameter = $part;
+                if (preg_match_all("/\[([^\]]*)\]/", $part, $matches)) {
+                    $parameter = str_replace($matches[0][0], false, $part);
+                    parse_str($matches[1][0], $values);
+                }
+                
+                if (array_key_exists($parameter, $this->_parameters)) {
+                    return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$part]))) : $this->{$part});
+                }
             }
-            
-            return (string) implode(PHP_EOL, $output);
         }
     }
 }

@@ -12,14 +12,21 @@ namespace Components\Core\Controller\Model {
                 $this->execute = $this->server["argv"][1];
                 foreach (array_slice($this->server["argv"], 2) as $parameters) {
                     if (strpos($parameters, "--") !== false) {
-                        $arguments[] = str_replace("--", false, $parameters);
+                        $this->arguments = [str_replace("--", false, $parameters)];
                     } else {
                         parse_str($parameters, $request);    
+                        print_r($request);
+                        foreach ($request as $parameter => $value){
+                            $parameter = new \Components\Core\Parameter($parameter);
+                            $parameter->sample = $value;
+                            $parameter->mandatory = true;
+                            $parameter->length = strlen($value);
+                            $parameter->default = $value;
+                            $this->input->add($parameter->parameter, $parameter->getValidation());                            
+                        }
                         $this->request = $request;                        
                     }
                 }
-                
-                $this->arguments = $arguments;
             }
         }
     }

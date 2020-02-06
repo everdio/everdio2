@@ -10,6 +10,7 @@ namespace Components\Core {
             $this->add("path", new Validation(false, [new Validator\IsString\IsPath]));
             $this->add("arguments", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
             $this->add("request", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
+            $this->add("input", new Validation(new \Components\Core, [new Validator\IsObject\Of("\Components\Core")]));
             $this->add("token", new Validation(bin2hex(openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]));
         }
         
