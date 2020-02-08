@@ -2,8 +2,7 @@
 namespace Components {
     class Core {
         use Helpers;
-        use Dryer;
-        private $_parameters = [];
+        private $_parameters = [];        
         
         public function __toString() : string {
             return (string) get_class($this);
@@ -20,7 +19,6 @@ namespace Components {
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $value));
-                //return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? $this->_parameters[$parameter]->get() + $value : $this->hydrate($value)));
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
@@ -80,16 +78,16 @@ namespace Components {
         final public function diff(array $parameters = []) : array {
             return (array) array_diff(array_keys($this->_parameters), $parameters);
         }
-
+        
         public function store(array $values) {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {
-                    $this->{$parameter} = (!is_array($value) && in_array(\Components\Validator\IsArray::TYPE, $this->get($parameter)->types) ? explode(",", $value) : $value);
+                    $this->{$parameter} = $value;
                 }
             }
-        }
+        }      
         
-        public function restore(array $parameters = [], array $values = []) : array {
+        final public function restore(array $parameters = [], array $values = []) : array {
             foreach ($this->inter($parameters) as $parameter) {
                 if (isset($this->{$parameter})) {
                     $values[$parameter] = $this->{$parameter};
@@ -132,36 +130,19 @@ namespace Components {
         }
         
         final public function reset(array $parameters = []) {
-            foreach ($this->inter($parameters) as $parameter) {
-                unset ($this->{$parameter});
-            }
+            $this->store(array_fill_keys($this->inter($parameters), false));
         }
         
         final public function match(array $values) {
             return (bool) ($values === $this->restore(array_keys($values)));
         }
         
-        public function search(string $path, array $matches = [], array $values = []) {            
-            foreach (explode(DIRECTORY_SEPARATOR, $path) as $part) {   
-                $parameter = $part;
-                if (preg_match_all("/\[([^\]]*)\]/", $part, $matches)) {
-                    $parameter = str_replace($matches[0][0], false, $part);
-                    parse_str($matches[1][0], $values);
-                }
-                if (array_key_exists($parameter, $this->_parameters) && $this->match($this->hydrate($values))) {
-                    return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$part]))) : $this->{$part});
+        public function search(string $path) {            
+            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
+                if (array_key_exists($parameter, $this->_parameters)) {
+                    return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter});
                 }
             }
-        }
-        
-        public function __dry(): string {
-            $validations = false;
-            
-            foreach ($this->_parameters as $parameter => $validation) {
-                $validations .= sprintf("\$this->add(\"%s\", %s);", $parameter, $validation->__dry()) . PHP_EOL;
-            }
-            
-            return (string) $validations;
         }
     }
 }

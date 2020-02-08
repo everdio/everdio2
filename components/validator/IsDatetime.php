@@ -3,7 +3,6 @@ namespace Components\Validator {
     class IsDatetime extends \Components\Validator {
         const TYPE = "IS_DATETIME";
         const MESSAGE = "INVALID_DATETIME";
-        
         protected $format = false;    
         
         public function __construct($format = "Y-m-d H:i:s") {

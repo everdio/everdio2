@@ -2,7 +2,6 @@
 namespace Components {
     class File extends \SplFileObject {   
         use Dryer;
-        
         public function exists($ttl = false) : bool {                
             return (bool) (!$ttl && parent::getSize()) || ($ttl && parent::getSize() && (parent::getMTime() + $ttl) > time());
         }
@@ -38,7 +37,7 @@ namespace Components {
         }    
         
         public function __dry() : string {
-            return (string) sprintf("new %s(%s, \"w+\")", $this->getRealPath());
+            return (string) sprintf("new %s(%s, \"w+\")", (string) $this, $this->getRealPath());
         }
     }
 }

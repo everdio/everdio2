@@ -4,6 +4,7 @@ namespace Components\Core\Adapter {
     use \Components\Validation;
     use \Components\Validator;    
     abstract class Model extends \Components\Core\Adapter {
+        use \Components\Dryer;
         public function __construct($key) {
             parent::__construct($key);            
             $this->add("model", new Validation(sprintf("%s/Model.tpl", __DIR__), [new Validator\IsString\IsFile]));
@@ -32,7 +33,13 @@ namespace Components\Core\Adapter {
             $this->remove("instance");
             $this->remove("key");
             
-            $tpl->model = parent::__dry();
+            $validations = false;
+            
+            foreach ($this->parameters() as $parameter) {
+                $validations .= sprintf("\$this->add(\"%s\", %s);", $parameter, $this->get($parameter)->__dry()) . PHP_EOL;
+            }
+            
+            $tpl->model = $validations;
             
             $file->store($tpl->display($model->restore()));
             

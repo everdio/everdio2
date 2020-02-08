@@ -10,8 +10,8 @@ namespace Components\File {
             }            
         }
         
-        public function store($content, $mode = 0777) : int {
-            return (int) parent::store(serialize($content), $mode);
+        public function store($content, $permission = 0777) : int {
+            return (int) parent::store(serialize($content), $permission);
         }
         
         public function restore($content = false) {
