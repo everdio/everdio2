@@ -3,7 +3,6 @@ namespace Components {
     class Core {
         use Helpers;
         private $_parameters = [];        
-        
         public function __toString() : string {
             return (string) get_class($this);
         }
@@ -87,7 +86,7 @@ namespace Components {
             }
         }      
         
-        final public function restore(array $parameters = [], array $values = []) : array {
+        public function restore(array $parameters = [], array $values = []) : array {
             foreach ($this->inter($parameters) as $parameter) {
                 if (isset($this->{$parameter})) {
                     $values[$parameter] = $this->{$parameter};
@@ -126,18 +125,14 @@ namespace Components {
         }
 
         final public function querystring(array $parameters = []) : string {
-            return (string) http_build_query($this->restore($parameters), true);
+            return (string) http_build_query($this->restore($this->inter($parameters)), true);
         }
         
         final public function reset(array $parameters = []) {
             $this->store(array_fill_keys($this->inter($parameters), false));
         }
-        
-        final public function match(array $values) {
-            return (bool) ($values === $this->restore(array_keys($values)));
-        }
-        
-        public function search(string $path) {            
+
+        final public function search(string $path) {            
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
                 if (array_key_exists($parameter, $this->_parameters)) {
                     return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter});

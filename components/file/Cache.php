@@ -11,11 +11,19 @@ namespace Components\File {
         }
         
         public function store($content, $permission = 0777) : int {
-            return (int) parent::store(serialize($content), $permission);
+            try {
+                return (int) parent::store(serialize($content), $permission);    
+            } catch (\Exception $ex) {
+                throw new Event($ex->getMessage());
+            }
         }
         
         public function restore($content = false) {
-            return unserialize(parent::restore($content));
+            try {
+                return unserialize(parent::restore($content));   
+            } catch (\Exception $ex) {
+                throw new Event($ex->getMessage());
+            }
         }
     }
 }
