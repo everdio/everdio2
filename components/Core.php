@@ -28,7 +28,7 @@ namespace Components {
                 try {
                     return $this->_parameters[$parameter]->execute();    
                 } catch (\Components\Event $event) {
-                    throw new Event(sprintf("invalid parameter `%s`; %s", $parameter, $event->getMessage()));
+                    throw new Event(sprintf("invalid parameter `%s`; %s in %s", $parameter, $event->getMessage(), get_class($this)));
                 }
             }
             
@@ -111,20 +111,13 @@ namespace Components {
         final public function isNormal(array $parameters = []) : bool {
             return (bool) in_array(true, $this->validate($parameters));
         }
-
-        final public function feed(string $querystring, array $values = []) {
-            parse_str($querystring, $values);
-            if (array_key_exists((string) $this, $values)) {
-                $this->store($values[(string) $this]);
-            }
-        }
         
         final public function import(string $querystring, array $values = []) {
             parse_str($querystring, $values);
             $this->store($values);
         }
 
-        final public function querystring(array $parameters = []) : string {
+        final public function export(array $parameters = []) : string {
             return (string) http_build_query($this->restore($this->inter($parameters)), true);
         }
         
@@ -132,11 +125,10 @@ namespace Components {
             $this->store(array_fill_keys($this->inter($parameters), false));
         }
 
-        final public function search(string $path) {            
+        final public function search(string $path) {    
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
-                if (array_key_exists($parameter, $this->_parameters)) {
-                    return (isset($this->{$parameter}) && $this->{$parameter} instanceof $this ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter});
-                }
+                //print_r(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter])));
+                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof \Components\Core ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
             }
         }
     }

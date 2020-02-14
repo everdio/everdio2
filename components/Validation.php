@@ -78,7 +78,7 @@ namespace Components {
                 return $this->value;
             }
             
-            throw new Event(sprintf("%s: `%s` validation for value %s (%s)", get_class($this), $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
+            throw new Event(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
         }
 
         public function __dry() : string {

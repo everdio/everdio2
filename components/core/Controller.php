@@ -2,16 +2,18 @@
 namespace Components\Core {
     use \Components\Validation;
     use \Components\Validator;
-    abstract class Controller extends \Components\Core {
+    abstract class Controller extends \Components\Core {        
+        const ROOT = "root";
+        const PATH = "path";
+        const ARGUMENTS = "arguments";
+        const REQUEST = "request";
+        const INPUT = "input";
         public function __construct() {
-            $this->add("time", new Validation(microtime(true), [new Validator\IsFloat]));
-            $this->add("memory", new Validation(memory_get_usage(true), [new Validator\IsInteger]));
-            $this->add("root", new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add("path", new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add("arguments", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add("request", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add("input", new Validation(new \Components\Core, [new Validator\IsObject\Of("\Components\Core")]));
-            $this->add("token", new Validation(bin2hex(openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]));
+            $this->add(self::ROOT, new Validation(false, [new Validator\IsString\IsPath]));
+            $this->add(self::PATH, new Validation(false, [new Validator\IsString\IsPath]));
+            $this->add(self::ARGUMENTS, new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
+            $this->add(self::REQUEST, new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
+            $this->add(self::INPUT, new Validation(new \Components\Core\Request, [new Validator\IsObject\Of("\Components\Core\Request")]));
         }
         
         final public function hasRequest(string $request) : bool {
@@ -52,7 +54,7 @@ namespace Components\Core {
             if ($this->isRouted($route)) {     
                 $controller = clone $this;
                 $controller->path = dirname($controller->path . DIRECTORY_SEPARATOR . $path);
-                if (!in_array(false, $controller->validate(["root", "path", "token"]))) {
+                if (!in_array(false, $controller->validate([self::ROOT, self::PATH]))) {
                     return (string) trim($controller->dispatch(basename($path)));
                 } 
                  

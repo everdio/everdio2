@@ -15,15 +15,7 @@ namespace Components\Core\Controller\Model {
                         $this->arguments = [str_replace("--", false, $parameters)];
                     } else {
                         parse_str($parameters, $request);    
-                        print_r($request);
-                        foreach ($request as $parameter => $value){
-                            $parameter = new \Components\Core\Parameter($parameter);
-                            $parameter->sample = $value;
-                            $parameter->mandatory = true;
-                            $parameter->length = strlen($value);
-                            $parameter->default = $value;
-                            $this->input->add($parameter->parameter, $parameter->getValidation());                            
-                        }
+                        $this->input->store($request);
                         $this->request = $request;                        
                     }
                 }

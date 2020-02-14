@@ -22,12 +22,11 @@ namespace Components\Core {
                                                         new Validator\IsString\IsUrl,
                                                         new Validator\IsString\IsDatetime, 
                                                         new Validator\IsString\IsDatetime\IsDate]));
-            //$this->add("options", new Validation(false, [new Validator\IsArray]));
         }
         
         public function getValidators(array $validators = []) : array {
-            if (isset($this->sample) && $this("sample")->isValid()) {
-                foreach ($this("sample")->validated() as $validator) {
+            if (isset($this->sample) && $this->get("sample")->isValid()) {
+                foreach ($this->get("sample")->validated() as $validator) {
                     $validators[] = $validator;
                 }
             } else {

@@ -10,21 +10,17 @@ namespace Components {
             if ($this->isWritable()) {
                 return (int) $this->fwrite($content);
             }
-            
             throw new Event($this->getRealPath());
         }
 
         public function restore($content = false) {                        
             if ($this->isReadable()) {
                 $this->rewind();
-                
                 while (!$this->eof()) {
                     $content .= $this->fgets();
                 }
-            
                 return $content;
             }
-            
             throw new Event($this->getRealPath());
         }
 
@@ -32,7 +28,6 @@ namespace Components {
             if ($this->isReadable() && $this->isWritable()) {
                 return (bool) unlink($this->getRealPath());
             }
-            
             throw new Event($this->getRealPath());
         }    
         
