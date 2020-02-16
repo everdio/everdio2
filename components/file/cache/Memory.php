@@ -15,7 +15,7 @@ namespace Components\File\Cache {
                 }
                 return $this->_id;
             }
-            throw new \Components\File\Event(sprintf("can't open memory for %s", $this->getRealPath()));
+            throw new Event(sprintf("can't open memory for %s", $this->getRealPath()));
         }
 
         public function store($content, $permission = 0755) : int {       

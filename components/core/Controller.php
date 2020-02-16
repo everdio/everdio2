@@ -3,17 +3,13 @@ namespace Components\Core {
     use \Components\Validation;
     use \Components\Validator;
     abstract class Controller extends \Components\Core {        
-        const ROOT = "root";
-        const PATH = "path";
-        const ARGUMENTS = "arguments";
-        const REQUEST = "request";
-        const INPUT = "input";
+
         public function __construct() {
-            $this->add(self::ROOT, new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add(self::PATH, new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add(self::ARGUMENTS, new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add(self::REQUEST, new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add(self::INPUT, new Validation(new \Components\Core\Request, [new Validator\IsObject\Of("\Components\Core\Request")]));
+            $this->add("root", new Validation(false, [new Validator\IsString\IsPath]));
+            $this->add("path", new Validation(false, [new Validator\IsString\IsPath]));
+            $this->add("arguments", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
+            $this->add("request", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
+            $this->add("input", new Validation(new \Components\Core\Request, [new Validator\IsObject\Of("\Components\Core\Request")]));
         }
         
         final public function hasRequest(string $request) : bool {
@@ -45,20 +41,16 @@ namespace Components\Core {
                 return (string) ob_get_clean();                                                            
             }
         }        
-        
-        final public function time(int $decimals = 4) : float {
-            return (float) round(microtime(true) - $this->time, $decimals);
-        }
 
         public function execute($path, string $route = NULL) {  
             if ($this->isRouted($route)) {     
                 $controller = clone $this;
                 $controller->path = dirname($controller->path . DIRECTORY_SEPARATOR . $path);
-                if (!in_array(false, $controller->validate([self::ROOT, self::PATH]))) {
+                if (!in_array(false, $controller->validate(["root", "path"]))) {
                     return (string) trim($controller->dispatch(basename($path)));
                 } 
                  
-                throw new Event(sprintf("Controller failure...%s", $this->dehydrate($controller->validate())));
+                throw new Event(sprintf("Controller failure... %s", $controller->validate()));
             }
         }
     }    
