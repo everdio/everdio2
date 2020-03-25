@@ -3,7 +3,7 @@ namespace Components {
     use FilesystemIterator;
     use RecursiveIteratorIterator;
     class Path extends \RecursiveIteratorIterator {
-        const SECRET = "steef";
+        const SECRET = "s3cred";
         public function __construct($path, $create = true, $mode = 0776, $group = "www-data") {
             try {
                 parent::__construct(new \RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
