@@ -10,6 +10,7 @@ try {
     flush();
     echo (string) $cli->execute($cli->execute) . PHP_EOL;
 } catch (\Components\Event $event) {
-    echo (string) sprintf("everdio screwed up: %s\n\n%s\n\n", $event->getMessage(), $event->getTraceAsString());
+    echo (string) sprintf("\neverdio catched an issue: %s\n\n", $event->getMessage()) . PHP_EOL;
+    echo $event->getTraceAsString() . PHP_EOL;
 }
 exit;

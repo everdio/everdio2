@@ -1,6 +1,6 @@
 <?php
 namespace Components\Core {
-    class Request extends \Components\Core {
+    class Parameters extends \Components\Core {
         public function __set(string $field, $value) : bool {
             $parameter = new \Components\Validation\Parameter($field, $value, true);
             return (bool) $this->add($field, $parameter->getValidation($parameter->getValidators()));

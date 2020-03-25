@@ -1,8 +1,8 @@
 <?php
 namespace Components\File\Cache {
     class Memory extends \Components\File\Cache {
+        private $_id = false;        
         private $_key = false;
-        private $_id = false;
         public function __construct(string $path) {
             parent::__construct($path);
             $this->_key = ftok($this->getRealPath(), "t");

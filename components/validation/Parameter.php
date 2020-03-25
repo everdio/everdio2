@@ -7,7 +7,7 @@ namespace Components\Validation {
         private $_length = 0;
         private $_mandatory = false;
         private $_default = false;
-        public function __construct(string $parameter, $value = false, bool $default = false, bool $mandatory = false, int $length = 0, array $options = []) {
+        public function __construct(string $parameter, $value = false, bool $default = NULL, bool $mandatory = true, int $length = NULL, array $options = []) {
             $this->_parameter = $this->labelize($parameter);
             $this->_length = $length;
             $this->_mandatory = $mandatory;
@@ -18,7 +18,6 @@ namespace Components\Validation {
                                          new Validator\IsResource,
                                          new Validator\IsObject, 
                                          new Validator\IsNumeric,
-                                         new Validator\IsNumeric\Decimal, 
                                          new Validator\IsString, 
                                          new Validator\IsArray\Intersect($options),
                                          new Validator\IsString\InArray($options),     
@@ -40,26 +39,29 @@ namespace Components\Validation {
                     $validators[] = $validator;
                 }                
             } else {
+                $validators[] = new Validator\IsString;
+                $validators[] = new Validator\IsNumeric;
+            }
+            
+            if ($this->_mandatory === false) {
                 $validators[] = new Validator\IsEmpty;
             }
+            
+            if ($this->_mandatory && $this->_length) {
+                $validators[] = new Validator\Len\Smaller($this->_length);
+            }            
             
             return (array) $validators;
         }        
 
         final public function getValidation(array $validators = [], string $validate = NULL) : Validation {
-            if ($this->_default && $this->_length) {
-                $validators[] = new Validator\Len\Smaller($this->_length);
-            }
-            
             if ($this->_mandatory === false) {
-                $validators[] = new Validator\IsNull;
                 $validate = self::NORMAL;
-            } elseif (!$validate && sizeof($validators) > 0) {
+            } elseif (!$validate && $this->_length && $this->_mandatory) {
                 $validate = self::STRICT;
             } else {
                 $validate = self::NORMAL;
             }
-                        
             return new Validation(($this->_default ? $this->get() : false), array_unique($validators), $validate);            
         }
     }

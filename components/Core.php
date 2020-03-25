@@ -1,8 +1,16 @@
 <?php
 namespace Components {
-    class Core {
-        use Helpers;
-        private $_parameters = [];        
+    abstract class Core {
+        use Helpers, Dryer;
+        private $_parameters = [];
+        public function __construct(array $parameters = []) {
+            foreach ($parameters as $parameter => $validation) {
+                if ($validation instanceof \Components\Validation) {
+                    $this->_parameters[$parameter] = $validation;
+                }
+            }
+        }
+        
         public function __toString() : string {
             return (string) get_class($this);
         }
@@ -117,19 +125,16 @@ namespace Components {
             $this->store($values);
         }
 
-        final public function export(array $parameters = []) : string {
-            return (string) http_build_query($this->restore($this->inter($parameters)), true);
+        final public function export() : string {
+            return (string) http_build_query($this->restore(array_keys($this->_parameters)), true);
         }
         
         final public function reset(array $parameters = []) {
             $this->store(array_fill_keys($this->inter($parameters), false));
         }
 
-        final public function search(string $path) {    
-            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
-                //print_r(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter])));
-                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof \Components\Core ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
-            }
+        public function __dry(): string {
+            return (string) $this->dehydrate($this->_parameters);
         }
     }
 }

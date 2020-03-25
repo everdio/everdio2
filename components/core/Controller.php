@@ -3,13 +3,14 @@ namespace Components\Core {
     use \Components\Validation;
     use \Components\Validator;
     abstract class Controller extends \Components\Core {        
-
         public function __construct() {
-            $this->add("root", new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add("path", new Validation(false, [new Validator\IsString\IsPath]));
-            $this->add("arguments", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add("request", new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]));
-            $this->add("input", new Validation(new \Components\Core\Request, [new Validator\IsObject\Of("\Components\Core\Request")]));
+            parent::__construct([
+                "root" => new Validation(false, [new Validator\IsString\IsPath]),
+                "path"=> new Validation(false, [new Validator\IsString\IsPath]),
+                "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
+                "request" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
+                "input" => new Validation(new \Components\Core\Parameters, [new Validator\IsObject\Of("\Components\Core\Parameters")])                
+            ]);
         }
         
         final public function hasRequest(string $request) : bool {
@@ -37,7 +38,7 @@ namespace Components\Core {
             $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . ".php", [new Validator\IsString\IsFile]);            
             if ($validation->isValid()) {
                 ob_start();
-                require_once $validation->execute();
+                require $validation->execute();
                 return (string) ob_get_clean();                                                            
             }
         }        

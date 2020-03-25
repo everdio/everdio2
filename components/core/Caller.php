@@ -4,8 +4,10 @@ namespace Components\Core {
     use \Components\Validator;
     abstract class Caller extends \Components\Core {
         public function __construct($caller) {
-            $this->add("caller", new Validation($caller, [new Validator\IsString]));
-            $this->add("resource", new Validation(false, [new Validator\IsResource]));
+            parent::__construct([
+                "caller" => new Validation($caller, [new Validator\IsString]),
+                "resource" => new Validation(false, [new Validator\IsResource])
+            ]);
         }
         
         final public function __toString() : string {

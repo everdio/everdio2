@@ -5,12 +5,12 @@ namespace Components {
             if (is_numeric($data) || is_integer($data)) {
                 return (int) $data;
             } elseif (is_string($data)) {
-                return (string) sprintf("\"%s\"", $data);    
+                return (string) sprintf("\"%s\"", $data);
             } elseif (is_array($data)) {
                 foreach ($data as $key => $value) {
                     $array[] = (is_integer($key) ? false : $this->dehydrate($key) . " => ") . ($this->dehydrate($value));
                 }
-                return (string) sprintf("[%s]", implode(", ", $array));                
+                return (string) sprintf("[%s]", implode(sprintf(","), $array));                
             } elseif (is_object($data)) {
                 if (method_exists($data, __FUNCTION__)) {
                     return (string) $data->__dry();

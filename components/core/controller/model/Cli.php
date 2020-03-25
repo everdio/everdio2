@@ -2,9 +2,8 @@
 namespace Components\Core\Controller\Model {
     use \Components\Validation;
     use \Components\Validator;
-
     final class Cli extends \Components\Core\Controller\Model {
-        public function __construct(array $server, \Components\Parser $parser, array $request = NULL, array $arguments = NULL) {
+        public function __construct(array $server, \Components\Parser $parser, array $request = NULL) {
             parent::__construct($parser);
             $this->add("server", new Validation($server, [new Validator\IsArray\Intersect\Key(["argv", "argc"])]));
             $this->add("execute", new Validation(false, [new Validator\IsString\IsPath]));
@@ -20,6 +19,8 @@ namespace Components\Core\Controller\Model {
                     }
                 }
             }
+            
+            $this->remove("server");
         }
     }
 }
