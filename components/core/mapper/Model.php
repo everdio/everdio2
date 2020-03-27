@@ -3,7 +3,7 @@ namespace Components\Core\Mapper {
     use \Components\File;        
     use \Components\Validation;
     use \Components\Validator;    
-    abstract class Model extends \Components\Core\Mapper implements Base {
+    abstract class Model extends \Components\Core\Mapper {
         public function __construct(array $parameters = []) {
             parent::__construct([
                 "key" => new Validation(false, [new Validator\IsString]),
@@ -14,6 +14,8 @@ namespace Components\Core\Mapper {
                 "use" => new Validation(false, [new Validator\IsString])
             ] + $parameters);
         }                
+        
+        abstract public function setup();
 
         public function __destruct() {
             $path = new \Components\Path($this->root . DIRECTORY_SEPARATOR . strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));

@@ -6,11 +6,15 @@ namespace Components\Core {
         abstract protected function initialise();
         
         public function getInstance() {
-            if (!array_key_exists($this->key, self::$_instances)) {
-                self::$_instances[$this->key] = $this->initialise();
+            if (isset($this->key)) {
+                if (!array_key_exists($this->key, self::$_instances)) {
+                    self::$_instances[$this->key] = $this->initialise();
+                }
+
+                return (object) self::$_instances[$this->key];
             }
             
-            return (object) self::$_instances[$this->key];
+            return (object) $this->initialise();
         }
         
         final public function hasField(string $field) : bool {
