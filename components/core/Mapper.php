@@ -10,7 +10,6 @@ namespace Components\Core {
                 if (!array_key_exists($this->key, self::$_instances)) {
                     self::$_instances[$this->key] = $this->initialise();
                 }
-
                 return (object) self::$_instances[$this->key];
             }
             

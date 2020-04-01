@@ -12,6 +12,7 @@ namespace Components\Validation {
             $this->_length = $length;
             $this->_mandatory = $mandatory;
             $this->_default = $default;
+            
             parent::__construct($value, [new Validator\IsArray, 
                                          new Validator\IsFloat, 
                                          new Validator\IsDouble, 
@@ -62,6 +63,7 @@ namespace Components\Validation {
             } else {
                 $validate = self::NORMAL;
             }
+            
             return new Validation(($this->_default ? $this->get() : false), array_unique($validators), $validate);            
         }
     }
