@@ -3,10 +3,8 @@ namespace Components\Validation {
     use \Components\Validation;
     use \Components\Validator;
     class Parameter extends \Components\Validation {
-        private $_parameter = false;
+        private $_parameter, $_mandatory, $_default;
         private $_length = 0;
-        private $_mandatory = false;
-        private $_default = false;
         public function __construct(string $parameter, $value = false, bool $default = NULL, bool $mandatory = true, int $length = NULL, array $options = []) {
             $this->_parameter = $this->labelize($parameter);
             $this->_length = $length;
@@ -64,7 +62,7 @@ namespace Components\Validation {
                 $validate = self::NORMAL;
             }
             
-            return new Validation(($this->_default ? $this->get() : false), array_unique($validators), $validate);            
+            return new Validation(($this->_default ? $this->value : false), array_unique($validators), $validate);            
         }
     }
 }

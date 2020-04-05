@@ -9,7 +9,7 @@ namespace Components {
 
         public $types = [];        
         
-        private $value = false;        
+        protected $value = false;        
         
         private $validated = [];                
         
