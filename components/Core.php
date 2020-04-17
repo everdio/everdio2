@@ -132,8 +132,14 @@ namespace Components {
         final public function reset(array $parameters = []) {
             $this->store(array_fill_keys($this->inter($parameters), false));
         }
+        
+        final public function search(string $path) {    
+            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
+                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof \Components\Core ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
+            }        
+        }
 
-        public function __dry(): string {
+        public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
     }

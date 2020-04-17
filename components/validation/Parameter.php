@@ -6,7 +6,7 @@ namespace Components\Validation {
         private $_parameter, $_mandatory, $_default;
         private $_length = 0;
         public function __construct(string $parameter, $value = false, bool $default = NULL, bool $mandatory = true, int $length = NULL, array $options = []) {
-            $this->_parameter = $this->labelize($parameter);
+            $this->_parameter = $parameter;
             $this->_length = $length;
             $this->_mandatory = $mandatory;
             $this->_default = $default;

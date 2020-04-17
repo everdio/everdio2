@@ -4,11 +4,12 @@ namespace Components\Core\Controller {
     use \Components\Validator;
     abstract class Model extends \Components\Core\Controller {    
         public function __construct(\Components\Parser $parser) {
-            parent::__construct();
-            $this->add("parser", new Validation($parser, array(new Validator\IsObject\Of("Components\Parser"))));
+            parent::__construct([
+                "parser" => new Validation($parser, array(new Validator\IsObject\Of("Components\Parser")))
+            ]);
         }
         
-        protected function dispatch(string $path) {   
+        final protected function dispatch(string $path) {   
             if (isset($this->parser)) {
                 $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . $this->parser::EXTENSION, array(new Validator\IsString\IsFile));
                 if ($validation->isValid()) {

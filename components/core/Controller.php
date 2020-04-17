@@ -3,31 +3,13 @@ namespace Components\Core {
     use \Components\Validation;
     use \Components\Validator;
     abstract class Controller extends \Components\Core {        
-        public function __construct() {
-            parent::__construct([
-                "root" => new Validation(false, [new Validator\IsString\IsPath]),
-                "path"=> new Validation(false, [new Validator\IsString\IsPath]),
+        public function __construct(array $parameters = []) {
+            parent::__construct([                
+                "path"=> new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
                 "request" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
                 "input" => new Validation(new \Components\Core\Parameters, [new Validator\IsObject\Of("\Components\Core\Parameters")])                
-            ]);
-        }
-        
-        final public function hasRequest(string $request) : bool {
-            return (bool) (isset($this->request) && array_key_exists($request, $this->request) && !empty($this->request[$request]));
-        }
-        
-        final public function getRequest(string $request) {
-            if ($this->hasRequest($request)) {
-                return $this->request[$request];
-            }
-        }
-
-        final public function isRequested(array $request = []) {
-            if (isset($this->request)) {
-                $validation = new Validation($request, [new Validator\IsArray\Intersect(array_keys($this->request))]);
-                return (bool) $validation->isValid();
-            }
+            ] + $parameters);
         }
         
         final protected function isRouted(string $route = NULL) : bool {
@@ -43,11 +25,11 @@ namespace Components\Core {
             }
         }        
 
-        public function execute($path, string $route = NULL) {  
+        final public function execute($path, string $route = NULL) {  
             if ($this->isRouted($route)) {     
                 $controller = clone $this;
-                $controller->path = dirname($controller->path . DIRECTORY_SEPARATOR . $path);
-                if (!in_array(false, $controller->validate(["root", "path"]))) {
+                $controller->path = dirname($controller->path . $path);
+                if (!in_array(false, $controller->validate(["path"]))) {
                     return (string) trim($controller->dispatch(basename($path)));
                 } 
                  

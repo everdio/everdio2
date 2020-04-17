@@ -22,6 +22,10 @@ namespace Components\Core\Controller\Model {
             
             $this->remove("server");
         }
+        
+        public function display(string $path) {
+            return (string) $this->execute($path . DIRECTORY_SEPARATOR . $this->execute);
+        }
     }
 }
 

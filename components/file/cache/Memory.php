@@ -2,7 +2,9 @@
 namespace Components\File\Cache {
     class Memory extends \Components\File\Cache {
         private $_id = false;        
+        
         private $_key = false;
+        
         public function __construct(string $path) {
             parent::__construct($path);
             $this->_key = ftok($this->getRealPath(), "t");
@@ -15,6 +17,7 @@ namespace Components\File\Cache {
                 }
                 return $this->_id;
             }
+            
             throw new Event(sprintf("can't open memory for %s", $this->getRealPath()));
         }
 
@@ -22,12 +25,15 @@ namespace Components\File\Cache {
             if (($resource = $this->_open(parent::store($content, $permission)))) {
                 return (int) shmop_write($resource, serialize($content), 0);
             }
+            
+            throw new Event(sprintf("can't store memory for %s", $this->getRealPath()));
         }
 
         public function restore($content = false) {        
             if (($resource = $this->_open($this->getSize()))) {
                 return unserialize(shmop_read($resource, 0, $this->getSize()));
             }        
+            
             return parent::restore($content);
         }    
 
@@ -35,6 +41,7 @@ namespace Components\File\Cache {
             if (($resource = $this->_open($this->getSize()))) {
                 shmop_delete($resource);
             }
+            
             return (bool) parent::delete();
         }
         

@@ -4,11 +4,9 @@ include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
 
 try {
     $cli = new \Components\Core\Controller\Model\Cli($_SERVER, new \Components\Parser\Ini);
-    $cli->root = __DIR__;
-    $cli->path = $cli->root;
     echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
     flush();
-    echo (string) $cli->execute($cli->execute) . PHP_EOL;
+    echo (string) $cli->display(__DIR__) . PHP_EOL;
 } catch (\Components\Event $event) {
     echo (string) sprintf("\neverdio catched an issue: %s\n\n", $event->getMessage()) . PHP_EOL;
     echo $event->getTraceAsString() . PHP_EOL;

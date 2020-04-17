@@ -1,20 +1,10 @@
 <?php
 namespace Components\Core {
     abstract class Mapper extends \Components\Core {
-        static private $_instances = [];
+        
+        static protected $instances = [];
         
         abstract protected function initialise();
-        
-        public function getInstance() {
-            if (isset($this->key)) {
-                if (!array_key_exists($this->key, self::$_instances)) {
-                    self::$_instances[$this->key] = $this->initialise();
-                }
-                return (object) self::$_instances[$this->key];
-            }
-            
-            return (object) $this->initialise();
-        }
         
         final public function hasField(string $field) : bool {
             return (bool) array_key_exists($field, $this->mapping);
@@ -38,7 +28,7 @@ namespace Components\Core {
         
         final public function __call($name, $arguments) {
             if (!method_exists($this, $name)) {
-                return call_user_func_array(array($this->getInstance(), $name), $arguments);            
+                return call_user_func_array(array($this->initialise(), $name), $arguments);            
             }
         }
     }
