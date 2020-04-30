@@ -2,7 +2,7 @@
 namespace Components\Core\Controller\Model {
     use \Components\Validation;
     use \Components\Validator;
-    class Browser extends \Components\Core\Controller\Model {   
+    abstract class Browser extends \Components\Core\Controller\Model {   
         public function __construct(array $server, array $request, \Components\Parser $parser) {
             parent::__construct($parser);
             $this->add("server", new Validation($server, array(new Validator\IsArray\Intersect\Key(array("HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT"))), Validation::NORMAL));

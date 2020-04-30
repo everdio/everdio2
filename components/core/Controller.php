@@ -24,6 +24,8 @@ namespace Components\Core {
                 return (string) ob_get_clean();                                                            
             }
         }        
+        
+        abstract public function display(string $path);
 
         final public function execute($path, string $route = NULL) {  
             if ($this->isRouted($route)) {     

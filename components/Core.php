@@ -68,7 +68,7 @@ namespace Components {
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }
         
-        final public function remove($parameter) {
+        public function remove($parameter) {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
