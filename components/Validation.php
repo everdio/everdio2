@@ -7,7 +7,7 @@ namespace Components {
         const NORMAL = "normal";
         const STRICT = "strict";        
 
-        public $types = [];        
+        private $types = [];        
         
         protected $value = false;        
         
@@ -37,16 +37,8 @@ namespace Components {
             return (string) get_class($this);
         }
         
-        public function __isset(string $validator) : bool {
-            return (booL) array_key_exists($validator, $this->validators);
-        }
-        
-        public function __invoke(string $validator) : \Components\Validator {
-            if (isset($this->{$validator})) {
-                return (object) $this->validators[$validator];
-            }
-
-            throw new Event("unknown validator");
+        public function __isset(string $type) : bool {
+            return (bool) in_array($type, $this->types);
         }
         
         public function set($value) : bool { 
@@ -57,14 +49,10 @@ namespace Components {
             return $this->value;
         }
         
-        public function validated() : array {
-            return (array) array_intersect_key($this->validators, array_flip(array_keys($this->validated, true)));
+        public function validated(bool $validation = true) : array {
+            return (array) array_intersect_key($this->validators, array_flip(array_keys($this->validated, $validation)));
         }
-        
-        public function hasType(string $type) : bool {
-            return (bool) in_array($type, $this->types);
-        }
-        
+
         public function isValid() : bool {
             foreach ($this->validators as $validator) {
                 $this->validated[(string) $validator] = $validator->execute($this->value);
