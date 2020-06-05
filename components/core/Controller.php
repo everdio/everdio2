@@ -27,7 +27,7 @@ namespace Components\Core {
         
         abstract public function display(string $path);
 
-        final public function execute($path, string $route = NULL) {  
+        final protected function execute($path, string $route = NULL) {  
             if ($this->isRouted($route)) {     
                 $controller = clone $this;
                 $controller->path = dirname($controller->path . $path);

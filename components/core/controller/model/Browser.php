@@ -2,10 +2,11 @@
 namespace Components\Core\Controller\Model {
     use \Components\Validation;
     use \Components\Validator;
-    abstract class Browser extends \Components\Core\Controller\Model {   
+    class Browser extends \Components\Core\Controller\Model {   
         public function __construct(array $server, array $request, \Components\Parser $parser) {
             parent::__construct($parser);
-            $this->add("server", new Validation($server, array(new Validator\IsArray\Intersect\Key(array("HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT"))), Validation::NORMAL));
+            $this->add("server", new Validation($server, array(new Validator\IsArray\Intersect\Key(array("HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT", "REMOTE_ADDR"))), Validation::NORMAL));
+            $this->add("remote", new Validation($this->server["REMOTE_ADDR"], array(new Validator\IsString)));
             $this->add("scheme", new Validation(sprintf("%s://", $this->server["REQUEST_SCHEME"]), array(new Validator\IsString\InArray(array("http://", "https://")))));
             $this->add("protocol", new Validation($this->server["SERVER_PROTOCOL"], array(new Validator\IsString)));
             $this->add("host", new Validation($this->server["HTTP_HOST"], array(new Validator\IsString)));
@@ -16,6 +17,10 @@ namespace Components\Core\Controller\Model {
             $this->input->store($request);
             
             $this->remove("server");
+        }
+        
+        public function display(string $path) : string {
+            return (string) $this->execute($path);              ;
         }
     }
 }

@@ -1,8 +1,6 @@
 <?php
 namespace Components\File\Cache {
     class Memory extends \Components\File\Cache {
-        private $_id = false;        
-        
         private $_key = false;
         
         public function __construct(string $path) {
@@ -11,14 +9,9 @@ namespace Components\File\Cache {
         }
         
         private function _open($size, $permission = 0755) {
-            if ($this->exists()) {
-                if ($this->_id === false) {
-                    $this->_id = shmop_open($this->_key, "c", $permission, $size);
-                }
-                return $this->_id;
+            if ($size && $this->exists()) {
+                return shmop_open($this->_key, ($this->getSize() ? "w" : "c"), $permission, $size);
             }
-            
-            throw new Event(sprintf("can't open memory for %s", $this->getRealPath()));
         }
 
         public function store($content, $permission = 0755) : int {       
@@ -46,8 +39,8 @@ namespace Components\File\Cache {
         }
         
         public function __destruct() {
-            if (($resource = $this->_open($this->getSize()))) {
-                shmop_close($resource);
+            if ($this->exists() && $this->getSize()) {
+                shmop_close($this->_open($this->getSize()));
             }            
         }
     }
