@@ -21,8 +21,6 @@ namespace Components\Validation {
                                          new Validator\IsArray\Intersect($options),
                                          new Validator\IsString\InArray($options),     
                                          new Validator\IsString\IsPath,
-                                         new Validator\IsString\IsDir,  
-                                         new Validator\IsString\IsFile,
                                          new Validator\IsString\IsUrl,
                                          new Validator\IsString\IsDatetime,                                          
                                          new Validator\IsString\IsDatetime\IsDate]);

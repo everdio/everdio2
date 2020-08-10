@@ -20,7 +20,7 @@ namespace Components\Core\Controller\Model {
         }
         
         public function display(string $path) : string {
-            return (string) $this->execute($path);              ;
+            return (string) $this->execute($path);
         }
     }
 }

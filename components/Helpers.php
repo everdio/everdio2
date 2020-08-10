@@ -15,7 +15,7 @@ namespace Components {
         }        
         
         public function substring($string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, $encoding = "UTF-8") : string {
-            return (string) (strlen($string) > $length ? $prefix . mb_substr($string, $start, $length, $encoding) . $suffix : $string);
+            return (string) (strlen($string) >= $length ? $prefix . mb_substr($string, $start, $length, $encoding) . $suffix : $string);
         }    
 
         public function sanitize($data) {
@@ -41,10 +41,25 @@ namespace Components {
             return $data;
         }
         
-        public function phrases(string $string, int $length = 40, array $phrases = []) : array {
+        public function str_limit(array $values, int $minimum = 30, int $total = 9999, array $return = [], int $count = 0) : array {
+            foreach ($values as $value) {
+                if (is_string($value)) {
+                    $length = strlen(trim($value));
+                    if ($length >= $minimum && ($length + $count) <= $total) {
+                        $return[] = trim($value);
+                        $count += $length;
+                    }
+                }
+            }
+            
+            return (array) array_unique($return);
+        } 
+
+        public function phrases(string $string, int $minimum = 40, int $total = 9999, array $phrases = [], int $count = 0) : array {
             foreach (explode(". ", trim(strip_tags($this->desanitize(($string))))) as $phrase) {
-                if (strlen($phrase) >= $length) {
+                if (strlen($phrase) >= $minimum && (strlen($phrase) + $count) <= $total) {
                     $phrases[] = trim($phrase);
+                    $count += strlen($phrase);
                 }
             }
             
@@ -52,15 +67,14 @@ namespace Components {
         }
         
         
-        public function words(string $string, int $length = 6, int $return = 100) : array {
-            $words = (array) str_word_count(strip_tags($string), 2);
-            foreach ($words as $count => $word) {
-                if (strlen($word) <= $length) {
-                    unset ($words[$count]);
+        public function words(string $string, int $minimum = 6, $total = 9999, array $words = [], int $count = 0) : array {
+            foreach (array_reverse((array) str_word_count(strip_tags($string), 2)) as $word) {
+                if (strlen($word) >= $minimum && (strlen($word) + $count) <= $total) {
+                    $words[] = $word;
+                    $count += strlen($word);
                 }            
             }
-
-            return (array) array_slice(array_unique($words), 0, $return);
+            return (array) array_unique($words);
         }        
     }
 }

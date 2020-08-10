@@ -3,6 +3,7 @@ namespace Components {
     abstract class Core {
         use Helpers, Dryer;
         private $_parameters = [];
+        
         public function __construct(array $parameters = []) {
             foreach ($parameters as $parameter => $validation) {
                 if ($validation instanceof \Components\Validation) {
@@ -125,8 +126,8 @@ namespace Components {
             $this->store($values);
         }
 
-        final public function export() : string {
-            return (string) http_build_query($this->restore(array_keys($this->_parameters)), true);
+        final public function export(array $parameters = []) : string {
+            return (string) http_build_query($this->restore($this->inter($parameters)), true);
         }
         
         final public function reset(array $parameters = []) {
