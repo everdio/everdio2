@@ -1,8 +1,7 @@
 <?php
 namespace Components {   
     class Validation {
-        use Dryer;
-        use Helpers;
+        use Dryer, Helpers;
         
         const NORMAL = "normal";
         const STRICT = "strict";        
@@ -20,32 +19,41 @@ namespace Components {
         private $validators = [];
         
         public function __construct($value, array $validators, $validate = self::NORMAL) {
-            $this->set($value);
-            
+            $this->setValue($value);
             foreach ($validators as $validator) {
-                if ($validator instanceof Validator) {
-                    $this->validators[(string) $validator] = $validator;
-                    $this->types[(string) $validator] = $validator::TYPE;
-                    $this->messages[(string) $validator] = $validator::MESSAGE;
-                }
+               $this($validator);
             }
             
             $this->validate = strtolower($validate);
         }
-
+        
         public function __toString() : string {
             return (string) get_class($this);
         }
         
         public function __isset(string $type) : bool {
+            return (bool) $this->hasType($type);
+        }
+        
+        public function __invoke(Validator $validator) {
+            $this->validators[(string) $validator] = $validator;
+            $this->types[(string) $validator] = $validator::TYPE;
+            $this->messages[(string) $validator] = $validator::MESSAGE;
+        }
+        
+        public function hasType(string $type) : bool {
             return (bool) in_array($type, $this->types);
         }
         
-        public function set($value) : bool { 
+        public function hasValidator(string $validator) : bool {
+            return (bool) array_key_exists($validator, $this->validators);
+        }
+
+        public function setValue($value) : bool { 
             return (bool) ($this->value = $this->hydrate($value));
         }
         
-        public function get() { 
+        public function getValue() { 
             return $this->value;
         }
         
@@ -66,7 +74,7 @@ namespace Components {
                 return $this->value;
             }
             
-            throw new Event(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
+            throw new Validation\Event(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
         }
 
         public function __dry() : string {

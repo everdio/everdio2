@@ -7,7 +7,7 @@ namespace Components\Core {
         }
 
         final public function display(string $template, string $enclosure = "@") : string { 
-            foreach ($this->restore($this->parameters()) as $parameter => $value) {
+            foreach ($this->restore($this->diff()) as $parameter => $value) {
                 $template = str_replace($enclosure . $parameter . $enclosure, $value, $template);
             }
             

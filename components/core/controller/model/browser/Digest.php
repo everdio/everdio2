@@ -1,7 +1,6 @@
 <?php
 namespace Components\Core\Controller\Model\Browser {
-    use \Components\Validation;
-    use \Components\Validator;
+    use \Components\Validation, \Components\Validator;
     abstract class Digest extends \Components\Core\Controller\Model\Browser {   
         public function __construct(array $server, array $request, \Components\Parser $parser, array $matches = []) {
             parent::__construct($server, $request, $parser);

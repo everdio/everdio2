@@ -1,10 +1,13 @@
 <?php
 namespace Components\Core {
     abstract class Mapper extends \Components\Core {
-        
         static protected $instances = [];
         
         abstract protected function initialise();
+        
+        final public function uses(string $trait) : bool {
+            return (bool) in_array($trait, class_uses($this));
+        }
         
         final public function hasField(string $field) : bool {
             return (bool) array_key_exists($field, $this->mapping);

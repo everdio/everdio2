@@ -6,6 +6,7 @@ namespace Components\Core\Mapper {
     abstract class Model extends \Components\Core\Mapper {
         public function __construct(array $parameters = []) {
             parent::__construct([
+                "label" => new Validation(false, [new Validator\IsString]),                
                 "model" => new Validation(__DIR__ . DIRECTORY_SEPARATOR . "Model.tpl", [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),
@@ -22,7 +23,7 @@ namespace Components\Core\Mapper {
             $tpl = new \Components\Core\Template;    
             $tpl->namespace = $this->namespace;
             $tpl->class = $this->class;
-            $tpl->use = $this->use;
+            $tpl->use = $this->use;            
             $this->remove("model");
             $this->remove("namespace");
             $this->remove("class");

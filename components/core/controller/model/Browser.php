@@ -1,7 +1,6 @@
 <?php
 namespace Components\Core\Controller\Model {
-    use \Components\Validation;
-    use \Components\Validator;
+    use \Components\Validation, \Components\Validator;
     class Browser extends \Components\Core\Controller\Model {   
         public function __construct(array $server, array $request, \Components\Parser $parser) {
             parent::__construct($parser);

@@ -26,7 +26,7 @@ namespace Components {
         
         public function __set(string $parameter, $value) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set((is_array($value) && is_array($this->_parameters[$parameter]->get()) ? array_merge($this->_parameters[$parameter]->get(), $value) : $value));
+                return (bool) $this->_parameters[$parameter]->setValue((is_array($value) && is_array($this->_parameters[$parameter]->getValue()) ? array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
@@ -36,7 +36,7 @@ namespace Components {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();    
-                } catch (\Components\Event $event) {
+                } catch (\Components\Validation\Event $event) {
                     throw new Event(sprintf("invalid parameter `%s`; %s in %s", $parameter, $event->getMessage(), get_class($this)));
                 }
             }
@@ -46,7 +46,7 @@ namespace Components {
 
         public function __unset(string $parameter) : bool {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set(false);
+                return (bool) $this->_parameters[$parameter]->setValue(false);
             }
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }      
@@ -69,14 +69,14 @@ namespace Components {
             throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
         }
         
-        public function remove($parameter) {
+        final public function remove($parameter) {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
         }
         
-        final public function parameters() : array {
-            return (array) array_keys($this->_parameters);
+        final public function parameters(array $parameters = []) : array {
+            return (array) array_intersect_key($this->_parameters, array_flip($this->inter($parameters)));
         }
                 
         final public function inter(array $parameters) : array {

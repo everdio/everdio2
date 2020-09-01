@@ -1,7 +1,6 @@
 <?php
 namespace Components\Core\Controller\Model {
-    use \Components\Validation;
-    use \Components\Validator;
+    use \Components\Validation, \Components\Validator;
     final class Cli extends \Components\Core\Controller\Model {
         public function __construct(array $server, \Components\Parser $parser, array $request = NULL) {
             parent::__construct($parser);
