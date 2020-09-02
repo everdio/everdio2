@@ -1,7 +1,6 @@
 <?php
 namespace Components\Validation {
-    use \Components\Validation;
-    use \Components\Validator;
+    use \Components\Validation, \Components\Validator;
     class Parameter extends \Components\Validation {
         private $_parameter, $_mandatory, $_default;
         private $_length = 0;
@@ -44,7 +43,8 @@ namespace Components\Validation {
                 $validators[] = new Validator\IsEmpty;
             }
             
-            if ($this->_mandatory && $this->_length) {
+            //if ($this->_mandatory && $this->_length) {
+            if ($this->_length) {
                 $validators[] = new Validator\Len\Smaller($this->_length);
             }            
             

@@ -21,7 +21,9 @@ namespace Components {
         public function __construct($value, array $validators, $validate = self::NORMAL) {
             $this->setValue($value);
             foreach ($validators as $validator) {
-               $this($validator);
+                $this->validators[(string) $validator] = $validator;
+                $this->types[(string) $validator] = $validator::TYPE;
+                $this->messages[(string) $validator] = $validator::MESSAGE;
             }
             
             $this->validate = strtolower($validate);
@@ -29,16 +31,6 @@ namespace Components {
         
         public function __toString() : string {
             return (string) get_class($this);
-        }
-        
-        public function __isset(string $type) : bool {
-            return (bool) $this->hasType($type);
-        }
-        
-        public function __invoke(Validator $validator) {
-            $this->validators[(string) $validator] = $validator;
-            $this->types[(string) $validator] = $validator::TYPE;
-            $this->messages[(string) $validator] = $validator::MESSAGE;
         }
         
         public function hasType(string $type) : bool {
