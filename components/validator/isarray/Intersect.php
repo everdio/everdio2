@@ -14,7 +14,7 @@ namespace Components\Validator\IsArray {
         }
         
         public function execute($value) : bool {
-            return (bool) (parent::execute($value) && (array_intersect($value, $this->array) === $value));
+            return (bool) (parent::execute($value) && (sizeof($this->array) && array_intersect($value, $this->array) === $value));
         }
         
         public function __dry() : string {

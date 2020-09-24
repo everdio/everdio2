@@ -2,8 +2,10 @@
 namespace Components {
     trait Dryer {        
         public function dehydrate($data, array $array = []) : string {
-            if (is_numeric($data) || is_integer($data)) {
-                return (int) $data;
+            if (is_bool($data)) {
+                return (string) ($data === true ? "true" : "false");            
+            } elseif (is_numeric($data) || is_integer($data)) {
+                return (string) $data;
             } elseif (is_string($data)) {
                 return (string) sprintf("\"%s\"", $data);
             } elseif (is_array($data)) {
@@ -30,8 +32,6 @@ namespace Components {
                         return (string) "false";
                     }
                 }
-            } elseif (is_bool($data) || is_double($data)) {
-                return (string) ($data === true ? "true" : "false");
             } elseif ($data === NULL) {
                 return (string) "false";
             } elseif (is_resource($data)) {
@@ -43,10 +43,8 @@ namespace Components {
 
         public function hydrate($data) {
             if (is_numeric($data) || is_integer($data)) {
-                if (is_float($data)) {
+                if (floatval($data) != intval($data)) {
                     return (float) $data;
-                } elseif (is_double($data)) {
-                    return (double) $data;
                 } else {
                     return (int) $data;
                 }

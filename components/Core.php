@@ -136,8 +136,12 @@ namespace Components {
         
         final public function search(string $path) {    
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
-                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof \Components\Core ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
+                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof self ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
             }        
+        }
+        
+        final public function unique(string $salt = NULL) : string {
+            return (string) sha1($this->export($this->diff()) . $salt);
         }
 
         public function __dry() : string {

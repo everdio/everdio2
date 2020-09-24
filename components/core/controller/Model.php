@@ -12,9 +12,13 @@ namespace Components\Core\Controller {
             $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . $this->parser::EXTENSION, array(new Validator\IsString\IsFile));
             if ($validation->isValid()) {
                 $file = new \Components\File($validation->execute(), "r");                   
-                foreach (array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {
-                    $this->add($parameter, new \Components\Validation($value, array(new Validator\IsString, new Validator\IsArray, new Validator\IsNumeric)), true);
+                foreach (array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    
+                    $parameter = new \Components\Validation\Parameter($parameter, $value, true);                    
+                    $this->add((string) $parameter, $parameter->getValidation($parameter->getValidators()));
+                    
+                    //$this->add($parameter, new \Components\Validation($value, array(new Validator\IsString, new Validator\IsArray, new Validator\IsNumeric, new Validator\IsDouble, new Validator\IsFloat)), true);
                 }                         
+                
             }
             return (string) parent::dispatch($path);
         }       
