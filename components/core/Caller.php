@@ -24,7 +24,7 @@ namespace Components\Core {
                 return call_user_func_array(sprintf("%s_%s", $this->caller, $name), $arguments);            
             }
             
-            throw new Event(sprintf("unknown function call %s_%s(%s)", $this->caller, $name, $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException  (sprintf("unknown function call %s_%s(%s)", $this->caller, $name, $this->dehydrate($arguments)));
         }       
     }
 }

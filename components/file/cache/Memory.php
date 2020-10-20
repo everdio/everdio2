@@ -19,7 +19,7 @@ namespace Components\File\Cache {
                 return (int) shmop_write($resource, serialize($content), 0);
             }
             
-            throw new Event(sprintf("can't store memory for %s", $this->getRealPath()));
+            throw new \RuntimeException(sprintf("can't store memory for %s", $this->getRealPath()));
         }
 
         public function restore($content = false) {        

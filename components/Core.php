@@ -2,6 +2,7 @@
 namespace Components {
     abstract class Core {
         use Helpers, Dryer;
+        
         private $_parameters = [];
         
         public function __construct(array $parameters = []) {
@@ -29,26 +30,26 @@ namespace Components {
                 return (bool) $this->_parameters[$parameter]->setValue((is_array($value) && is_array($this->_parameters[$parameter]->getValue()) ? array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
-            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
+            throw new \RuntimeException(sprintf("unknown or missing parameter `%s` in %s", $parameter, get_class($this)));
         }
 
         public function __get(string $parameter) {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();    
-                } catch (\Components\Validation\Event $event) {
-                    throw new Event(sprintf("invalid parameter `%s`; %s in %s", $parameter, $event->getMessage(), get_class($this)));
+                } catch (\InvalidArgumentException $exception) {      
+                    throw new \RuntimeException (sprintf("invalid parameter `%s` and %s (%s) ", $parameter, implode(", ", array_keys($this->validate($this->diff()), false)), get_class($this)), 2, $exception);
                 }
             }
             
-            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
+            throw new \RuntimeException (sprintf("unknown or missing parameter `%s` in %s", $parameter, get_class($this)));
         }
 
         public function __unset(string $parameter) : bool {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
-            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
+            throw new \RuntimeException(sprintf("unknown or missing parameter `%s` in %s", $parameter, get_class($this)));
         }      
 
         final public function exists(string $parameter) : bool {
@@ -66,7 +67,7 @@ namespace Components {
                 return (object) $this->_parameters[$parameter];
             }
             
-            throw new Event(sprintf("unknown parameter `%s` in %s", $parameter, get_class($this)));
+            throw new \RuntimeException(sprintf("unknown or missing parameter `%s` in %s", $parameter, get_class($this)));
         }
         
         final public function remove($parameter) {
@@ -74,7 +75,7 @@ namespace Components {
                 unset ($this->_parameters[$parameter]);
             }
         }
-        
+   
         final public function parameters(array $parameters = []) : array {
             return (array) array_intersect_key($this->_parameters, array_flip($this->inter($parameters)));
         }
@@ -140,8 +141,8 @@ namespace Components {
             }        
         }
         
-        final public function unique(string $salt = NULL) : string {
-            return (string) sha1($this->export($this->diff()) . $salt);
+        final public function unique(array $parameters = [], string $salt = NULL) : string {
+            return (string) sha1($this->export($this->inter($parameters)) . $salt);
         }
 
         public function __dry() : string {

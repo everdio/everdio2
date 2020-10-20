@@ -11,7 +11,7 @@ namespace Components {
                    return self::__construct($path, $mode, $group);
                 }
                 
-                throw new Event($ex->getMessage());
+                throw new \Exception($ex->getMessage());
             }
         }    
     }

@@ -6,7 +6,7 @@ namespace Components\File {
                 $path = new \Components\Path(dirname($file));
                 parent::__construct($path->getPath() . DIRECTORY_SEPARATOR . basename($file) . ".cache", "c+");
             } catch (\Exception $ex) {
-                throw new Event($ex->getMessage());
+                throw new \RuntimeException($ex->getMessage());
             }            
         }
         
@@ -14,7 +14,7 @@ namespace Components\File {
             try {
                 return (int) parent::store(serialize($content), $permission);    
             } catch (\Exception $ex) {
-                throw new Event($ex->getMessage());
+                throw new \RuntimeException($ex->getMessage());
             }
         }
         
@@ -22,7 +22,7 @@ namespace Components\File {
             try {
                 return unserialize(parent::restore($content));   
             } catch (\Exception $ex) {
-                throw new Event($ex->getMessage());
+                throw new \RuntimeException($ex->getMessage());
             }
         }
     }

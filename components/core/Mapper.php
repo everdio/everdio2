@@ -4,7 +4,7 @@ namespace Components\Core {
         static protected $instances = [];
         
         abstract protected function initialise();
-        
+
         final public function uses(string $trait) : bool {
             return (bool) in_array($trait, class_uses($this));
         }
@@ -18,7 +18,7 @@ namespace Components\Core {
                 return (string) array_search($parameter, $this->mapping);
             }
             
-            throw new Event(sprintf("unknown parameter %s", $parameter));
+            throw new \LogicException (sprintf("unknown parameter %s", $parameter));
         }
 
         final public function getParameter(string $field) : string {
@@ -26,9 +26,9 @@ namespace Components\Core {
                 return (string) $this->mapping[$field];
             }
             
-            throw new Event(sprintf("unknown field %s", $field));
+            throw new \LogicException (sprintf("unknown field %s", $field));
         }
-        
+
         final public function __call($name, $arguments) {
             if (!method_exists($this, $name)) {
                 return call_user_func_array(array($this->initialise(), $name), $arguments);            

@@ -8,7 +8,7 @@ namespace Components\Core\Caller {
         
         final public function execute() {
             if (($response = $this->exec()) === false) {                
-                throw new Event($this->error());
+                throw new \RuntimeException($this->error());
             }
             
             return (string) trim($response);

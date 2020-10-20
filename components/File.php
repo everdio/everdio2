@@ -10,7 +10,7 @@ namespace Components {
             if ($this->isWritable()) {
                 return (int) $this->fwrite($content);
             }
-            throw new Event($this->getRealPath());
+            throw new \Exception($this->getRealPath());
         }
 
         public function restore($content = false) {                        
@@ -21,14 +21,14 @@ namespace Components {
                 }
                 return $content;
             }
-            throw new Event($this->getRealPath());
+            throw new \Exception($this->getRealPath());
         }
 
         public function delete() : bool {
             if ($this->isReadable() && $this->isWritable()) {
                 return (bool) unlink($this->getRealPath());
             }
-            throw new Event($this->getRealPath());
+            throw new \Exception($this->getRealPath());
         }    
         
         public function __dry() : string {

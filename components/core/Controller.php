@@ -5,6 +5,7 @@ namespace Components\Core {
     abstract class Controller extends \Components\Core {            
         public function __construct(array $parameters = []) {
             parent::__construct([                
+                "pid" => new Validation(getmypid(), [new Validator\IsInteger]),
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
                 "input" => new Validation(new \Components\Core\Parameters, [new Validator\IsObject\Of("\Components\Core\Parameters")]),
@@ -32,7 +33,7 @@ namespace Components\Core {
             if (isset($controller->path)) {
                 return (string) trim($controller->dispatch(basename($path)));
             }
-            throw new Event(sprintf("controller failed executing %s", $controller->validate()));
+            throw new \LogicException (sprintf("controller failed executing %s", $controller->validate()));
         }
     }    
 }
