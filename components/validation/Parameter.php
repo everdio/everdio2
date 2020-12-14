@@ -4,7 +4,7 @@ namespace Components\Validation {
     class Parameter extends \Components\Validation {
         private $_parameter, $_mandatory, $_default;
         private $_length = 0;
-        public function __construct(string $parameter, $value = false, bool $default = NULL, bool $mandatory = true, int $length = NULL, array $options = []) {
+        public function __construct(string $parameter, $value = false, bool $default = false, bool $mandatory = true, int $length = NULL, array $options = []) {
             $this->_parameter = $parameter;
             $this->_length = $length;
             $this->_mandatory = $mandatory;
@@ -35,8 +35,7 @@ namespace Components\Validation {
                     $validators[] = $validator;
                 }                
             } else {
-                $validators[] = new Validator\IsString;
-                $validators[] = new Validator\IsNumeric;
+                $validators[] = new Validator\IsDefault;
             }
             
             if ($this->_mandatory === false) {
@@ -51,13 +50,11 @@ namespace Components\Validation {
             return (array) $validators;
         }        
 
-        final public function getValidation(array $validators = [], string $validate = NULL) : Validation {
-            if ($this->_mandatory === false) {
-                $validate = self::NORMAL;
-            } elseif (!$validate && $this->_length && $this->_mandatory) {
+        final public function getValidation(array $validators = [], string $validate = self::NORMAL) : Validation {
+            if ($this->_length && $this->_mandatory) {
                 $validate = self::STRICT;
-            } else {
-                $validate = self::NORMAL;
+            } elseif ($this->_mandatory && sizeof($validators) > 1) {
+                $validate = self::STRICT;
             }
             
             return new Validation(($this->_default ? $this->value : false), array_unique($validators), $validate);            

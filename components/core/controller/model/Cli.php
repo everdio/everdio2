@@ -13,11 +13,10 @@ namespace Components\Core\Controller\Model {
                         $this->arguments = [str_replace("--", false, $parameters)];
                     } else {
                         parse_str($parameters, $request);    
-                        $this->input->store($request);
-                        $this->request = $request;                        
+                        $this->request->store($request);
                     }
                 }
-            }
+            }           
         }
         
         public function display(string $path) {

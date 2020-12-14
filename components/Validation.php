@@ -3,9 +3,9 @@ namespace Components {
     class Validation {
         use Dryer, Helpers;
         
-        const NORMAL = "normal";
-        const STRICT = "strict";        
-
+        const NORMAL = "NORMAL";
+        const STRICT = "STRICT";   
+        
         private $types = [];        
         
         protected $value = false;        
@@ -26,11 +26,27 @@ namespace Components {
                 $this->messages[(string) $validator] = $validator::MESSAGE;
             }
             
-            $this->validate = strtolower($validate);
+            $this->validate = strtoupper($validate);
         }
         
         public function __toString() : string {
             return (string) get_class($this);
+        }
+        
+        public function __get(string $validator) : \Components\Validator {
+            if ($this->hasValidator($validator)) {
+                return (object) $this->validators[$validator];
+            }
+            
+            throw new \LogicException(sprintf("unknown validator %s", $validator));
+        }
+                
+        public function getValidate() : string {
+            return (string) $this->validate;
+        }
+        
+        public function getTypes() : array {
+            return (array) $this->types;
         }
         
         public function hasType(string $type) : bool {

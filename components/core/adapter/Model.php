@@ -1,12 +1,11 @@
 <?php
-namespace Components\Core\Mapper {
+namespace Components\Core\Adapter {
     use \Components\File;        
     use \Components\Validation;
     use \Components\Validator;    
-    abstract class Model extends \Components\Core\Mapper {
+    abstract class Model extends \Components\Core\Adapter {
         public function __construct(array $parameters = []) {
             parent::__construct([
-                "label" => new Validation(false, [new Validator\IsString]),                
                 "model" => new Validation(__DIR__ . DIRECTORY_SEPARATOR . "Model.tpl", [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),

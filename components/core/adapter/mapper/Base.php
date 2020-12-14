@@ -1,5 +1,5 @@
 <?php
-namespace Components\Core\Mapper {
+namespace Components\Core\Adapter\Mapper {
     interface Base {                
         public function find(array $validations = [], string $query = NULL);
         

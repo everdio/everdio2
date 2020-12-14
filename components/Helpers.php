@@ -26,6 +26,7 @@ namespace Components {
             } elseif (is_string($data)) {
                 return (string) htmlspecialchars(addslashes((string) $data));
             }
+            
             return $data;
         }         
         

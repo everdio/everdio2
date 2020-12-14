@@ -19,8 +19,7 @@ namespace Components\Core\Controller\Model {
             $this->host = $this->server["HTTP_HOST"];
             $this->method = strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = array_filter(explode(DIRECTORY_SEPARATOR, str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
-            $this->input->store($request);
-            $this->remove("server");
+            $this->request->store($request);
         }
         
         public function display(string $path) : string {

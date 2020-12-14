@@ -3,7 +3,7 @@ namespace Components {
     class File extends \SplFileObject {   
         use Dryer;
         public function exists($ttl = false) : bool {                
-            return (bool) (!$ttl && $this->isFile()) || ($ttl && $this->isFile() && ($this->getMTime() + $ttl) > time());
+            return (bool) (!$ttl && ($this->isFile() && $this->getSize())) || ($ttl && ($this->isFile() && $this->getSize()) && ($this->getMTime() + $ttl) > time());
         }
         
         public function store($content) : int {

@@ -2,6 +2,7 @@
 namespace Components\Validator\IsString {
     class InArray extends \Components\Validator\IsString {
         const MESSAGE = "NOT_IN_ARRAY";
+        const TYPE = "IN_ARRAY";
         protected $array = [];        
         
         public function __construct(array $array) {

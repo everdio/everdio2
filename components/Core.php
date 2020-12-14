@@ -38,7 +38,7 @@ namespace Components {
                 try {
                     return $this->_parameters[$parameter]->execute();    
                 } catch (\InvalidArgumentException $exception) {      
-                    throw new \RuntimeException (sprintf("invalid parameter `%s` and %s (%s) ", $parameter, implode(", ", array_keys($this->validate($this->diff()), false)), get_class($this)), 2, $exception);
+                    throw new \RuntimeException (sprintf("invalid value for parameter `%s` and  %s in %s ", $parameter, implode(", ", array_keys($this->validate($this->diff([$parameter])), false)), get_class($this)), 2, $exception);
                 }
             }
             
@@ -120,6 +120,10 @@ namespace Components {
         
         final public function isNormal(array $parameters = []) : bool {
             return (bool) in_array(true, $this->validate($parameters));
+        }
+        
+        final public function isEmpty(array $parameters = []) : bool {
+            return (bool) !in_array(true, $this->restore($parameters));
         }
         
         final public function import(string $querystring, array $values = []) {

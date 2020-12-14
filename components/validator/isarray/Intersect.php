@@ -2,7 +2,7 @@
 namespace Components\Validator\IsArray {
     class Intersect extends \Components\Validator\IsArray {
         const MESSAGE = "ARRAYS_NOT_MATCHING";
-        
+        const TYPE = "IS_ARRAY_INTERSECT";
         protected $array = [];
         
         public function __construct(array $array = []) {

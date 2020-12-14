@@ -8,7 +8,9 @@ namespace Components\Core {
                 "pid" => new Validation(getmypid(), [new Validator\IsInteger]),
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
-                "input" => new Validation(new \Components\Core\Parameters, [new Validator\IsObject\Of("\Components\Core\Parameters")]),
+                "time" => new Validation(microtime(true), [new Validator\IsFloat]),
+                "request" => new Validation(new \Components\Core\Parameters, [new Validator\IsObject\Of("\Components\Core\Parameters")]),
+                "token" => new Validation(bin2hex(openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)])
             ] + $parameters);
         }
         
@@ -29,11 +31,13 @@ namespace Components\Core {
 
         final protected function execute($path) {  
             $controller = clone $this;
-            $controller->path = dirname($controller->path . trim($path));
+            $controller->path = realpath(dirname($controller->path . DIRECTORY_SEPARATOR . trim($path)));
+            
             if (isset($controller->path)) {
                 return (string) trim($controller->dispatch(basename($path)));
             }
-            throw new \LogicException (sprintf("controller failed executing %s", $controller->validate()));
+            
+            throw new \LogicException (sprintf("controller failed executing %s", $path));
         }
     }    
 }
