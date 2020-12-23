@@ -125,7 +125,7 @@ namespace Components {
         final public function isEmpty(array $parameters = []) : bool {
             return (bool) !in_array(true, $this->restore($parameters));
         }
-        
+
         final public function import(string $querystring, array $values = []) {
             parse_str($querystring, $values);
             $this->store($values);

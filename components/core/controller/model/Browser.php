@@ -10,7 +10,7 @@ namespace Components\Core\Controller\Model {
                 "protocol" => new Validation(false, array(new Validator\IsString)),
                 "host" => new Validation(false, array(new Validator\IsString)),
                 "method" => new Validation(false, array(new Validator\IsString\InArray(array("get", "post", "head", "put", "delete", "connect")))),                
-                "default" => new Validation("index.html", array(new Validator\IsString))
+                "routing" => new Validation(false, [new Validator\IsString\IsUrl])
             ], $parser);
 
             $this->remote = $this->server["REMOTE_ADDR"];
@@ -19,6 +19,7 @@ namespace Components\Core\Controller\Model {
             $this->host = $this->server["HTTP_HOST"];
             $this->method = strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = array_filter(explode(DIRECTORY_SEPARATOR, str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
+            $this->routing = $this->scheme . $this->host . $this->server["REQUEST_URI"];
             $this->request->store($request);
         }
         

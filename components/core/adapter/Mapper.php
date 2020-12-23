@@ -1,15 +1,6 @@
 <?php
 namespace Components\Core\Adapter {
     abstract class Mapper extends \Components\Core\Adapter {
-        public function summarize(array $types, int $size = 2, array $parameters = []) : array {
-            foreach ($this->parameters($this->mapping) as $parameter => $validation) {
-                if (array_intersect($validation->getTypes(), $types) === $validation->getTypes()) {
-                    $parameters[] = $parameter; 
-                }
-            }      
-            return (array) array_slice($parameters, 0, $size);            
-        }        
-        
         final public function hasField(string $field) : bool {
             return (bool) (isset($this->mapping) && array_key_exists($field, $this->mapping));
         }
@@ -34,13 +25,13 @@ namespace Components\Core\Adapter {
             throw new \LogicException (sprintf("unknown key %s", $parameter));
         }
         
-        final public function hasRelation(string $mapper) : bool {
-            return (bool) (isset($this->relations) && in_array($mapper, $this->relations));
+        final public function hasRelation(string $key) : bool {
+            return (bool) (isset($this->relations) && array_key_exists($key, $this->relations));
         }
         
-        final public function getRelation(string $mapper) : string {
-            if ($this->hasRelation($mapper)) {
-                return (string) array_search($mapper, $this->relations);
+        final public function getRelation(string $key) : string {
+            if ($this->hasRelation($key)) {
+                return (string) $this->relations[$key];
             }
             
             throw new \LogicException (sprintf("unknown relation %s", $mapper));
@@ -53,5 +44,18 @@ namespace Components\Core\Adapter {
             
             throw new \LogicException (sprintf("unknown field %s", $field));
         }
+        
+        final public function summarize(array $types, int $size = 2) : array {
+            return (array) array_slice(array_keys($this->byTypes($types)), 0, $size);            
+        }          
+
+        final public function byTypes(array $types, array $parameters = []) : array {
+            foreach ($this->parameters($this->mapping) as $parameter => $validation) {
+                if (array_intersect($validation->getTypes(), $types) === $validation->getTypes()) {    
+                    $parameters[$parameter] = $validation;
+                }
+            }             
+            return (array) $parameters;
+        }        
     }
 }
