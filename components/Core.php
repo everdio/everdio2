@@ -106,6 +106,10 @@ namespace Components {
             return (array) $values;
         }
         
+        final public function reset(array $parameters = []) {
+            $this->store(array_fill_keys($this->inter($parameters), false));
+        }
+                        
         final public function validate(array $parameters = [], array $validations = []) { 
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
@@ -134,11 +138,7 @@ namespace Components {
         final public function export(array $parameters = []) : string {
             return (string) http_build_query($this->restore($this->inter($parameters)), true);
         }
-        
-        final public function reset(array $parameters = []) {
-            $this->store(array_fill_keys($this->inter($parameters), false));
-        }
-        
+
         final public function search(string $path) {    
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
                 return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof self ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);

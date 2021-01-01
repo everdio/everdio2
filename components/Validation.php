@@ -34,7 +34,7 @@ namespace Components {
         }
         
         public function __get(string $validator) : \Components\Validator {
-            if ($this->hasValidator($validator)) {
+            if (array_key_exists($validator, $this->validators)) {
                 return (object) $this->validators[$validator];
             }
             
@@ -44,19 +44,11 @@ namespace Components {
         public function getValidate() : string {
             return (string) $this->validate;
         }
-        
-        public function getTypes() : array {
-            return (array) $this->types;
-        }
-        
-        public function hasType(string $type) : bool {
-            return (bool) in_array($type, $this->types);
-        }
-        
-        public function hasValidator(string $validator) : bool {
-            return (bool) array_key_exists($validator, $this->validators);
-        }
 
+        public function hasTypes(array $types, int $sizeof = 1) : bool {
+            return (bool) (sizeof(array_intersect($types, $this->types)) >= $sizeof);
+        }
+        
         public function setValue($value) : bool { 
             return (bool) ($this->value = $this->hydrate($value));
         }

@@ -8,14 +8,14 @@ namespace Components\Core\Caller {
         
         final public function execute() : string {
             if (($response = $this->exec()) === false) {
-                return (string) $this->error($this->curl);
+                return (string) $this->error();
             }
             
             return (string) trim($response);
         }
         
         public function __destruct() {
-            $this->close($this->curl);
+            $this->close();
         }
     }
 }

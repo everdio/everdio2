@@ -25,9 +25,7 @@ namespace Components\Core {
                 require $validation->execute();    
                 return (string) ob_get_clean();                                                            
             }
-        }        
-        
-        abstract public function display(string $path);
+        }                
 
         final protected function execute($path) {  
             $controller = clone $this;
@@ -39,5 +37,7 @@ namespace Components\Core {
             
             throw new \LogicException (sprintf("controller failed executing %s", $path));
         }
+        
+        abstract public function display(string $path);        
     }    
 }

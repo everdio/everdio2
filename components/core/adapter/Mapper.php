@@ -22,19 +22,30 @@ namespace Components\Core\Adapter {
                 return (string) array_search($parameter, $this->keys);
             }
             
-            throw new \LogicException (sprintf("unknown key %s", $parameter));
+            throw new \LogicException (sprintf("unknown key by parameter %s", $parameter));
         }
         
-        final public function hasRelation(string $key) : bool {
-            return (bool) (isset($this->relations) && array_key_exists($key, $this->relations));
+        final public function hasRelation(string $parameter) : bool {
+            return (bool) ($this->hasKey($parameter) && isset($this->parents) && array_key_exists($this->getKey($parameter), $this->parents));
         }
-        
-        final public function getRelation(string $key) : string {
-            if ($this->hasRelation($key)) {
-                return (string) $this->relations[$key];
+
+        final public function getRelation(string $parameter) : self {
+            if ($this->hasRelation($parameter)) {
+                return (object) new $this->parents[$this->getKey($parameter)];
             }
             
-            throw new \LogicException (sprintf("unknown relation %s", $mapper));
+            throw new \LogicException (sprintf("unknown relation by parameter %s", $parameter));
+        }        
+        
+        final public function hasForeign($key) : bool {
+            return (bool) (isset($this->keys) && array_key_exists($key, $this->keys));
+        }
+        
+        final public function getForeign($key) : string {
+            if ($this->hasForeign($key)) {
+                return (string) $this->keys[$key];
+            }
+            throw new \LogicException (sprintf("unknown foreign key %s", $key));
         }
 
         final public function getParameter(string $field) : string {
@@ -45,13 +56,13 @@ namespace Components\Core\Adapter {
             throw new \LogicException (sprintf("unknown field %s", $field));
         }
         
-        final public function summarize(array $types, int $size = 2) : array {
-            return (array) array_slice(array_keys($this->byTypes($types)), 0, $size);            
-        }          
+        final public function view(array $types, int $size = 2) : string {
+            return (string) implode(", ", $this->restore(array_slice(array_keys($this->byTypes($types)), 0, $size)));
+        }
 
         final public function byTypes(array $types, array $parameters = []) : array {
             foreach ($this->parameters($this->mapping) as $parameter => $validation) {
-                if (array_intersect($validation->getTypes(), $types) === $validation->getTypes()) {    
+                if ($validation->hasTypes($types)){ 
                     $parameters[$parameter] = $validation;
                 }
             }             

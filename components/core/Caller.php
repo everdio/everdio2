@@ -6,7 +6,7 @@ namespace Components\Core {
         public function __construct($caller) {
             parent::__construct([
                 "caller" => new Validation($caller, [new Validator\IsString]),
-                "resource" => new Validation(false, [new Validator\IsResource])
+                "resource" => new Validation(false, [new Validator\IsResource, new Validator\IsObject])
             ]);
         }
         
@@ -14,13 +14,12 @@ namespace Components\Core {
             return (string) $this->caller;
         }
         
-        abstract public function execute();
-        
         final public function __call($name, $arguments) {
             if (function_exists(sprintf("%s_%s", $this->caller, $name))) {
                 if (isset($this->resource)) {
                     array_unshift($arguments, $this->resource); 
                 }
+
                 return call_user_func_array(sprintf("%s_%s", $this->caller, $name), $arguments);            
             }
             

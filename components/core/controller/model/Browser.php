@@ -23,6 +23,10 @@ namespace Components\Core\Controller\Model {
             $this->request->store($request);
         }
         
+        final public function isReturned() : bool {
+            return (bool) (isset($this->server["HTTP_REFERER"]) && (parse_url($this->server["HTTP_REFERER"], PHP_URL_HOST) === $this->host));
+        }            
+        
         public function display(string $path) : string {
             return (string) $this->execute($path);
         }
