@@ -4,17 +4,17 @@ namespace Components {
         use Dryer, Helpers;
         
         const NORMAL = "NORMAL";
-        const STRICT = "STRICT";   
-        
-        private $types = [];        
+        const STRICT = "STRICT";           
         
         protected $value = false;        
         
-        private $validated = [];                
+        private $validated = [];   
+        
+        public $types = [];                
         
         private $messages = [];
         
-        private $validate = false;        
+        public $validate = false;        
         
         private $validators = [];
         
@@ -39,10 +39,6 @@ namespace Components {
             }
             
             throw new \LogicException(sprintf("unknown validator %s", $validator));
-        }
-                
-        public function getValidate() : string {
-            return (string) $this->validate;
         }
 
         public function hasTypes(array $types, int $sizeof = 1) : bool {

@@ -14,7 +14,7 @@ namespace Components\Core {
                 return self::$_adapters[$key];
             }
             
-            throw new RuntimeException(sprintf("unknown or invalid instance by key %s", $key));
+            throw new RuntimeException(sprintf("unknown or invalid adapter by key %s", $key));
         }
         
         protected function addAdapter($key, $instance, $overwrite = true) {

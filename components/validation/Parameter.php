@@ -12,7 +12,6 @@ namespace Components\Validation {
             
             parent::__construct($value, [new Validator\IsArray, 
                                          new Validator\IsFloat, 
-                                         new Validator\IsDouble, 
                                          new Validator\IsResource,
                                          new Validator\IsObject, 
                                          new Validator\IsNumeric,
@@ -52,8 +51,6 @@ namespace Components\Validation {
 
         final public function getValidation(array $validators = [], string $validate = self::NORMAL) : Validation {
             if ($this->_length && $this->_mandatory) {
-                $validate = self::STRICT;
-            } elseif ($this->_mandatory && sizeof($validators) > 1) {
                 $validate = self::STRICT;
             }
             

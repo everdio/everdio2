@@ -31,7 +31,7 @@ namespace Components\Core\Adapter {
 
         final public function getRelation(string $parameter) : self {
             if ($this->hasRelation($parameter)) {
-                return (object) new $this->parents[$this->getKey($parameter)];
+                return (object) ((string) $this === $this->parents[$this->getKey($parameter)] ? clone $this : new $this->parents[$this->getKey($parameter)]);
             }
             
             throw new \LogicException (sprintf("unknown relation by parameter %s", $parameter));
@@ -52,21 +52,23 @@ namespace Components\Core\Adapter {
             if ($this->hasField($field)) {
                 return (string) $this->mapping[$field];
             }
-            
             throw new \LogicException (sprintf("unknown field %s", $field));
         }
         
         final public function view(array $types, int $size = 2) : string {
-            return (string) implode(", ", $this->restore(array_slice(array_keys($this->byTypes($types)), 0, $size)));
+            return (string) implode(", ", $this->restore(array_slice(array_keys($this->label($types)), 0, $size)));
         }
-
-        final public function byTypes(array $types, array $parameters = []) : array {
-            foreach ($this->parameters($this->mapping) as $parameter => $validation) {
-                if ($validation->hasTypes($types)){ 
-                    $parameters[$parameter] = $validation;
+        
+        final public function label(array $types, array $parameters = []) : array {
+            if (isset($this->mapping)) {
+                foreach ($this->parameters($this->mapping) as $parameter => $validation) {
+                    if (array_intersect($validation->types, $types) === $validation->types) {
+                        $parameters[$parameter] = $validation;
+                    }
                 }
-            }             
+            }
+            
             return (array) $parameters;
-        }        
+        }
     }
 }

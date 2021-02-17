@@ -1,8 +1,7 @@
 <?php
 namespace Components {
     abstract class Validator {
-        use Dryer;
-        
+        use Dryer;        
         const TYPE = self::TYPE;
         const MESSAGE = self::MESSAGE;
         

@@ -148,7 +148,11 @@ namespace Components {
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) sha1($this->export($this->inter($parameters)) . $salt);
         }
-
+        
+        final public function __clone() {
+            $this->_parameters = $this->_parameters;
+        }
+        
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
