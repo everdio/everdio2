@@ -1,7 +1,7 @@
 <?php
 namespace Components\Core {
     class Template extends \Components\Core {
-        public function __set(string $field, $value) : bool {
+        public function __set(string $field, $value) {
             $parameter = new \Components\Validation\Parameter($field, $value, $value, true);
             return (bool) $this->add((string) $parameter, $parameter->getValidation($parameter->getValidators()));
         }

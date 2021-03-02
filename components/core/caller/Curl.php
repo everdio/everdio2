@@ -10,7 +10,6 @@ namespace Components\Core\Caller {
             if (($response = $this->exec()) === false) {                
                 throw new \RuntimeException($this->error());
             }
-            
             return (string) trim($response);
         }
 

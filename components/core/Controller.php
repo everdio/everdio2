@@ -30,7 +30,6 @@ namespace Components\Core {
         final protected function execute($path) {  
             $controller = clone $this;
             $controller->path = realpath(dirname($controller->path . DIRECTORY_SEPARATOR . trim($path)));
-            
             if (isset($controller->path)) {
                 return (string) trim($controller->dispatch(basename($path)));
             }

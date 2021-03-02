@@ -31,7 +31,8 @@ namespace Components\Core\Adapter {
 
         final public function getRelation(string $parameter) : self {
             if ($this->hasRelation($parameter)) {
-                return (object) ((string) $this === $this->parents[$this->getKey($parameter)] ? clone $this : new $this->parents[$this->getKey($parameter)]);
+                return (object) new $this->parents[$this->getKey($parameter)];
+                //return (object) ((string) $this === $this->parents[$this->getKey($parameter)] ? clone $this : new $this->parents[$this->getKey($parameter)]);
             }
             
             throw new \LogicException (sprintf("unknown relation by parameter %s", $parameter));
@@ -45,6 +46,7 @@ namespace Components\Core\Adapter {
             if ($this->hasForeign($key)) {
                 return (string) $this->keys[$key];
             }
+            
             throw new \LogicException (sprintf("unknown foreign key %s", $key));
         }
 
@@ -70,5 +72,9 @@ namespace Components\Core\Adapter {
             
             return (array) $parameters;
         }
+        
+        final public function __dry() : string {
+            return (string) sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->mapping)));
+        }              
     }
 }

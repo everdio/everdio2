@@ -2,9 +2,7 @@
 namespace Components {
     abstract class Core {
         use Helpers, Dryer;
-        
-        private $_parameters = [];
-        
+        public $_parameters = [];
         public function __construct(array $parameters = []) {
             foreach ($parameters as $parameter => $validation) {
                 if ($validation instanceof \Components\Validation) {
@@ -25,7 +23,7 @@ namespace Components {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }        
         
-        public function __set(string $parameter, $value) : bool {
+        public function __set(string $parameter, $value) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue((is_array($value) && is_array($this->_parameters[$parameter]->getValue()) ? array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
@@ -45,7 +43,7 @@ namespace Components {
             throw new \RuntimeException (sprintf("unknown or missing parameter `%s` in %s", $parameter, get_class($this)));
         }
 
-        public function __unset(string $parameter) : bool {
+        public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
@@ -139,12 +137,6 @@ namespace Components {
             return (string) http_build_query($this->restore($this->inter($parameters)), true);
         }
 
-        final public function search(string $path) {    
-            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
-                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof self ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
-            }        
-        }
-        
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) sha1($this->export($this->inter($parameters)) . $salt);
         }

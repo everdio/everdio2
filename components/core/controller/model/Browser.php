@@ -4,12 +4,12 @@ namespace Components\Core\Controller\Model {
     class Browser extends \Components\Core\Controller\Model {   
         public function __construct(array $server, array $request, \Components\Parser $parser) {
             parent::__construct([
-                "server" => new Validation($server, array(new Validator\IsArray\Intersect\Key(array("HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT", "REMOTE_ADDR"))), Validation::NORMAL),
-                "remote" => new Validation(false, array(new Validator\IsString)),
-                "scheme" => new Validation(false, array(new Validator\IsString\InArray(array("http://", "https://")))),
-                "protocol" => new Validation(false, array(new Validator\IsString)),
-                "host" => new Validation(false, array(new Validator\IsString)),
-                "method" => new Validation(false, array(new Validator\IsString\InArray(array("get", "post", "head", "put", "delete", "connect")))),                
+                "server" => new Validation($server, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT", "REMOTE_ADDR"])], Validation::NORMAL),
+                "remote" => new Validation(false, [new Validator\IsString]),
+                "scheme" => new Validation(false, [new Validator\IsString\InArray(["http://", "https://"])]),
+                "protocol" => new Validation(false, [new Validator\IsString]),
+                "host" => new Validation(false, [new Validator\IsString]),
+                "method" => new Validation(false, [new Validator\IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
                 "routing" => new Validation(false, [new Validator\IsString\IsUrl])
             ], $parser);
 
