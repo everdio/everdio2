@@ -45,6 +45,7 @@ namespace Components {
         public function str_limit(array $values, int $minimum = 30, int $total = 9999, array $return = [], int $count = 0) : array {
             foreach ($values as $value) {
                 if (is_string($value)) {
+                    
                     $length = strlen(trim($value));
                     if ($length >= $minimum && ($length + $count) <= $total) {
                         $return[] = trim($value);
@@ -56,15 +57,15 @@ namespace Components {
             return (array) array_unique($return);
         } 
 
-        public function phrases(string $string, int $minimum = 40, int $total = 9999, array $phrases = [], int $count = 0) : array {
-            foreach (explode(". ", trim(strip_tags($this->desanitize(($string))))) as $phrase) {
+        public function phrases(string $string, int $minimum = 40, int $total = 9999, $implode = ". ", array $phrases = [], int $count = 0) : string {
+            foreach (explode($implode, strip_tags($this->desanitize(($string)))) as $phrase) {
                 if (strlen($phrase) >= $minimum && (strlen($phrase) + $count) <= $total) {
                     $phrases[] = trim($phrase);
                     $count += strlen($phrase);
                 }
             }
             
-            return (array) $phrases;
+            return (string) implode($implode, $phrases);
         }
         
         

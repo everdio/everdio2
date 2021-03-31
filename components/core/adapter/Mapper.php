@@ -13,49 +13,41 @@ namespace Components\Core\Adapter {
             throw new \LogicException (sprintf("unknown parameter %s", $parameter));
         }
         
-        final public function hasKey(string $parameter) : bool {
-            return (bool) (isset($this->keys) && $this->exists($parameter) && in_array($parameter, $this->keys));
-        }
-        
-        final public function getKey(string $parameter) : string {
-            if ($this->hasKey($parameter)) {
-                return (string) array_search($parameter, $this->keys);
-            }
-            
-            throw new \LogicException (sprintf("unknown key by parameter %s", $parameter));
-        }
-        
-        final public function hasRelation(string $parameter) : bool {
-            return (bool) ($this->hasKey($parameter) && isset($this->parents) && array_key_exists($this->getKey($parameter), $this->parents));
-        }
-
-        final public function getRelation(string $parameter) : self {
-            if ($this->hasRelation($parameter)) {
-                return (object) new $this->parents[$this->getKey($parameter)];
-                //return (object) ((string) $this === $this->parents[$this->getKey($parameter)] ? clone $this : new $this->parents[$this->getKey($parameter)]);
-            }
-            
-            throw new \LogicException (sprintf("unknown relation by parameter %s", $parameter));
-        }        
-        
-        final public function hasForeign($key) : bool {
-            return (bool) (isset($this->keys) && array_key_exists($key, $this->keys));
-        }
-        
-        final public function getForeign($key) : string {
-            if ($this->hasForeign($key)) {
-                return (string) $this->keys[$key];
-            }
-            
-            throw new \LogicException (sprintf("unknown foreign key %s", $key));
-        }
-
         final public function getParameter(string $field) : string {
             if ($this->hasField($field)) {
                 return (string) $this->mapping[$field];
             }
+            
             throw new \LogicException (sprintf("unknown field %s", $field));
+        }        
+               
+        final public function hasParent(string $parameter) : bool {
+            return (bool) (isset($this->parents) && array_key_exists($parameter, $this->parents));
         }
+        
+        final public function isParent(Mapper $mapper) : bool {
+            return (bool) (isset($this->keys) && isset($mapper->keys) && sizeof(array_intersect_key($this->keys, $mapper->keys)));
+        }        
+        
+        final public function getParent(string $parameter) : self {
+            if ($this->hasParent($parameter)) {
+                return (object) new $this->parents[$parameter];
+            }
+            
+            throw new \LogicException (sprintf("unknown parent by key %s", $parameter));
+        }
+        
+        final public function hasKey(string $parameter) : bool {
+            return (bool) (isset($this->keys) && array_key_exists($parameter, $this->keys));
+        }
+        
+        final public function getKey(string $parameter) : string {
+            if ($this->hasKey($parameter)) {
+                return (string) $this->keys[$parameter];
+            }
+            
+            throw new \LogicException (sprintf("unknown key by parameter %s", $parameter));
+        }        
         
         final public function view(array $types, int $size = 2) : string {
             return (string) implode(", ", $this->restore(array_slice(array_keys($this->label($types)), 0, $size)));

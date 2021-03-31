@@ -13,9 +13,8 @@ namespace Components\Core {
         }
         
         public function restore(array $parameters = [], array $values = []) : array {
-            return (array) parent::restore($this->diff($parameters), $values);
+            return (array) parent::restore($this->inter($parameters), $values);
         }
-        
 
         final public function search(string $path) {    
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   

@@ -127,18 +127,26 @@ namespace Components {
         final public function isEmpty(array $parameters = []) : bool {
             return (bool) !in_array(true, $this->restore($parameters));
         }
-
-        final public function import(string $querystring, array $values = []) {
-            parse_str($querystring, $values);
-            $this->store($values);
+        
+        public function import(string $querystring, array $cores = []) {
+            parse_str($querystring, $cores);
+            foreach ($cores as $core => $values) {
+                if ((string) $this === $core && is_array($values)) {
+                    $this->store($values);
+                }
+            }
         }
 
-        final public function export(array $parameters = []) : string {
-            return (string) http_build_query($this->restore($this->inter($parameters)), true);
+        public function export(array $parameters = []) : string {
+            return (string) http_build_query([(string) $this => $this->restore($this->inter($parameters))]);
+        }
+        
+        final public function querystring(array $parameters = []) : string {
+            return (string) http_build_query($this->restore($this->inter($parameters)));
         }
 
         final public function unique(array $parameters = [], string $salt = NULL) : string {
-            return (string) sha1($this->export($this->inter($parameters)) . $salt);
+            return (string) sha1($this->querystring($this->inter($parameters)) . $salt);
         }
         
         final public function __clone() {

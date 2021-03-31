@@ -2,6 +2,10 @@
 namespace Components\Core {
     use \Components\File;        
     trait Model {        
+        public function __toString() {
+            return (string) $this->namespace . "\\" . $this->class;
+        }
+        
         public function __destruct() {
             $path = new \Components\Path(strtolower(implode(DIRECTORY_SEPARATOR, explode("\\", $this->namespace))));
             
