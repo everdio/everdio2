@@ -13,10 +13,8 @@ namespace Component\Core\Controller {
             if ($validation->isValid()) {
                 $file = new \Component\File($validation->execute(), "r");                   
                 foreach (array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    
-                    $parameter = new \Component\Validation\Parameter($parameter, $value, true);                    
-                    $this->add((string) $parameter, $parameter->getValidation($parameter->getValidators()));
+                    $this->add($parameter, new Validation($value, [new Validator\IsArray, new Validator\IsString, new Validator\IsNumeric]));
                 }                         
-                
             }
             return (string) parent::dispatch($path);
         }       

@@ -2,10 +2,9 @@
 namespace Component\Validation {
     use \Component\Validation, \Component\Validator;
     class Parameter extends \Component\Validation {
-        private $_parameter, $_mandatory, $_default;
+        private $_mandatory, $_default;
         private $_length = 0;
-        public function __construct(string $parameter, $value = false, bool $default = false, bool $mandatory = true, int $length = NULL, array $options = []) {
-            $this->_parameter = $parameter;
+        public function __construct($value = false, bool $default = false, bool $mandatory = true, int $length = NULL, array $options = []) {
             $this->_length = $length;
             $this->_mandatory = $mandatory;
             $this->_default = $default;
@@ -22,11 +21,7 @@ namespace Component\Validation {
                                          new Validator\IsString\IsDatetime,                                          
                                          new Validator\IsString\IsDatetime\IsDate]);
         }
-        
-        final public function __toString() : string {
-            return (string) $this->_parameter;
-        }
-        
+
         final public function getValidators(array $validators = []) : array {
             if ($this->isValid()) {
                 foreach ($this->validated() as $validator) {

@@ -2,7 +2,7 @@
 namespace Component\Core {
     class Parameters extends \Component\Core {
         public function __set(string $field, $value) : void {
-            $parameter = new \Component\Validation\Parameter($field, $value, true);
+            $parameter = new \Component\Validation\Parameter($value, true);
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
         

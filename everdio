@@ -6,9 +6,9 @@ try {
     $cli = new \Component\Core\Controller\Model\Cli($_SERVER, new \Component\Parser\Ini);
     echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
     flush();
-    echo (string) $cli->display(__DIR__) . PHP_EOL;
+    echo (string) $cli->execute(__DIR__) . PHP_EOL;
 } catch (\Exception $ex) {
-    echo (string) sprintf("\neverdio catched an issue: %s\n\n", $ex->getMessage()) . PHP_EOL;
-    echo $ex->getTraceAsString() . PHP_EOL;
+    echo (string) sprintf("\nCatched an error:`%s`\n\n", $ex->getMessage());
+    //echo $ex->getTraceAsString() . PHP_EOL;
 }
 exit;

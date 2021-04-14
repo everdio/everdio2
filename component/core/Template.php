@@ -2,8 +2,8 @@
 namespace Component\Core {
     class Template extends \Component\Core {
         public function __set(string $field, $value) {
-            $parameter = new \Component\Validation\Parameter($field, $value, $value, true);
-            return (bool) $this->add((string) $parameter, $parameter->getValidation($parameter->getValidators()));
+            $parameter = new \Component\Validation\Parameter($value, $value, true);
+            return (bool) $this->add($field, $parameter->getValidation($parameter->getValidators()));
         }
 
         final public function display(string $template, string $enclosure = "@") : string { 

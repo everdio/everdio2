@@ -27,22 +27,22 @@ namespace Component\Core {
             }
         }                
 
-        final protected function execute($path) {  
+        public function execute($path) {  
             $controller = clone $this;
             $controller->path = realpath(dirname($controller->path . DIRECTORY_SEPARATOR . trim($path)));
             if (isset($controller->path)) {
                 try {
                     return (string) trim($controller->dispatch(basename($path)));    
                 } catch (\InvalidArgumentException $ex) {
-                    return (string) sprintf("input/output; %s\n%s", $ex->getMessage(), $ex->getTraceAsString());
+                    throw $ex;
                 } catch (\RuntimeException $ex) {
-                    return (string) sprintf("execute; %s", $ex->getMessage());
+                    throw $ex;
+                } catch (\LogicException $ex) {
+                    throw $ex;
                 }
             }
             
             throw new \LogicException (sprintf("failed executing %s", $path));
         }
-        
-        abstract public function display(string $path);        
     }    
 }

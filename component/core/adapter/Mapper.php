@@ -24,12 +24,7 @@ namespace Component\Core\Adapter {
         final public function hasParent(string $parameter) : bool {
             return (bool) (isset($this->parents) && array_key_exists($parameter, $this->parents));
         }
-        
-        final public function isParent(Mapper $mapper) : bool {
-            //print_r(\array_intersect_key($this->parents, \array_intersect($this->keys, $mapper->primary)));
-            return (bool) (isset($this->keys) && $mapper->primary) && sizeof(\array_intersect_key($this->parents, \array_intersect($this->keys, $mapper->primary)));
-        }        
-        
+
         final public function getParent(string $parameter) : self {
             if ($this->hasParent($parameter)) {
                 return (object) new $this->parents[$parameter];
