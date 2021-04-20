@@ -3,7 +3,9 @@
 include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
 
 try {
-    $cli = new \Component\Core\Controller\Model\Cli($_SERVER, new \Component\Parser\Ini);
+    $cli = new \Component\Core\Controller\Model\Cli;
+    $cli->server = $_SERVER;
+    $cli->parser = new \Component\Parser\Ini;
     echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
     flush();
     echo (string) $cli->execute(__DIR__) . PHP_EOL;

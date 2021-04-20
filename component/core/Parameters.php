@@ -15,11 +15,5 @@ namespace Component\Core {
         public function restore(array $parameters = [], array $values = []) : array {
             return (array) parent::restore($this->inter($parameters), $values);
         }
-
-        final public function search(string $path) {    
-            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
-                return (isset($this->{$parameter}) ? ($this->{$parameter} instanceof self ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter}) : false);
-            }        
-        }
     }
 }

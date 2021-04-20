@@ -128,17 +128,12 @@ namespace Component {
             return (bool) !in_array(true, $this->restore($parameters));
         }
         
-        public function import(string $querystring, array $cores = []) {
-            parse_str($querystring, $cores);
-            foreach ($cores as $core => $values) {
-                if ((string) $this === $core && is_array($values)) {
-                    $this->store($values);
-                }
-            }
+        final public function import(string $serialized) {
+            $this->_parameters = array_merge($this->_parameters, unserialize($serialized));
         }
 
-        public function export(array $parameters = []) : string {
-            return (string) http_build_query([(string) $this => $this->restore($this->inter($parameters))]);
+        final public function export(array $parameters = []) : string {
+            return (string) serialize($this->parameters($parameters));
         }
         
         final public function querystring(array $parameters = []) : string {
@@ -148,6 +143,14 @@ namespace Component {
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) sha1($this->querystring($this->inter($parameters)) . $salt);
         }
+        
+        final public function search(string $path) {    
+            foreach (explode(DIRECTORY_SEPARATOR, $path) as $parameter) {   
+                if (isset($this->{$parameter})) {
+                    return ($this->{$parameter} instanceof self ? $this->{$parameter}->search(implode(DIRECTORY_SEPARATOR, array_diff(explode(DIRECTORY_SEPARATOR, $path), [$parameter]))) : $this->{$parameter});
+                }
+            }        
+        }        
         
         final public function __clone() {
             $this->_parameters = $this->_parameters;

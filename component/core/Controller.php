@@ -12,27 +12,30 @@ namespace Component\Core {
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "token" => new Validation(bin2hex(openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)])
             ] + $parameters);
-        }
+        }        
         
         final protected function isRouted(string $route) : bool {
             return (bool) (isset($this->arguments) && implode(DIRECTORY_SEPARATOR, array_intersect_assoc(explode(DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
         
-        protected function dispatch(string $path) {
-            $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . ".php", [new Validator\IsString\IsFile]);            
+        public function dispatch(string $basename) {
+            $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $basename . ".php", [new Validator\IsString\IsFile]);            
             if ($validation->isValid()) {
                 ob_start();
                 require $validation->execute();    
                 return (string) ob_get_clean();                                                            
             }
-        }                
+        }
+        
+        abstract public function prepare();        
 
-        public function execute($path) {  
-            $controller = clone $this;
-            $controller->path = realpath(dirname($controller->path . DIRECTORY_SEPARATOR . trim($path)));
+        public function execute(string $path, array $parameters = []) {  
+            $controller = new $this;
+            $controller->import($this->export(array_merge($controller->diff(), $parameters)));
+            $controller->path = realpath($this->path . DIRECTORY_SEPARATOR . dirname($path));
             if (isset($controller->path)) {
                 try {
-                    return (string) trim($controller->dispatch(basename($path)));    
+                    return $controller->dispatch(basename($path));    
                 } catch (\InvalidArgumentException $ex) {
                     throw $ex;
                 } catch (\RuntimeException $ex) {
@@ -41,8 +44,6 @@ namespace Component\Core {
                     throw $ex;
                 }
             }
-            
-            throw new \LogicException (sprintf("failed executing %s", $path));
         }
     }    
 }
