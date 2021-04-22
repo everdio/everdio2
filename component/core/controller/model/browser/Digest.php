@@ -2,27 +2,30 @@
 namespace Component\Core\Controller\Model\Browser {
     use \Component\Validation, \Component\Validator;
     abstract class Digest extends \Component\Core\Controller\Model\Browser {   
+        public $digest = [];
         public function __construct(array $parameters = []) {
             parent::__construct([
                 "auth" => new Validation(false, [new Validator\IsArray\Intersect\Key(["PHP_AUTH_DIGEST"])]),
-                "digest" => new Validation(false, [new Validator\IsArray])
+                "digest2" => new Validation(false, [new Validator\IsArray])
             ] + $parameters);
         }
         
-        final public function prepare(array $matches = [], array $digest = []) {            
+        final public function setup(array $matches = [], array $digest = []) {    
             if (isset($this->auth)) {
                 preg_match_all('@(\w+)=(?:(?:\'([^\']+)\'|"([^"]+)")|([^\s,]+))@', $this->auth["PHP_AUTH_DIGEST"], $matches, PREG_SET_ORDER);
 
                 foreach ($matches as $match)  {      
                     $digest[$match[1]] = ($match[2] ? $match[2] : ($match[3] ? $match[3] : $match[4]));            
                 } 
-                
+
                 $this->digest = $digest;
-            }                
-            parent::prepare();            
-        }
+                $this->digest2 = $digest;
+            }
+            
+            parent::setup();            
+        }               
         
-        final public function response($password) : string {
+        final public function getResponse($password) : string {
             return (string) md5(sprintf("%s:%s:%s:%s:%s:%s", $password, $this->digest["nonce"], $this->digest["nc"], $this->digest["cnonce"], $this->digest["qop"], md5(sprintf("%s:%s", strtoupper($this->method), $this->digest["uri"]))));            
         }
 

@@ -27,10 +27,11 @@ namespace Component\Core {
             }
         }
         
-        abstract public function prepare();        
+        abstract public function setup();
 
-        public function execute(string $path, array $parameters = []) {  
+        public function execute(string $path, array $parameters = []) {
             $controller = new $this;
+            //$controller->digest = $this->digest;
             $controller->import($this->export(array_merge($controller->diff(), $parameters)));
             $controller->path = realpath($this->path . DIRECTORY_SEPARATOR . dirname($path));
             if (isset($controller->path)) {

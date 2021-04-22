@@ -8,7 +8,7 @@ namespace Component\Core\Controller\Model {
             ] + $parameters);
         }
         
-        final public function prepare() {
+        final public function setup() {
             if (isset($this->server) && $this->server["argc"] >= 2) {
                 foreach (array_slice($this->server["argv"], 2) as $parameters) {
                     if (strpos($parameters, "--") !== false) {

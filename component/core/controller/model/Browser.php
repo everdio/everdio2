@@ -11,11 +11,11 @@ namespace Component\Core\Controller\Model {
                 "host" => new Validation(false, [new IsString]),                
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
                 "routing" => new Validation(false, [new IsString]),
-                "template" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
+                "display" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
             ] + $parameters);
         }              
         
-        public function prepare() {
+        public function setup() {
             if (isset($this->server)) {
                 $this->remote = $this->server["REMOTE_ADDR"];
                 $this->scheme = sprintf("%s://", $this->server["REQUEST_SCHEME"]);
@@ -27,7 +27,7 @@ namespace Component\Core\Controller\Model {
             }
         }
           
-        final protected function initialize(string $template = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = [], array $arguments = []) : string {
+        final private function initialize(string $template = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = [], array $arguments = []) : string {
             if (preg_match_all($regex, $template, $matches, PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $match) {
                     if (method_exists($this, ($method = parse_url($match, \PHP_URL_PATH))) && is_callable([$this, $method])) {
@@ -41,16 +41,12 @@ namespace Component\Core\Controller\Model {
         }
         
         final public function display(string $template, int $instances = 2, string $replace = "{{%s}}") : string {
-            foreach ($this->template->restore($this->template->diff()) as $parameter => $value) {
+            foreach ($this->display->restore($this->display->diff()) as $parameter => $value) {
                 $template = implode($value, explode(sprintf($replace, $parameter), $template, $instances));
             }
             
             return (string) $this->initialize($template);
         }        
-
-        final public function execute(string $path, array $parameters = []) {
-            return (string) $this->initialize(parent::execute($path, $parameters));
-        }
     }
 }
 
