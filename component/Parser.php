@@ -7,7 +7,7 @@ namespace Component {
         abstract static public function parse(string $content) : array;
         
         public function __dry() : string {
-            return (string) sprintf("new %s", get_class($this));
+            return (string) \sprintf("new %s", \get_class($this));
         }
     }
 }

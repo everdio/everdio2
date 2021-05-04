@@ -1,7 +1,7 @@
 <?php
 namespace Component\Parser {
     final class Csv extends \Component\Parser {
-        const EXTENSION = ".csv";  
+        const EXTENSION = "csv";  
         
         /*
          * thanks to starrychloe at oliveyou dot net

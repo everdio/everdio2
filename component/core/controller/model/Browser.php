@@ -18,35 +18,38 @@ namespace Component\Core\Controller\Model {
         public function setup() {
             if (isset($this->server)) {
                 $this->remote = $this->server["REMOTE_ADDR"];
-                $this->scheme = sprintf("%s://", $this->server["REQUEST_SCHEME"]);
+                $this->scheme = \sprintf("%s://", $this->server["REQUEST_SCHEME"]);
                 $this->protocol = $this->server["SERVER_PROTOCOL"];
                 $this->host = $this->server["HTTP_HOST"];
-                $this->method = strtolower($this->server["REQUEST_METHOD"]);
-                $this->arguments = array_filter(explode(DIRECTORY_SEPARATOR, str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
+                $this->method = \strtolower($this->server["REQUEST_METHOD"]);
+                $this->arguments = \array_filter(\explode(DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
                 $this->routing = $this->host . $this->server["REQUEST_URI"];                
             }
-        }
-          
-        final private function initialize(string $template = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = [], array $arguments = []) : string {
-            if (preg_match_all($regex, $template, $matches, PREG_PATTERN_ORDER)) {
+        }  
+
+        private function parse(string $template, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) : string {
+            if (\preg_match_all($regex, $template, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $match) {
-                    if (method_exists($this, ($method = parse_url($match, \PHP_URL_PATH))) && is_callable([$this, $method])) {
-                        parse_str(parse_url(html_entity_decode($match), \PHP_URL_QUERY), $arguments);
-                        $template = str_replace(sprintf($replace, $match), (string) $this->initialize(call_user_func_array([$this, $method], array_values($arguments))), $template);                            
+                    if ($this->callAble($match)) {
+                        $template = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $template);    
                     }
-                }
-            }            
-            
-            return (string) $template;
-        }
-        
-        final public function display(string $template, int $instances = 2, string $replace = "{{%s}}") : string {
-            foreach ($this->display->restore($this->display->diff()) as $parameter => $value) {
-                $template = implode($value, explode(sprintf($replace, $parameter), $template, $instances));
+                }            
             }
             
-            return (string) $this->initialize($template);
+            return (string) $template;
+        }              
+        
+        final protected function display(string $template, int $instances = 2, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!") : string {
+            foreach ($this->display->restore($this->display->diff()) as $parameter => $value) {
+                $template = \implode($value, \explode(sprintf($replace, $parameter), $template, $instances));
+            }
+            
+            return (string) $this->parse($template, $replace, $regex);
         }        
+        
+        final public function execute(string $path, array $parameters = [], string $require = "php") {
+            return $this->display(parent::execute($path, $parameters, $require));
+        }
     }
 }
 

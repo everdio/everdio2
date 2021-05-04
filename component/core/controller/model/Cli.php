@@ -21,9 +21,9 @@ namespace Component\Core\Controller\Model {
             }            
         }
         
-        public function execute(string $path, array $parameters = []) {
+        public function execute(string $path, array $parameters = [], string $require = "php") {
             if ($this->server["argc"] >= 2) {
-                return (string) parent::execute($path . DIRECTORY_SEPARATOR . $this->server["argv"][1], $parameters);
+                return (string) parent::execute($path . DIRECTORY_SEPARATOR . $this->server["argv"][1], $parameters, $require);
             }
             
             throw new \RuntimeException("nothing to execute");

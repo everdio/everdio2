@@ -32,7 +32,7 @@ namespace Component {
         }    
         
         public function __dry() : string {
-            return (string) sprintf("new %s(%s, \"w+\")", (string) $this, $this->getRealPath());
+            return (string) \sprintf("new %s(%s, \"w+\")", (string) $this, $this->getRealPath());
         }
     }
 }

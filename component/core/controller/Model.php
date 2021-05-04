@@ -8,8 +8,8 @@ namespace Component\Core\Controller {
             ] + $parameters);
         }
         
-        final public function dispatch(string $basename) : string {   
-            $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $basename . $this->parser::EXTENSION, array(new Validator\IsString\IsFile));
+        public function dispatch(string $basename) {   
+            $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $basename . "." . $this->parser::EXTENSION, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 $file = new \Component\File($validation->execute(), "r");                   
                 foreach (array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    

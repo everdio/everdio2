@@ -26,19 +26,19 @@ namespace Component {
                 $this->messages[(string) $validator] = $validator::MESSAGE;
             }
             
-            $this->validate = strtoupper($validate);
+            $this->validate = \strtoupper($validate);
         }
         
         public function __toString() : string {
-            return (string) get_class($this);
+            return (string) \get_class($this);
         }
         
         public function __isset($type) : bool {
-            return (bool) in_array($type, $this->types);
+            return (bool) \in_array($type, $this->types);
         }
         
         public function __get(string $validator) : \Component\Validator {
-            if (array_key_exists($validator, $this->validators)) {
+            if (\array_key_exists($validator, $this->validators)) {
                 return (object) $this->validators[$validator];
             }
             
@@ -46,7 +46,7 @@ namespace Component {
         }
 
         public function hasTypes(array $types, int $sizeof = 1) : bool {
-            return (bool) (sizeof(array_intersect($types, $this->types)) >= $sizeof);
+            return (bool) (\sizeof(\array_intersect($types, $this->types)) >= $sizeof);
         }
         
         public function setValue($value) : bool { 
@@ -58,7 +58,7 @@ namespace Component {
         }
         
         public function validated(bool $validation = true) : array {
-            return (array) array_intersect_key($this->validators, array_flip(array_keys($this->validated, $validation)));
+            return (array) \array_intersect_key($this->validators, \array_flip(\array_keys($this->validated, $validation)));
         }
 
         public function isValid() : bool {
@@ -66,7 +66,7 @@ namespace Component {
                 $this->validated[(string) $validator] = $validator->execute($this->value);
             }
             
-            return (bool) (sizeof($this->validated) && (($this->validate === self::NORMAL && in_array(true, $this->validated)) || ($this->validate === self::STRICT && !in_array(false, $this->validated))));
+            return (bool) (\sizeof($this->validated) && (($this->validate === self::NORMAL && \in_array(true, $this->validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->validated))));
         }        
 
         public function execute() {
@@ -74,7 +74,7 @@ namespace Component {
                 return $this->value;
             }
             
-            throw new \InvalidArgumentException(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), implode("+", array_intersect_key($this->messages, array_flip(array_keys($this->validated, false))))));
+            throw new \InvalidArgumentException(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode("+", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
         }
 
         public function __dry() : string {
@@ -84,7 +84,7 @@ namespace Component {
                 $validators[] = $validator->__dry();
             }
                         
-            return (string) sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), implode(", ", $validators), strtoupper($this->validate));
+            return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
         }        
     }
 }
