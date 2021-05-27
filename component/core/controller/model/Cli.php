@@ -8,25 +8,31 @@ namespace Component\Core\Controller\Model {
             ] + $parameters);
         }
         
-        final public function setup() {
+        final public function setup(array $request = []) : void {
             if (isset($this->server) && $this->server["argc"] >= 2) {
-                foreach (array_slice($this->server["argv"], 2) as $parameters) {
-                    if (strpos($parameters, "--") !== false) {
-                        $this->arguments = [str_replace("--", false, $parameters)];
+                foreach (\array_slice($this->server["argv"], 2) as $parameters) {
+                    if (\strpos($parameters, "--") !== false) {
+                        $this->arguments = [\str_replace("--", false, $parameters)];
                     } else {
-                        parse_str($parameters, $request);    
+                        \parse_str($parameters, $request);    
                         $this->request->store($request);
                     }
                 }
+            } elseif (!isset($this->server)) {
+                throw new \RuntimeException("you suppose to use the command line");
             }            
         }
         
-        public function execute(string $path, array $parameters = [], string $require = "php") {
+        public function echo(string $content, string $break = PHP_EOL) {
+            fwrite(STDOUT, $content . $break);
+        }
+        
+        public function run(string $path, array $parameters = [], string $require = "php") {
             if ($this->server["argc"] >= 2) {
-                return (string) parent::execute($path . DIRECTORY_SEPARATOR . $this->server["argv"][1], $parameters, $require);
+                return (string) $this->execute($path . \DIRECTORY_SEPARATOR . $this->server["argv"][1], $parameters, $require);
             }
             
-            throw new \RuntimeException("nothing to execute");
+            throw new \InvalidArgumentException("nothing to execute");
         }
     }
 }

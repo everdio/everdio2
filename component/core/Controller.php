@@ -9,7 +9,7 @@ namespace Component\Core {
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
                 "time" => new Validation(microtime(true), [new Validator\IsFloat]),
-                "require" => new Validation(false, [new Validator\IsString, new Validator\Len\Smaller(4)], Validation::STRICT),
+                "include" => new Validation(false, [new Validator\IsString\InArray(["php", "html", "txt", "css", "js"]), new Validator\Len\Smaller(4)], Validation::STRICT),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)])
             ] + $parameters);
@@ -20,7 +20,7 @@ namespace Component\Core {
         }        
         
         public function dispatch(string $basename) {
-            $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $basename . "." . $this->require, [new Validator\IsString\IsFile]);
+            $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $basename . "." . $this->include, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 \ob_start();
                 require $validation->execute();    
@@ -28,16 +28,27 @@ namespace Component\Core {
             }
         }
         
-        abstract public function setup();               
+        abstract public function setup() : void;     
+        
+        private function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
+            if (\preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
+                foreach ($matches[1] as $match) {
+                    if ($this->callAble($match)) {
+                        $output = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $output);    
+                    }
+                }            
+            }
+            return (string) $output;
+        }    
 
-        public function execute(string $path, array $parameters = [], string $require = "php") {
+        public function execute(string $path, array $parameters = [], string $include = "php") {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-            $controller->require = $require;
+            $controller->include = $include;
             if (isset($controller->path)) {
                 try {
-                    return $controller->dispatch(\basename($path));    
+                    return $controller->parse($controller->dispatch(\basename($path)));    
                 } catch (\InvalidArgumentException $ex) {
                     throw $ex;
                 } catch (\RuntimeException $ex) {

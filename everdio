@@ -9,9 +9,9 @@ try {
     $cli->setup();
     echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
     flush();
-    echo (string) $cli->execute(__DIR__) . PHP_EOL;
+    echo (string) $cli->run(__DIR__) . PHP_EOL;
 } catch (\Exception $ex) {
-    echo (string) sprintf("\nCatched an error:`%s`\n\n", $ex->getMessage());
+    echo (string) sprintf("\n%s:`%s`\n\n", get_class($ex), $ex->getMessage());
     echo $ex->getTraceAsString() . PHP_EOL;
 }
 exit;

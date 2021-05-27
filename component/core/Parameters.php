@@ -6,7 +6,7 @@ namespace Component\Core {
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
         
-        public function store(array $values) {
+        public function store(array $values) : void {
             foreach ($values as $field => $value) {
                 $this->{$field} = $value;
             }

@@ -15,21 +15,6 @@ namespace Component {
                 return (string) \sprintf("[%s]", \implode(sprintf(","), $array));                
             } elseif (\is_object($data)) {
                 return (string) ((\method_exists($data, __FUNCTION__)) ? $data->__dry() : "false");
-                /*
-                $reflection = new \ReflectionClass($data);
-                if ($reflection->isInstantiable() && $reflection->hasMethod("__construct")) {
-                    foreach ($reflection->getConstructor()->getParameters() as $parameter) {
-                        foreach ($reflection->getProperties() as $property) {
-                            if ($property->name === $parameter->name) {
-                                $property->setAccessible(true);                        
-                                $array[] = $this->dehydrate($property->getValue($data));
-                            }
-                        }
-                    }       
-                    return (string) sprintf("new \%s(%s)", $reflection->getName(), implode(", ", $array));            
-                }
-                 * 
-                 */
             } elseif ($data === NULL) {
                 return (string) "false";
             } elseif (\is_resource($data)) {

@@ -10,12 +10,11 @@ namespace Component\Core\Controller\Model {
                 "protocol" => new Validation(false, [new IsString]),
                 "host" => new Validation(false, [new IsString]),                
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
-                "routing" => new Validation(false, [new IsString]),
-                "display" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
+                "routing" => new Validation(false, [new IsString])
             ] + $parameters);
         }              
-        
-        public function setup() {
+
+        public function setup() : void {
             if (isset($this->server)) {
                 $this->remote = $this->server["REMOTE_ADDR"];
                 $this->scheme = \sprintf("%s://", $this->server["REQUEST_SCHEME"]);
@@ -24,32 +23,10 @@ namespace Component\Core\Controller\Model {
                 $this->method = \strtolower($this->server["REQUEST_METHOD"]);
                 $this->arguments = \array_filter(\explode(DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, ltrim($this->server["REQUEST_URI"], DIRECTORY_SEPARATOR))));
                 $this->routing = $this->host . $this->server["REQUEST_URI"];                
+            } else {
+                throw new \RuntimeException("you suppose to use a browser");
             }
         }  
-
-        private function parse(string $template, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) : string {
-            if (\preg_match_all($regex, $template, $matches, \PREG_PATTERN_ORDER)) {
-                foreach ($matches[1] as $match) {
-                    if ($this->callAble($match)) {
-                        $template = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $template);    
-                    }
-                }            
-            }
-            
-            return (string) $template;
-        }              
-        
-        final protected function display(string $template, int $instances = 2, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!") : string {
-            foreach ($this->display->restore($this->display->diff()) as $parameter => $value) {
-                $template = \implode($value, \explode(sprintf($replace, $parameter), $template, $instances));
-            }
-            
-            return (string) $this->parse($template, $replace, $regex);
-        }        
-        
-        final public function execute(string $path, array $parameters = [], string $require = "php") {
-            return $this->display(parent::execute($path, $parameters, $require));
-        }
     }
 }
 

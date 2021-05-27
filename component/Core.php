@@ -2,7 +2,9 @@
 namespace Component {
     abstract class Core {
         use Helpers, Dryer;
+        
         public $_parameters = [];
+        
         public function __construct(array $parameters = []) {
             foreach ($parameters as $parameter => $validation) {
                 if ($validation instanceof \Component\Validation) {
@@ -35,8 +37,8 @@ namespace Component {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();    
-                } catch (\InvalidArgumentException $exception) {      
-                    throw new \InvalidArgumentException (sprintf("invalid value for parameter `%s` in %s ", $parameter, \get_class($this)), 2, $exception);
+                } catch (\InvalidArgumentException $exception) {   
+                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s` in %s ", $parameter, \get_class($this)));
                 }
             }
             
@@ -68,7 +70,7 @@ namespace Component {
             throw new \InvalidArgumentException(sprintf("unknown or missing parameter `%s` in %s", $parameter, \get_class($this)));
         }
         
-        final public function remove($parameter) {
+        final public function remove($parameter) : void {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
@@ -86,7 +88,7 @@ namespace Component {
             return (array) \array_diff(\array_keys($this->_parameters), $parameters);
         }
         
-        public function store(array $values) {
+        public function store(array $values) : void {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {
                     $this->{$parameter} = $value;
@@ -104,7 +106,7 @@ namespace Component {
             return (array) $values;
         }
         
-        final public function reset(array $parameters = []) {
+        final public function reset(array $parameters = []) : void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
                         
@@ -128,7 +130,7 @@ namespace Component {
             return (bool) !\in_array(true, $this->restore($parameters));
         }
         
-        final public function import(string $serialized) {
+        final public function import(string $serialized) : void {
             $this->_parameters = \array_merge($this->_parameters, \unserialize($serialized));
         }
 
@@ -144,10 +146,10 @@ namespace Component {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }
         
-        final public function search(string $path, string $implode = NULL) {    
+        final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
                 if (isset($this->{$parameter})) {
-                    return (string) ($this->{$parameter} instanceof self ? $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $implode) : (is_array($this->{$parameter}) && array_key_exists(($key = implode(false, array_diff(explode(\DIRECTORY_SEPARATOR, $path), [$parameter]))), $this->{$parameter}) ? $this->{$parameter}[$key] : (is_array($this->{$parameter}) ? implode($implode, $this->{$parameter}) : $this->{$parameter})));
+                    return (string) sprintf($wrap, ($this->{$parameter} instanceof self ? $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $implode) : (\is_array($this->{$parameter}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter]))), $this->{$parameter}) ? $this->{$parameter}[$key] : (\is_array($this->{$parameter}) ? \implode($implode, $this->{$parameter}) : $this->{$parameter}))));
                 }
             }        
         }     
@@ -176,8 +178,12 @@ namespace Component {
             }
         }         
         
-        final public function __clone() {
-            $this->_parameters = $this->_parameters;
+        final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
+            foreach ($this->restore($parameters) as $parameter => $value) {
+                $content = \implode($value, \explode(sprintf($replace, $parameter), $content, $instances));
+            }
+            
+            return (string) $content;
         }
         
         public function __dry() : string {

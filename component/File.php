@@ -6,7 +6,7 @@ namespace Component {
             return (bool) (!$ttl && ($this->isFile() && $this->getSize())) || ($ttl && ($this->isFile() && $this->getSize()) && ($this->getMTime() + $ttl) > time());
         }
         
-        public function store($content) : int {
+        public function store($content, $permission = 0776) : int {
             if ($this->isWritable()) {
                 return (int) $this->fwrite($content);
             }

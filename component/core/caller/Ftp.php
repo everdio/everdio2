@@ -11,7 +11,7 @@ namespace Component\Core\Caller {
                 return (string) $this->error();
             }
             
-            return (string) trim($response);
+            return (string) \trim($response);
         }
         
         public function __destruct() {

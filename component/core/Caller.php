@@ -15,15 +15,15 @@ namespace Component\Core {
         }
         
         final public function __call($name, $arguments) {
-            if (function_exists(sprintf("%s_%s", $this->caller, $name))) {
+            if (\function_exists(sprintf("%s_%s", $this->caller, $name))) {
                 if (isset($this->resource)) {
-                    array_unshift($arguments, $this->resource); 
+                    \array_unshift($arguments, $this->resource); 
                 }
 
-                return call_user_func_array(sprintf("%s_%s", $this->caller, $name), $arguments);            
+                return \call_user_func_array(sprintf("%s_%s", $this->caller, $name), $arguments);            
             }
             
-            throw new \BadFunctionCallException  (sprintf("unknown function call %s_%s(%s)", $this->caller, $name, $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException(sprintf("unknown function call %s_%s(%s)", $this->caller, $name, $this->dehydrate($arguments)));
         }       
     }
 }

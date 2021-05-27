@@ -8,9 +8,9 @@ namespace Component\Core\Caller {
         
         final public function execute() {
             if (($response = $this->exec()) === false) {                
-                throw new \RuntimeException($this->error());
+                throw new \RuntimeException(sprintf("Curl: %s", $this->error()));
             }
-            return (string) trim($response);
+            return (string) \trim($response);
         }
 
         public function __destruct() {
