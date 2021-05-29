@@ -38,7 +38,7 @@ namespace Component {
                     $data[$key] = $this->desanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \urldecode(\html_entity_decode((string) $data));
+                return (string) \rawurldecode(\html_entity_decode((string) $data));
             } else {
                 return $data;
             }

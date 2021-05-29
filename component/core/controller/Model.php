@@ -8,6 +8,8 @@ namespace Component\Core\Controller {
             ] + $parameters);
         }
         
+        abstract public function setup() : void;        
+        
         public function dispatch(string $basename) {   
             $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $basename . "." . $this->parser::EXTENSION, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {

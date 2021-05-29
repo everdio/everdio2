@@ -23,11 +23,11 @@ namespace Component\Core\Controller\Model {
             }            
         }
         
-        public function echo(string $content, string $break = PHP_EOL) {
+        final public function echo(string $content, string $break = PHP_EOL) {
             fwrite(STDOUT, $content . $break);
         }
         
-        public function run(string $path, array $parameters = [], string $require = "php") {
+        final public function run(string $path, array $parameters = [], string $require = "php") {
             if ($this->server["argc"] >= 2) {
                 return (string) $this->execute($path . \DIRECTORY_SEPARATOR . $this->server["argv"][1], $parameters, $require);
             }

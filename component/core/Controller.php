@@ -26,9 +26,7 @@ namespace Component\Core {
                 require $validation->execute();    
                 return (string) \ob_get_clean();                                                            
             }
-        }
-        
-        abstract public function setup() : void;     
+        }        
         
         private function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
             if (\preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
