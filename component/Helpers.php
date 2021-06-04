@@ -24,7 +24,7 @@ namespace Component {
                     $data[$key] = $this->sanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \htmlspecialchars(\addslashes((string) $data));
+                return (string) \htmlspecialchars((string) $data);
             } else {
                 return $data;
             }
@@ -59,7 +59,7 @@ namespace Component {
         
         
         public function words(string $content, int $min = 6, $max = 9999, array $words = [], int $count = 0) : array {
-            $list = \array_count_values(\str_word_count(\strip_tags($content), 1));            
+            $list = \array_count_values(\str_word_count(\strtolower(\strip_tags($content)), 1));            
             \asort($list);            
             foreach (\array_keys(\array_reverse($list)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {

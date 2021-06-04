@@ -152,7 +152,7 @@ namespace Component {
                     return (string) sprintf($wrap, ($this->{$parameter} instanceof self ? $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $implode) : (\is_array($this->{$parameter}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter]))), $this->{$parameter}) ? $this->{$parameter}[$key] : (\is_array($this->{$parameter}) ? \implode($implode, $this->{$parameter}) : $this->{$parameter}))));
                 }
             }        
-        }     
+        }
         
         private function methodName(string $querystring) : string {
             return (string) \parse_url($querystring, \PHP_URL_PATH);            

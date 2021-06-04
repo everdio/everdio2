@@ -1,7 +1,7 @@
 <?php
 namespace Component\Core {
     abstract class Adapter extends \Component\Core {
-        static protected $adapters = [];        
+        static public $adapters = [];        
 
         abstract protected function initialize();
 

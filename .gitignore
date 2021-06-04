@@ -4,6 +4,8 @@
 *.json
 *.csv
 *.txt
+cache/
+uploads/
 library/
 *.ini
 modules/

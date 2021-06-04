@@ -19,7 +19,6 @@ namespace Component\Core {
                 if (isset($this->resource)) {
                     \array_unshift($arguments, $this->resource); 
                 }
-
                 return \call_user_func_array(sprintf("%s_%s", $this->caller, $name), $arguments);            
             }
             
