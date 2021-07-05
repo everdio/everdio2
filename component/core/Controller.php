@@ -3,8 +3,8 @@ namespace Component\Core {
     use \Component\Validation;
     use \Component\Validator;
     abstract class Controller extends \Component\Core {            
-        public function __construct(array $parameters = []) {
-            parent::__construct([                
+        public function __construct(private array $_parameters = []) {
+            parent::__construct(_parameters: [                
                 "pid" => new Validation(getmypid(), [new Validator\IsInteger]),
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
@@ -12,7 +12,7 @@ namespace Component\Core {
                 "include" => new Validation(false, [new Validator\IsString\InArray(["php", "html", "txt", "css", "js"]), new Validator\Len\Smaller(4)], Validation::STRICT),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)])
-            ] + $parameters);
+            ] + $_parameters);
         }        
         
         final protected function isRouted(string $route) : bool {

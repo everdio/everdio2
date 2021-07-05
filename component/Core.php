@@ -2,17 +2,14 @@
 namespace Component {
     abstract class Core {
         use Helpers, Dryer;
-        
-        public $_parameters = [];
-        
-        public function __construct(array $parameters = []) {
-            foreach ($parameters as $parameter => $validation) {
+        public function __construct(private array $_parameters = []) {
+           foreach ($_parameters as $parameter => $validation) {
                 if ($validation instanceof \Component\Validation) {
                     $this->_parameters[$parameter] = $validation;
                 }
-            }
+            }            
         }
-        
+
         public function __toString() : string {
             return (string) \get_class($this);
         }

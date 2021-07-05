@@ -1,7 +1,6 @@
 <?php
 namespace Component\Core\Adapter\Mapper {
     interface Base {                
-        
         public function fetch(string $query);
         
         public function count(array $validations = [], string $query = NULL) : int;

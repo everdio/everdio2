@@ -2,8 +2,8 @@
 namespace Component\Core\Controller\Model {
     use \Component\Validation, \Component\Validator, \Component\Validator\IsString;
     class Browser extends \Component\Core\Controller\Model {   
-        public function __construct(array $parameters = []) {
-            parent::__construct([
+        public function __construct(private array $_parameters = []) {
+            parent::__construct(_parameters: [
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT", "REMOTE_ADDR"])], Validation::NORMAL),
                 "remote" => new Validation(false, [new IsString]),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
@@ -11,7 +11,7 @@ namespace Component\Core\Controller\Model {
                 "host" => new Validation(false, [new IsString]),                
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
                 "routing" => new Validation(false, [new IsString])
-            ] + $parameters);
+            ] + $_parameters);
         }              
 
         public function setup() : void {

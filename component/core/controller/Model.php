@@ -2,10 +2,10 @@
 namespace Component\Core\Controller {
     use \Component\Validation, \Component\Validator;
     abstract class Model extends \Component\Core\Controller {    
-        public function __construct(array $parameters = []) {
-            parent::__construct([
+        public function __construct(private array $_parameters = []) {
+            parent::__construct(_parameters: [
                 "parser" => new Validation(false, array(new Validator\IsObject\Of("\Component\Parser")))
-            ] + $parameters);
+            ] + $_parameters);
         }
         
         abstract public function setup() : void;        

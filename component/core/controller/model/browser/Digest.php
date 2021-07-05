@@ -2,10 +2,10 @@
 namespace Component\Core\Controller\Model\Browser {
     use \Component\Validation, \Component\Validator;
     abstract class Digest extends \Component\Core\Controller\Model\Browser {   
-        public function __construct(array $parameters = []) {
-            parent::__construct([
+        public function __construct(private array $_parameters = []) {
+            parent::__construct(_parameters: [
                 "auth" => new Validation(false, [new Validator\IsArray\Intersect\Key(["PHP_AUTH_DIGEST"])])
-            ] + $parameters);
+            ] + $_parameters);
         }
         
         final public function getDigest(array $digest = []) : array {

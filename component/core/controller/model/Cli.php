@@ -2,10 +2,10 @@
 namespace Component\Core\Controller\Model {
     use \Component\Validation, \Component\Validator;
     class Cli extends \Component\Core\Controller\Model {
-        public function __construct(array $parameters = []) {
-            parent::__construct([
+        public function __construct(array $_parameters = []) {
+            parent::__construct(_parameters: [
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])])
-            ] + $parameters);
+            ] + $_parameters);
         }
         
         final public function setup(array $request = []) : void {
