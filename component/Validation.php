@@ -4,9 +4,7 @@ namespace Component {
         use Dryer, Helpers;
         
         const NORMAL = "NORMAL";
-        const STRICT = "STRICT";           
-        
-        protected $value = false;        
+        const STRICT = "STRICT";                           
         
         private $validated = [];   
         
@@ -14,11 +12,7 @@ namespace Component {
         
         private $messages = [];
         
-        public $validate = false;        
-        
-        private $validators = [];
-        
-        public function __construct($value, array $validators, $validate = self::NORMAL) {
+        public function __construct(protected $value = false, private array $validators, public string $validate = self::NORMAL) {
             $this->setValue($value);
             foreach ($validators as $validator) {
                 $this->validators[(string) $validator] = $validator;

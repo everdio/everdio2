@@ -181,10 +181,14 @@ namespace Component {
             }
             
             return (string) $content;
-        }
+        }        
         
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
+        
+        public function __destruct() {
+            unset ($this->_parameters);
+        }        
     }
 }
