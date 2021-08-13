@@ -27,7 +27,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
-            throw new \InvalidArgumentException(sprintf("unknown or missing parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
 
         public function __get(string $parameter) {
@@ -35,18 +35,19 @@ namespace Component {
                 try {
                     return $this->_parameters[$parameter]->execute();    
                 } catch (\InvalidArgumentException $exception) {   
-                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s` in %s ", $parameter, \get_class($this)));
+                    
+                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s::%s` (%s)", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }
             
-            throw new \InvalidArgumentException (sprintf("unknown or missing parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException (sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
 
         final public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
-            throw new \InvalidArgumentException(sprintf("unknown or missing parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }      
 
         final public function exists(string $parameter) : bool {
@@ -64,7 +65,7 @@ namespace Component {
                 return (object) $this->_parameters[$parameter];
             }
             
-            throw new \InvalidArgumentException(sprintf("unknown or missing parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
         
         final public function remove($parameter) : void {
@@ -144,51 +145,59 @@ namespace Component {
         }
         
         final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
-            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
-                if (isset($this->{$parameter})) {
-                    return (string) sprintf($wrap, ($this->{$parameter} instanceof self ? $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $implode) : (\is_array($this->{$parameter}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter]))), $this->{$parameter}) ? $this->{$parameter}[$key] : (\is_array($this->{$parameter}) ? \implode($implode, $this->{$parameter}) : $this->{$parameter}))));
+            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $value) {
+                if (isset($this->{$value})) {
+                    return (string) \sprintf($wrap, ($this->{$value} instanceof self ? $this->{$value}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value])), $implode) : (\is_array($this->{$value}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value]))), $this->{$value}) ? $this->{$value}[$key] : (\is_array($this->{$value}) ? \implode($implode, $this->{$value}) : $this->{$value}))));
                 }
             }        
         }
         
+        private function methodClass(string $querystring) : string {
+            return (string) \parse_url($querystring, \PHP_URL_HOST);            
+        }        
+        
         private function methodName(string $querystring) : string {
-            return (string) \parse_url($querystring, \PHP_URL_PATH);            
+            return (string) \parse_url($querystring, \PHP_URL_SCHEME);
         }
         
         private function methodArguments(string $querystring, array $arguments = []) : array {
             \parse_str(\parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY), $arguments);
             return (array) $arguments;
-        }
+        }                 
         
-        final public function callAble(string $querystring) : bool {
-            if (\method_exists($this, ($name = $this->methodName($querystring))) && \is_callable([$this, $name])) {
-                $reflection = new \ReflectionMethod($this, $this->methodName($querystring));
-                return (bool) ($reflection->getNumberOfRequiredParameters() <= sizeof(array_values(($arguments = $this->methodArguments($querystring)))));
+        private function callAble(string $querystring) : bool {
+            if (($class = $this->methodClass($querystring)) && ($name = $this->methodName($querystring))) {
+                if (\method_exists($class, $name)) {
+                    $reflection = new \ReflectionMethod($class, $name);
+                    return (bool) ($reflection->getNumberOfRequiredParameters() <= sizeof(array_values(($arguments = $this->methodArguments($querystring)))));
+                }                
             }
             
-            return (bool) false;
+            return (bool) false;            
         }
         
-        final public function call(string $querystring) {            
-            if ($this->callAble($querystring)) {                
-                return \call_user_func_array([$this, $this->methodName($querystring)], \array_values($this->methodArguments($querystring)));
-            }
-        }         
+        final public function call(string $querystring) {
+            if ($this->callAble($querystring)) {    
+                if (\is_subclass_of($this, $this->methodClass($querystring))) {
+                    return \call_user_func_array([$this, $this->methodName($querystring)], \array_values($this->methodArguments($querystring)));
+                }
+            }            
+        }                             
         
         final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
             foreach ($this->restore($parameters) as $parameter => $value) {
-                $content = \implode($value, \explode(sprintf($replace, $parameter), $content, $instances));
+                $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
             }
             
             return (string) $content;
-        }        
+        }      
         
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
         
         public function __destruct() {
-            unset ($this->_parameters);
+            $this->_parameters = [];
         }        
     }
 }

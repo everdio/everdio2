@@ -4,7 +4,7 @@ namespace Component\Core {
     use \Component\Validator;
     abstract class Controller extends \Component\Core {            
         public function __construct(private array $_parameters = []) {
-            parent::__construct(_parameters: [                
+            parent::__construct([                
                 "pid" => new Validation(getmypid(), [new Validator\IsInteger]),
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
@@ -24,22 +24,20 @@ namespace Component\Core {
             if ($validation->isValid()) {
                 \ob_start();
                 require $validation->execute();    
-                return (string) \ob_get_clean();                                                            
+                return (string) \ob_get_clean();                                                     
             }
         }        
         
         private function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
             if (\preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $match) {
-                    if ($this->callAble($match)) {
-                        $output = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $output);    
-                    }
+                    $output = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $output);                        
                 }            
             }
             return (string) $output;
         }    
 
-        public function execute(string $path, array $parameters = [], string $include = "php") {
+        final public function execute(string $path, array $parameters = [], string $include = "php") {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));

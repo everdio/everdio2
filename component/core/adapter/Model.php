@@ -4,7 +4,7 @@ namespace Component\Core\Adapter {
     abstract class Model extends \Component\Core\Adapter {
         use \Component\Core\Model;
         public function __construct(private array $_parameters = []) {
-            parent::__construct(_parameters: [
+            parent::__construct([
                 "model" => new Validation(false, [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),

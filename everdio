@@ -1,17 +1,23 @@
 #!/usr/bin/env php
 <?php
+ini_set("memory_limit", "1024M");
 include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
 
+$cli = new \Component\Core\Controller\Model\Cli;
+$cli->server = $_SERVER;
+$cli->parser = new \Component\Parser\Ini;
+$cli->setup();
+echo "\neverdio 2.0 ~ command line interface\n\n";
+\flush();
 try {
-    $cli = new \Component\Core\Controller\Model\Cli;
-    $cli->server = $_SERVER;
-    $cli->parser = new \Component\Parser\Ini;
-    $cli->setup();
-    echo PHP_EOL . "everdio 2.0 ~ CLI" . PHP_EOL;
-    flush();
-    echo (string) $cli->run(__DIR__) . PHP_EOL;
+    echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL;
+    \flush();
 } catch (\Exception $ex) {
-    echo (string) sprintf("\n%s:`%s`\n\n", get_class($ex), $ex->getMessage());
-    echo $ex->getTraceAsString() . PHP_EOL;
+    echo \sprintf("\n%s: %s\n", get_class($ex), $ex->getMessage());
+    \flush();
+    if (isset($cli->request->debug)) {
+        echo \sprintf("\n%s\n", $ex->getTraceAsString());
+        \flush();
+    }
 }
 exit;

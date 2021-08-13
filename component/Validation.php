@@ -4,16 +4,15 @@ namespace Component {
         use Dryer, Helpers;
         
         const NORMAL = "NORMAL";
-        const STRICT = "STRICT";                           
+        const STRICT = "STRICT";             
         
-        private $validated = [];   
+        protected $value = false;
+        private $messages = [], $validated = [], $validators = [];   
         
-        public $types = [];                
+        public $types = [], $validate = self::NORMAL;                
         
-        private $messages = [];
-        
-        public function __construct(protected $value = false, private array $validators, public string $validate = self::NORMAL) {
-            $this->setValue($value);
+        public function __construct($value = false, array $validators, string $validate = self::NORMAL) {
+            $this->value = $value;
             foreach ($validators as $validator) {
                 $this->validators[(string) $validator] = $validator;
                 $this->types[(string) $validator] = $validator::TYPE;
@@ -37,6 +36,14 @@ namespace Component {
             }
             
             throw new \LogicException(sprintf("unknown validator %s", $validator));
+        }
+        
+        public function has(array $types) : bool { 
+            return (bool) \sizeof(\array_intersect($this->types, $types));
+        }
+        
+        public function match(array $types) : bool {
+            return (bool) (\sizeof(\array_intersect($this->types, $types)) === sizeof($this->types));
         }
 
         public function hasTypes(array $types, int $sizeof = 1) : bool {

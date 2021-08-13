@@ -3,7 +3,7 @@ namespace Component\Core {
     use \Component\Validation, \Component\Validator;
     abstract class Caller extends \Component\Core {
         public function __construct($caller) {
-            parent::__construct(_parameters: [
+            parent::__construct([
                 "caller" => new Validation($caller, [new Validator\IsString]),
                 "resource" => new Validation(false, [new Validator\IsResource, new Validator\IsObject])
             ]);

@@ -4,7 +4,7 @@ namespace Component\Core\Adapter\Mapper {
     use \Component\Validator;    
     abstract class Model extends \Component\Core\Adapter\Model {
         public function __construct(array $_parameters = []) {
-            parent::__construct(_parameters: [
+            parent::__construct([
                 "label" => new Validation(false, [new Validator\IsString]),                
                 "primary" => new Validation(false, array(new Validator\IsArray)),
                 "keys" => new Validation(false, array(new Validator\IsArray)),
