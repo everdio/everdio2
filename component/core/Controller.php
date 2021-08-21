@@ -43,17 +43,7 @@ namespace Component\Core {
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             $controller->include = $include;
             if (isset($controller->path)) {
-                try {
-                    return $controller->parse($controller->dispatch(\basename($path)));    
-                } catch (\InvalidArgumentException $ex) {
-                    throw $ex;
-                } catch (\RuntimeException $ex) {
-                    throw $ex;
-                } catch (\LogicException $ex) {
-                    throw $ex;
-                } catch (\ErrorException $ex) {
-                    throw $ex;
-                }
+                return $controller->parse($controller->dispatch(\basename($path)));    
             }
         }
     }    
