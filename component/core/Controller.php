@@ -9,13 +9,13 @@ namespace Component\Core {
                 "path" => new Validation(DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
                 "time" => new Validation(microtime(true), [new Validator\IsFloat]),
-                "include" => new Validation(false, [new Validator\IsString\InArray(["php", "html", "txt", "css", "js"]), new Validator\Len\Smaller(4)], Validation::STRICT),
+                "include" => new Validation(false, [new Validator\IsString\InArray(["php", "html", "txt", "css", "js", "json"]), new Validator\Len\Smaller(4)], Validation::STRICT),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)])
             ] + $_parameters);
         }        
         
-        final protected function isRouted(string $route) : bool {
+        final public function isRoute(string $route) : bool {
             return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
         

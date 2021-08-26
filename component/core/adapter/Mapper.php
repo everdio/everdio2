@@ -49,16 +49,16 @@ namespace Component\Core\Adapter {
             return (string) implode(", ", $this->restore(array_slice(array_keys($this->label($types)), 0, $size)));
         }
         
-        final public function label(array $types, array $parameters = []) : array {
+        final public function label(array $types, $sizeof = false, array $parameters = []) : array {
             if (isset($this->mapping)) {
                 foreach ($this->parameters($this->mapping) as $parameter => $validation) {
-                    if (array_intersect($validation->types, $types) === $validation->types) {
+                    if ($validation->match($types)) {
                         $parameters[$parameter] = $validation;
                     }
                 }
             }
             
-            return (array) $parameters;
+            return (array) ($sizeof ? array_slice($parameters, 0, $sizeof) : $parameters);
         }
         
         final public function __dry() : string {

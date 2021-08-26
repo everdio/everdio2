@@ -58,12 +58,12 @@ namespace Component {
         }
         
         
-        public function words(string $content, int $min = 6, $max = 9999, array $words = [], int $count = 0) : array {
+        public function words(string $content, int $min = 6, $max = 9999, array $exclude = [], array $words = [], int $count = 0) : array {
             $list = \array_count_values(\str_word_count(\strtolower(\strip_tags($content)), 1));            
-            \asort($list);            
+            \asort($list);
             foreach (\array_keys(\array_reverse($list)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
-                    $words[] = $word;
+                    $words[] = trim($word);
                     $count += \strlen($word);
                 }            
             }
