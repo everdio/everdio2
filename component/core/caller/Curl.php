@@ -7,7 +7,7 @@ namespace Component\Core\Caller {
         }
         
         final public function execute() {
-            if (($response = $this->exec()) === false) {                
+            if (($response = $this->exec()) === false) {          
                 throw new \RuntimeException(sprintf("Curl: %s", $this->error()));
             }
             return (string) \trim($response);

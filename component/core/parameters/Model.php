@@ -4,7 +4,7 @@ namespace Component\Core\Parameters {
     use \Component\Validator;    
     class Model extends \Component\Core\Parameters {
         use \Component\Core\Model;
-        public function __construct(private array $_parameters = []) {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "model" => new Validation(false, [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),

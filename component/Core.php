@@ -35,8 +35,7 @@ namespace Component {
                 try {
                     return $this->_parameters[$parameter]->execute();    
                 } catch (\InvalidArgumentException $exception) {   
-                    
-                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s::%s` (%s)", \get_class($this), $parameter, $exception->getMessage()));
+                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }
             
@@ -47,6 +46,7 @@ namespace Component {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
+            
             throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }      
 
@@ -142,7 +142,7 @@ namespace Component {
 
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
-        }
+        }        
         
         final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $value) {
@@ -165,7 +165,7 @@ namespace Component {
             return (array) $arguments;
         }                 
         
-        private function callAble(string $querystring) : bool {
+        final protected function callAble(string $querystring) : bool {
             if (($class = $this->methodClass($querystring)) && ($name = $this->methodName($querystring))) {
                 if (\method_exists($class, $name)) {
                     $reflection = new \ReflectionMethod($class, $name);
@@ -176,16 +176,14 @@ namespace Component {
             return (bool) false;            
         }
         
-        final public function call(string $querystring) {
-            if ($this->callAble($querystring)) {    
-                if (\is_subclass_of($this, $this->methodClass($querystring))) {
-                    return \call_user_func_array([$this, $this->methodName($querystring)], \array_values($this->methodArguments($querystring)));
-                }
-            }            
+        final protected function call(string $querystring) {
+            if (\is_subclass_of($this, $this->methodClass($querystring))) {
+                return \call_user_func_array([$this, $this->methodName($querystring)], \array_values($this->methodArguments($querystring)));
+            }
         }                             
         
         final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
-            foreach ($this->restore($parameters) as $parameter => $value) {
+            foreach ($this->restore($parameters) as $parameter => $value) {      
                 $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
             }
             

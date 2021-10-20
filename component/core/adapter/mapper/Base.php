@@ -11,6 +11,6 @@ namespace Component\Core\Adapter\Mapper {
         
         public function save() : \Component\Core\Adapter\Mapper;
         
-        public function delete() : void;
+        public function delete() : \Component\Core\Adapter\Mapper;
     }
 }

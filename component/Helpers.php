@@ -24,9 +24,7 @@ namespace Component {
                     $data[$key] = $this->sanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \htmlspecialchars(\addslashes($data), \ENT_QUOTES);
-            } else {
-                return $data;
+                return (string) \htmlspecialchars(\addslashes($data));
             }
             
             return $data;
@@ -39,8 +37,6 @@ namespace Component {
                 }
             } elseif (\is_string($data)) {
                 return (string) \rawurldecode(\html_entity_decode(\stripslashes($data)));
-            } else {
-                return $data;
             }
             
             return $data;

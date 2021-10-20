@@ -11,7 +11,7 @@ namespace Component {
         
         public $types = [], $validate = self::NORMAL;                
         
-        public function __construct($value = false, array $validators, string $validate = self::NORMAL) {
+        public function __construct($value = false, array $validators = [], string $validate = self::NORMAL) {
             $this->value = $value;
             foreach ($validators as $validator) {
                 $this->validators[(string) $validator] = $validator;
@@ -75,7 +75,7 @@ namespace Component {
                 return $this->value;
             }
             
-            throw new \InvalidArgumentException(sprintf("`%s` validation for value %s (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode("+", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
+            throw new \InvalidArgumentException(sprintf("`%s` validation for value `%s` (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode("+", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
         }
 
         public function __dry() : string {

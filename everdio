@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-ini_set("memory_limit", "1024M");
+ini_set("memory_limit", "1536M");
 include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
 
 $cli = new \Component\Core\Controller\Model\Cli;

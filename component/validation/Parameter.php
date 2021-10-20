@@ -35,7 +35,6 @@ namespace Component\Validation {
                 $validators[] = new Validator\IsEmpty;
             }
             
-            //if ($this->_mandatory && $this->_length) {
             if ($this->_length) {
                 $validators[] = new Validator\Len\Smaller($this->_length);
             }            

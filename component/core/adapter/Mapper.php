@@ -33,6 +33,18 @@ namespace Component\Core\Adapter {
             throw new \LogicException (sprintf("unknown parent by key %s", $parameter));
         }
         
+        final public function isParent(string $parameter) : bool {
+            return (bool) ($this->isKey($parameter) && isset($this->parents) && array_key_exists($parameter, $this->parents));
+        }        
+        
+        final public function isPrimary(string $parameter) : bool {
+            return (bool) (isset($this->primary) && in_array($parameter, $this->primary));
+        }        
+        
+        final public function isKey(string $parameter) : bool {
+            return (bool) (isset($this->keys) && array_key_exists($parameter, $this->keys));
+        }        
+        
         final public function hasKey(string $parameter) : bool {
             return (bool) (isset($this->keys) && array_key_exists($parameter, $this->keys));
         }
@@ -43,22 +55,22 @@ namespace Component\Core\Adapter {
             }
             
             throw new \LogicException (sprintf("unknown key by parameter %s", $parameter));
-        }        
-        
-        final public function view(array $types, int $size = 2) : string {
-            return (string) implode(", ", $this->restore(array_slice(array_keys($this->label($types)), 0, $size)));
+        }     
+  
+        final public function view(array $types = [Component\Validator\IsString::TYPE], int $sizeof = 1) : string {
+            return (string) $this->desanitize(strip_tags(implode(", ", array_filter($this->restore(array_keys($this->label($types, $sizeof)))))));
         }
         
-        final public function label(array $types, $sizeof = false, array $parameters = []) : array {
+        final public function label(array $types = [Component\Validator\IsString::TYPE], int $sizeof = 1, array $parameters = []) : array {
             if (isset($this->mapping)) {
                 foreach ($this->parameters($this->mapping) as $parameter => $validation) {
-                    if ($validation->match($types)) {
+                    if ($validation->has($types)) {
                         $parameters[$parameter] = $validation;
                     }
                 }
             }
             
-            return (array) ($sizeof ? array_slice($parameters, 0, $sizeof) : $parameters);
+            return (array) \array_diff_key($parameters, \array_slice(\array_reverse($parameters), $sizeof / 2, \sizeof($parameters) - $sizeof));
         }
         
         final public function __dry() : string {
