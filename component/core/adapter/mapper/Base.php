@@ -7,7 +7,7 @@ namespace Component\Core\Adapter\Mapper {
         
         public function find(array $validations = [], string $query = NULL) : \Component\Core\Adapter\Mapper;
         
-        public function findAll(array $validations = [], int $position = 0, int $limit = 0, string $query = NULL) : array;
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL) : array;
         
         public function save() : \Component\Core\Adapter\Mapper;
         

@@ -10,7 +10,7 @@ namespace Component\Core\Controller {
         
         abstract public function setup() : void;
         
-        public function dispatch(string $path) {   
+        public function dispatch(string $path, string $extension) {   
             $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . "." . $this->parser::EXTENSION, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 $file = new \Component\File($validation->execute(), "r");                   
@@ -19,7 +19,7 @@ namespace Component\Core\Controller {
                 }                         
             }
             
-            return (string) parent::dispatch($path);
+            return (string) parent::dispatch($path, $extension);
         }       
     }
 }

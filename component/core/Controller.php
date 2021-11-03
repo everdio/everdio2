@@ -8,10 +8,10 @@ namespace Component\Core {
                 "pid" => new Validation(\getmypid(), [new Validator\IsInteger]),
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
-                "path" => new Validation(\DIRECTORY_SEPARATOR, [new Validator\IsString\IsPath\IsReal]),
+                "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
-                "type" => new Validation("php", [new Validator\IsString\InArray(["php", "html", "txt", "css", "js", "json"]), new Validator\Len\Smaller(4)], Validation::STRICT),
-                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
+                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
+                "global" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
             ] + $_parameters);
         }        
         
@@ -19,8 +19,8 @@ namespace Component\Core {
             return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
 
-        public function dispatch(string $path) {
-            $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $this->type, [new Validator\IsString\IsFile]);
+        public function dispatch(string $path, string $extension) {
+            $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $extension, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 \ob_start();
                 require $validation->execute();    
@@ -39,13 +39,13 @@ namespace Component\Core {
             return (string) $output;
         }    
 
-        public function execute(string $path, array $parameters = [], string $type = "php") {
+        public function execute(string $path, array $parameters = [], string $extension = "php") {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
-            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-            $controller->type = $type;
+            $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
+            
             if (isset($controller->path)) {
-                return $controller->parse($controller->dispatch(\basename($path)));    
+                return $controller->parse($controller->dispatch(\basename($path), $extension));    
             }
         }
     }    

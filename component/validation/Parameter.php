@@ -2,12 +2,7 @@
 namespace Component\Validation {
     use \Component\Validation, \Component\Validator;
     class Parameter extends \Component\Validation {
-        private $_mandatory, $_default;
-        private $_length = 0;
-        public function __construct($value = false, bool $default = false, bool $mandatory = true, int $length = NULL, array $options = []) {
-            $this->_length = $length;
-            $this->_mandatory = $mandatory;
-            $this->_default = $default;
+        public function __construct($value = false, private bool $_default = false, private bool $_mandatory = true, private $_length = NULL, array $options = []) {
             parent::__construct($value, [new Validator\IsArray, 
                                          new Validator\IsFloat, 
                                          new Validator\IsResource,

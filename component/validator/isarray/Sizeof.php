@@ -2,9 +2,8 @@
 namespace Component\Validator\IsArray {
     abstract class Sizeof extends \Component\Validator\IsArray {
         const MESSAGE = "INVALID_ARRAY_SIZE";
-        protected $sizeof = 0;
-        public function __construct(int $sizeof = 0) {
-            $this->sizeof = $sizeof;
+        public function __construct(protected int $sizeof = 0) {
+            
         }
         
         public function getSize() : int {
