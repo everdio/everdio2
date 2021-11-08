@@ -43,7 +43,6 @@ namespace Component\Core {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
-            
             if (isset($controller->path)) {
                 return $controller->parse($controller->dispatch(\basename($path), $extension));    
             }

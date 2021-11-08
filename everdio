@@ -9,10 +9,11 @@ $cli->parser = new \Component\Parser\Ini;
 $cli->setup();
 echo "\neverdio 2.0 ~ command line interface\n\n";
 \flush();
+
 try {
     echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL;
     \flush();
-} catch (\Exception $ex) {
+} catch (\Exception | \ErrorException $ex) {
     echo \sprintf("\n%s: %s\n", get_class($ex), $ex->getMessage());
     \flush();
     if (isset($cli->request->debug)) {

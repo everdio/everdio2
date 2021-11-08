@@ -36,7 +36,7 @@ namespace Component {
                     $data[$key] = $this->desanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \rawurldecode(\html_entity_decode(\stripslashes($data)));
+                return (string) \rawurldecode(\html_entity_decode(\str_replace("\\\\", "\\", $data)));
             }
             
             return $data;
