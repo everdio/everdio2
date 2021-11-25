@@ -14,6 +14,5 @@ namespace Component\Core\Adapter\Mapper {
             
             $this->model = __DIR__ . DIRECTORY_SEPARATOR . "Model.tpl";
         }   
-
     }
 }

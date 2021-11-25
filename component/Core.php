@@ -3,7 +3,7 @@ namespace Component {
     abstract class Core {
         use Helpers, Dryer;
         public function __construct(private array $_parameters = []) {
-           foreach ($_parameters as $parameter => $validation) {
+            foreach ($_parameters as $parameter => $validation) {
                 if ($validation instanceof \Component\Validation) {
                     $this->_parameters[$parameter] = $validation;
                 }
@@ -108,7 +108,7 @@ namespace Component {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
                         
-        final public function validate(array $parameters = [], array $validations = []) { 
+        private function validate(array $parameters = [], array $validations = []) { 
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
             }        
@@ -136,6 +136,11 @@ namespace Component {
             return (string) \serialize($this->parameters($parameters));
         }
         
+        final public function duplicate(self $core, array $parameters = []) : self {
+            $core->import($this->export($parameters));                        
+            return (object) $core;
+        }
+        
         final public function querystring(array $parameters = []) : string {
             return (string) \http_build_query($this->restore($this->inter($parameters)));
         }
@@ -144,43 +149,13 @@ namespace Component {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }        
         
-        final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
+        final public function search(string $path, string $implode = "", string $wrap = "%s") {    
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $value) {
                 if (isset($this->{$value})) {
                     return (string) \sprintf($wrap, ($this->{$value} instanceof self ? $this->{$value}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value])), $implode) : (\is_array($this->{$value}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value]))), $this->{$value}) ? $this->{$value}[$key] : (\is_array($this->{$value}) ? \implode($implode, $this->{$value}) : $this->{$value}))));
                 }
             }        
         }
-        
-        private function methodClass(string $querystring) : string {
-            return (string) \parse_url($querystring, \PHP_URL_HOST);            
-        }        
-        
-        private function methodName(string $querystring) : string {
-            return (string) \parse_url($querystring, \PHP_URL_SCHEME);
-        }
-        
-        private function methodArguments(string $querystring, array $arguments = []) : array {
-            \parse_str(\parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY), $arguments);
-            return (array) $arguments;
-        }                 
-        
-        final protected function callAble(string $querystring) : bool {
-            if (($class = $this->methodClass($querystring)) && ($name = $this->methodName($querystring))) {
-                if (\method_exists($class, $name)) {
-                    $reflection = new \ReflectionMethod($class, $name);
-                    return (bool) ($reflection->getNumberOfRequiredParameters() <= sizeof(array_values(($arguments = $this->methodArguments($querystring)))));
-                }                
-            }
-            
-            return (bool) false;            
-        }
-        
-        final protected function call(string $querystring) {
-            if (\is_subclass_of($this, $this->methodClass($querystring))) {
-                return \call_user_func_array([$this, $this->methodName($querystring)], \array_values($this->methodArguments($querystring)));
-            }
-        }                             
         
         final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
             foreach ($this->restore($parameters) as $parameter => $value) {      
@@ -189,7 +164,7 @@ namespace Component {
             
             return (string) $content;
         }      
-        
+
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }

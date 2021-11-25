@@ -1,6 +1,12 @@
 <?php
 namespace Component\Core\Adapter {
     abstract class Mapper extends \Component\Core\Adapter {
+        public function __construct(array $_parameters = []) {
+            parent::__construct([
+                "library" => new \Component\Validation(new \Component\Core\Parameters, [new \Component\Validator\IsObject\Of("\Component\Core\Parameters")])
+                ] + $_parameters);
+        }
+        
         final public function hasField(string $field) : bool {
             return (bool) (isset($this->mapping) && \array_key_exists($field, $this->mapping));
         }
@@ -20,19 +26,7 @@ namespace Component\Core\Adapter {
             
             throw new \LogicException(\sprintf("unknown field %s", $field));
         }        
-               
-        final public function hasParent(string $parameter) : bool {
-            return (bool) (isset($this->parents) && \array_key_exists($parameter, $this->parents));
-        }
-
-        final public function getParent(string $parameter) : self {
-            if ($this->hasParent($parameter)) {
-                return (object) new $this->parents[$parameter];
-            }
-            
-            throw new \LogicException(\sprintf("unknown parent by key %s", $parameter));
-        }
-        
+     
         final public function isValid() {
             return (bool) ((isset($this->primary) && \sizeof($this->primary) === \sizeof($this->restore($this->primary)))) || (isset($this->keys) && \sizeof($this->keys) === \sizeof($this->restore($this->keys)));
         }
@@ -53,14 +47,6 @@ namespace Component\Core\Adapter {
             return (bool) (isset($this->keys) && \array_key_exists($parameter, $this->keys));
         }
         
-        final public function getKey(string $parameter) : string {
-            if ($this->hasKey($parameter)) {
-                return (string) $this->keys[$parameter];
-            }
-            
-            throw new \LogicException(\sprintf("unknown key by parameter %s", $parameter));
-        }     
-  
         final public function view(array $types = [Component\Validator\IsString::TYPE], int $sizeof = 1) : string {
             return (string) $this->desanitize(\strip_tags(\implode(", ", \array_filter($this->restore(\array_keys($this->label($types, $sizeof)))))));
         }
@@ -73,10 +59,9 @@ namespace Component\Core\Adapter {
                     }
                 }
             }
-            
-            return (array) \array_diff_key($parameters, \array_slice(\array_reverse($parameters), $sizeof / 2, \sizeof($parameters) - $sizeof));
+            return (array) \array_diff_key($parameters, \array_slice(\array_reverse($parameters), \round($sizeof / 2), \sizeof($parameters) - $sizeof));
         }
-        
+
         final public function __dry() : string {
             return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->mapping)));
         }              

@@ -10,7 +10,7 @@ namespace Component {
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }        
         
-        public function labelize($name) : string {
+        public function labelize(string $name) : string {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($name))))))));
         }        
         
@@ -36,7 +36,7 @@ namespace Component {
                     $data[$key] = $this->desanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \rawurldecode(\html_entity_decode(\str_replace("\\\\", "\\", $data)));
+                return (string) \rawurldecode(\htmlspecialchars_decode(\str_replace("\\\\", "\\", $data)));
             }
             
             return $data;

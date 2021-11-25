@@ -76,16 +76,22 @@ namespace Component {
             }
             
             throw new \InvalidArgumentException(sprintf("`%s` validation for value `%s` (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode("+", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
-        }
+        }        
+        
+        public function __call(string $method, array $arguments) {
+            foreach ($this->validators as $validator) {
+                if (\method_exists($validator, $method)) {
+                    return \call_user_func_array(array($validator, $method), $arguments);
+                }
+            }
+        }         
 
-        public function __dry() : string {
-            $validators = [];
-            
+        public function __dry(array $validators = []) : string {
             foreach ($this->validators as $validator) {
                 $validators[] = $validator->__dry();
             }
                         
             return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
-        }        
+        }               
     }
 }

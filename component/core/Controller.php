@@ -28,16 +28,39 @@ namespace Component\Core {
             }
         }        
         
-        private function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
-            if (\preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
+        private function parse_object(string $querystring) : string {
+            return (string) \parse_url($querystring, \PHP_URL_HOST);            
+        }        
+        
+        private function parse_method(string $querystring) : string {
+            return (string) \parse_url($querystring, \PHP_URL_SCHEME);
+        }
+        
+        private function parse_arguments(string $querystring, array $arguments = []) : array {
+            if ($query = \parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY)) {
+                \parse_str($query, $arguments);
+            }
+            
+            return (array) $arguments;            
+        }                     
+        
+        final public function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
+            if (is_string($output) && \preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $match) {
-                    if ($this->callAble($match)) {
+                    if (($object = $this->parse_object($match)) && ($method = $this->parse_method($match)) && \method_exists($object, $method)) {                        
                         $output = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $output);                        
                     }
                 }            
             }
+            
             return (string) $output;
-        }    
+        } 
+        
+        final public function call(string $querystring) {
+            if (\is_a($this, $this->parse_object($querystring))) {
+                return \call_user_func_array([$this, $this->parse_method($querystring)], \array_values($this->parse_arguments($querystring)));
+            }
+        }         
 
         public function execute(string $path, array $parameters = [], string $extension = "php") {
             $controller = new $this;
