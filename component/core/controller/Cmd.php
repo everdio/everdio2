@@ -6,8 +6,9 @@ namespace Component\Core\Controller {
             if (isset($this->request->dry)) {
                 echo $exec . PHP_EOL;
                 ob_flush();
+            } else {
+                \exec($exec);            
             }
-            \exec($exec);            
         }
     }
 }
