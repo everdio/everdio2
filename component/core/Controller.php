@@ -10,8 +10,7 @@ namespace Component\Core {
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
-                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
-                "global" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
+                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
             ] + $_parameters);
         }        
         
@@ -67,7 +66,7 @@ namespace Component\Core {
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
             if (isset($controller->path)) {
-                return $controller->parse($controller->dispatch(\basename($path), $extension));    
+                return $this->desanitize($controller->parse($controller->dispatch(\basename($path), $extension)));    
             }
         }
     }    

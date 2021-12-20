@@ -2,8 +2,9 @@
 namespace Component\Core\Adapter\Mapper {
     trait Duplication {
         final public function duplication(\Component\Core\Adapter\Mapper $mapper, array $values = [], array $parameters = []) : \Component\Core\Adapter\Mapper {
-            $mapper = (isset($mapper->mapping) ? $mapper->duplicate(new $mapper, \array_values($mapper->mapping)): $mapper->duplicate(new $mapper));
+            $mapper = (isset($mapper->mapping) ? $mapper->duplicate(new $mapper, \array_merge(\array_values($mapper->mapping), $parameters)) : $mapper->duplicate(new $mapper, $parameters));
             $mapper->store($values);
+            
             return (object) $mapper;
         }
 
