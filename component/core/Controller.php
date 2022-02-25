@@ -22,7 +22,7 @@ namespace Component\Core {
             $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $extension, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 \ob_start();
-                require $validation->execute();    
+                require $validation->execute();   
                 return (string) \ob_get_clean();                                                     
             }
         }        
@@ -66,7 +66,7 @@ namespace Component\Core {
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
             if (isset($controller->path)) {
-                return $this->desanitize($controller->parse($controller->dispatch(\basename($path), $extension)));    
+                return $this->desanitize($controller->parse($controller->dispatch(\basename($path), $extension)));        
             }
         }
     }    
