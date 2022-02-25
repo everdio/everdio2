@@ -2,11 +2,11 @@
 namespace Component {   
     class Validation {
         use Dryer, Helpers;
-        
         const NORMAL = "NORMAL";
         const STRICT = "STRICT";             
         
         protected $value = false;
+        
         private $messages = [], $validated = [], $validators = [];   
         
         public $types = [], $validate = self::NORMAL;                
@@ -43,7 +43,7 @@ namespace Component {
         }
         
         public function match(array $types) : bool {
-            return (bool) (\sizeof(\array_intersect($this->types, $types)) === sizeof($this->types));
+            return (bool) (\sizeof(\array_intersect($this->types, $types)) === \sizeof($this->types));
         }
 
         public function hasTypes(array $types, int $sizeof = 1) : bool {

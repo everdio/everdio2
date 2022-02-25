@@ -10,9 +10,9 @@ namespace Component {
                 return (string) \sprintf("\"%s\"", $data);
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
-                    $array[] = (\is_integer($key) ? false : sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
+                    $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
                 }
-                return (string) \sprintf("[%s]", \implode(sprintf(","), $array));                
+                return (string) \sprintf("[%s]", \implode(\sprintf(","), $array));                
             } elseif (\is_object($data)) {
                 return (string) ((\method_exists($data, __FUNCTION__)) ? $data->__dry() : "false");
             } elseif ($data === NULL) {

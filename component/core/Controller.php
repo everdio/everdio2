@@ -1,7 +1,6 @@
 <?php
 namespace Component\Core {
-    use \Component\Validation;
-    use \Component\Validator;
+    use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
             parent::__construct([                
@@ -15,7 +14,7 @@ namespace Component\Core {
         }        
         
         final public function isRoute(string $route) : bool {
-            return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
+            return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
 
         public function dispatch(string $path, string $extension) {
@@ -44,7 +43,7 @@ namespace Component\Core {
         }                     
         
         final public function parse(string $output = NULL, string $replace = "{{%s}}", string $regex = "!\{\{(.+?)\}\}!", array $matches = []) {
-            if (is_string($output) && \preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
+            if (\is_string($output) && \preg_match_all($regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $match) {
                     if (($object = $this->parse_object($match)) && ($method = $this->parse_method($match)) && \method_exists($object, $method)) {                        
                         $output = \str_replace(sprintf($replace, $match), $this->parse($this->call($match), $replace, $regex), $output);                        

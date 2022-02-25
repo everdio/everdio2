@@ -1,7 +1,6 @@
 <?php
 namespace Component\Core\Adapter\Mapper {
-    use \Component\Validation;
-    use \Component\Validator;    
+    use \Component\Validation, \Component\Validator;
     abstract class Model extends \Component\Core\Adapter\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
@@ -12,7 +11,7 @@ namespace Component\Core\Adapter\Mapper {
                 "mapping" => new Validation(false, array(new Validator\IsArray))                             
             ] + $_parameters);
             
-            $this->model = __DIR__ . DIRECTORY_SEPARATOR . "Model.tpl";
+            $this->model = __DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl";
         }   
     }
 }
