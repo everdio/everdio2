@@ -10,7 +10,7 @@ namespace Component\Core\Controller\Model {
         }
         
         final public function setup(array $request = []) : void {
-            if (isset($this->server) && $this->server["argc"] >= 2) {
+            if ($this->server["argc"] >= 2) {
                 $this->route = $this->server["argv"][1];                
                 foreach (\array_slice($this->server["argv"], 2) as $parameters) {
                     if (\strpos($parameters, "--") !== false) {
@@ -20,9 +20,7 @@ namespace Component\Core\Controller\Model {
                         $this->request->store($request);
                     }                    
                 }
-            } elseif (!isset($this->server)) {
-                throw new \RuntimeException("you suppose to use the command line");
-            }            
+            }      
         }
     }
 }

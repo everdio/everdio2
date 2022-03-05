@@ -75,7 +75,7 @@ namespace Component {
                 return $this->value;
             }
             
-            throw new \InvalidArgumentException(sprintf("`%s` validation for value `%s` (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode("+", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
+            throw new \InvalidArgumentException(sprintf("`%s` validation for value `%s` (%s)", $this->validate, $this->substring($this->dehydrate($this->value), 0, 150), \implode(", ", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false))))));
         }        
         
         public function __call(string $method, array $arguments) {
