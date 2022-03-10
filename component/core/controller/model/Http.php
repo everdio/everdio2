@@ -13,8 +13,8 @@ namespace Component\Core\Controller\Model {
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
                 "routing" => new Validation(false, [new IsString])
             ] + $_parameters);
-        }              
-
+        }          
+        
         public function setup() : void {
             if (isset($this->server["HTTP_REFERER"])) {
                 $this->referer = $this->server["HTTP_REFERER"];

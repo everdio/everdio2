@@ -7,18 +7,15 @@ $cli = new \Component\Core\Controller\Model\Cli;
 $cli->server = $_SERVER;
 $cli->parser = new \Component\Parser\Ini;
 $cli->setup();
-echo "\neverdio 2.0 ~ command line interface\n\n";
-\flush();
+
+fwrite(STDOUT, "\neverdio 2.0 ~ command line interface\n\n");
 
 try {
-    echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL;
-    \flush();
+    fwrite(STDOUT, $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL);
 } catch (\Exception | \ErrorException $ex) {
-    echo \sprintf("\n%s: %s\n", get_class($ex), $ex->getMessage());
-    \flush();
+    fwrite(STDERR, \sprintf("\n%s: %s\n\n", get_class($ex), $ex->getMessage()));    
     if (isset($cli->request->debug)) {
-        echo \sprintf("\n%s\n", $ex->getTraceAsString());
-        \flush();
+        fwrite(STDERR, \sprintf("\n%s\n\n", $ex->getTraceAsString()));
     }
 }
 exit;
