@@ -10,11 +10,12 @@ namespace Component\Core\Controller {
         
         abstract public function setup() : void;
         
-        public function dispatch(string $path, string $extension) {   
+        public function dispatch(string $path, string $extension,) {   
             $validation = new Validation($this->path . DIRECTORY_SEPARATOR . $path . "." . $this->parser::EXTENSION, [new Validator\IsString\IsFile]);
+            
             if ($validation->isValid()) {
                 $file = new \Component\File($validation->execute(), "r");                   
-                foreach (array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    
+                foreach (\array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    
                     $this->add($parameter, new Validation($value, [new Validator\IsArray, new Validator\IsString, new Validator\IsNumeric]));
                 }                         
             }
