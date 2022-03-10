@@ -12,7 +12,7 @@ namespace Component\Validator\IsString {
         public function execute($value) : bool {
             if (parent::execute($value)) {
                 foreach ($this->array as $string) {
-                    if (strpos($value, (string) $string) !== false) {
+                    if (\strpos($value, (string) $string) !== false) {
                         return (bool) true;
                     }
                 }

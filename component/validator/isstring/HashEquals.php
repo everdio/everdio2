@@ -9,7 +9,7 @@ namespace Component\Validator\IsString {
             $this->hash = $hash;
         }
         public function execute($value) : bool {
-            return (bool) (parent::execute($value) && hash_equals($this->hash, $value));
+            return (bool) (parent::execute($value) && \hash_equals($this->hash, $value));
         }
     }
 }

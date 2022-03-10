@@ -5,7 +5,7 @@ namespace Component\Validator {
         const MESSAGE = "INVALID_ARRAY";
         
         public function execute($value) : bool {
-            return (bool) is_array($value);
+            return (bool) \is_array($value);
         }
     }
 }

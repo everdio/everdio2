@@ -42,7 +42,7 @@ namespace Component\Validation {
                 $validate = self::STRICT;
             }
             
-            return new Validation(($this->_default ? $this->value : false), array_unique($validators), $validate);            
+            return new Validation(($this->_default ? $this->value : false), \array_unique($validators), $validate);            
         }
     }
 }

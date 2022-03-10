@@ -59,7 +59,7 @@ namespace Component {
             \asort($list);
             foreach (\array_keys(\array_reverse($list)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
-                    $words[] = trim($word);
+                    $words[] = \trim($word);
                     $count += \strlen($word);
                 }            
             }
