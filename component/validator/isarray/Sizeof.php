@@ -11,7 +11,7 @@ namespace Component\Validator\IsArray {
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->sizeof));
+            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->sizeof));
         }          
     }
 }

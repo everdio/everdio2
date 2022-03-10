@@ -14,11 +14,11 @@ namespace Component\Validator\IsString {
         }
         
         public function execute($value) : bool {
-            return (bool) (parent::execute($value) && (in_array($value, $this->array) || array_key_exists($value, $this->array)));
+            return (bool) (parent::execute($value) && (\in_array($value, $this->array) || \array_key_exists($value, $this->array)));
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->array));
+            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->array));
         }
     }
 }

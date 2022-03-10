@@ -10,11 +10,11 @@ namespace Component\Validator\IsObject {
         }
         
         public function execute($value) : bool {
-            return (bool) parent::execute($value) && in_array($this->trait, class_uses($value));
+            return (bool) parent::execute($value) && \in_array($this->trait, \class_uses($value));
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(\"%s\")", (string) $this, $this->trait);
+            return (string) \sprintf("new \%s(\"%s\")", (string) $this, $this->trait);
         }
     }
 }

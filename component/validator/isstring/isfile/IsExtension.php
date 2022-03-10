@@ -7,7 +7,7 @@ namespace Component\Validator\IsString\IsFile {
         }
         
         public function execute($value) : bool {
-            return (bool) (parent::execute($value) && pathinfo($value, PATHINFO_EXTENSION) === $this->extension);
+            return (bool) (parent::execute($value) && \pathinfo($value, \PATHINFO_EXTENSION) === $this->extension);
         }
     }
 }

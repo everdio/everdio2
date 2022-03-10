@@ -14,7 +14,7 @@ namespace Component\Validator\IsObject {
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(\"%s\")", (string) $this, $this->instance);
+            return (string) \sprintf("new \%s(\"%s\")", (string) $this, $this->instance);
         }
     }
 }

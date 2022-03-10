@@ -23,7 +23,7 @@ namespace Component\Validator\IsString {
         }
         
         public function __dry() : string {
-            return (string) sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->format));
+            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->format));
         }        
     }
 }
