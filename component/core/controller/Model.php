@@ -15,7 +15,7 @@ namespace Component\Core\Controller {
             
             if ($validation->isValid()) {
                 $file = new \Component\File($validation->execute(), "r");                   
-                foreach (\array_merge_recursive($this->parser::parse($file->restore())) as $parameter => $value) {    
+                foreach (\array_merge_recursive($this->parser->parse($file->restore())) as $parameter => $value) {    
                     $this->add($parameter, new Validation($value, [new Validator\IsArray, new Validator\IsString, new Validator\IsNumeric]));
                 }                         
             }

@@ -7,14 +7,15 @@ namespace Component\Parser {
          * thanks to starrychloe at oliveyou dot net
          * http://php.net/manual/en/function.str-getcsv.php#117692
          */
-        final static public function parse(string $content, string $delimiter = ";", string $enclosure = "\"", string $escape = "\\", array $csv = []) : array {
-            foreach (explode(PHP_EOL, $content) as $key => $row) {
+        final public function parse(string $content, string $delimiter = ";", string $enclosure = "\"", string $escape = "\\", array $data = []) : array {
+            foreach (\explode(\PHP_EOL, $content) as $key => $row) {
                 if ($key === 0) {
-                    $columns = str_getcsv(strtolower($row), $delimiter, $enclosure, $escape);
+                    $columns = \str_getcsv(\strtolower($row), $delimiter, $enclosure, $escape);
                 }
-                $csv[] = array_combine($columns, str_getcsv($row, $delimiter, $enclosure, $escape));
+                $data[] = \array_combine($columns, \str_getcsv($row, $delimiter, $enclosure, $escape));
             }            
-            return (array) $csv;
+            
+            return (array) $data;
         }
     }
 }

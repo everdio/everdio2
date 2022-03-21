@@ -46,10 +46,6 @@ namespace Component {
             return (bool) (\sizeof(\array_intersect($this->types, $types)) === \sizeof($this->types));
         }
 
-        public function hasTypes(array $types, int $sizeof = 1) : bool {
-            return (bool) (\sizeof(\array_intersect($types, $this->types)) >= $sizeof);
-        }
-        
         public function setValue($value) : bool { 
             return (bool) ($this->value = $this->hydrate($value));
         }

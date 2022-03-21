@@ -20,11 +20,9 @@ namespace Component\Core {
 
         public function dispatch(string $path, string $extension) {
             $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $extension, [new Validator\IsString\IsFile]);
-            
             if ($validation->isValid()) {
                 \ob_start();
-                require $validation->execute();   
-                
+                require $validation->execute();                   
                 return (string) $this->desanitize($this->caller(\ob_get_clean()));
             }
         }        

@@ -14,7 +14,7 @@ namespace Component {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($name))))))));
         }        
         
-        public function substring($string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
+        public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }    
 
@@ -54,17 +54,17 @@ namespace Component {
         }
         
         
-        public function words(string $content, int $min = 6, $max = 9999, array $exclude = [], array $words = [], int $count = 0) : array {
-            $list = \array_count_values(\str_word_count(\strtolower(\strip_tags($content)), 1));            
-            \asort($list);
-            foreach (\array_keys(\array_reverse($list)) as $word) {
+        public function words(string $content, int $min = 5, $max = 9999, array $keywords = [], int $count = 0) : array {
+            $words = \array_count_values(\str_word_count(\strtolower(\strip_tags($content)), 1));            
+            \asort($words);
+            foreach (\array_keys(\array_reverse($words)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
-                    $words[] = \trim($word);
+                    $keywords[] = \trim($word);
                     $count += \strlen($word);
                 }            
             }
             
-            return (array) $words;
+            return (array) $keywords;
         }        
     }
 }

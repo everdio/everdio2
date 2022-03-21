@@ -1,12 +1,6 @@
 <?php
 namespace Component\Core\Adapter {
     abstract class Mapper extends \Component\Core\Adapter {
-        public function __construct(array $_parameters = []) {
-            parent::__construct([
-                "library" => new \Component\Validation(new \Component\Core\Parameters, [new \Component\Validator\IsObject\Of("\Component\Core\Parameters")])
-                ] + $_parameters);
-        }
-        
         final public function hasField(string $field) : bool {
             return (bool) (isset($this->mapping) && \array_key_exists($field, $this->mapping));
         }

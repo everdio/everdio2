@@ -2,7 +2,7 @@
 namespace Component\Core\Caller {
     class Curl extends \Component\Core\Caller {
         public function __construct() {
-            parent::__construct("curl");
+            parent::__construct("curl_");
             $this->resource = $this->init();
         }
         
