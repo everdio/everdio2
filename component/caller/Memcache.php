@@ -1,8 +1,8 @@
 <?php
-namespace Component\Core\Caller {
-    class Memcache extends \Component\Core\Caller {
+namespace Component\Caller {
+    class Memcache extends \Component\Caller {
         public function __construct(string $url, int $port = 11211) {
-            parent::__construct("memcache");
+            parent::__construct("memcache_");
             $this->resource = $this->pconnect($url, $port);
         }
         

@@ -12,7 +12,7 @@ $cli->setup();
 try {
     echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL;
     flush();
-} catch (\Exception | \ErrorException $ex) {
+} catch (\ErrorException | \Exception $ex) {
     echo \sprintf("\n%s: %s\n\n", get_class($ex), $ex->getMessage());
     if (isset($cli->request->debug)) {
         echo \sprintf("\n%s\n\n", $ex->getTraceAsString());

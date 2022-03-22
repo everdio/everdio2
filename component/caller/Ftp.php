@@ -1,6 +1,6 @@
 <?php
-namespace Component\Core\Caller {
-    class Ftp extends \Component\Core\Caller {
+namespace Component\Caller {
+    class Ftp extends \Component\Caller {
         public function __construct(string $url) {
             parent::__construct("ftp_");
             $this->resource = $this->connect($url);
@@ -8,7 +8,7 @@ namespace Component\Core\Caller {
         
         final public function execute() : string {
             if (($response = $this->exec()) === false) {
-                return (string) $this->error();
+                throw new \RuntimeException($this->error());
             }
             
             return (string) \trim($response);

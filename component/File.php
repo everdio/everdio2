@@ -19,15 +19,18 @@ namespace Component {
                 while (!$this->eof()) {
                     $content .= $this->fgets();
                 }
+                
                 return $content;
             }
+            
             throw new \RuntimeException("unable to read");
         }
 
         public function delete() : bool {
-            if ($this->isReadable() && $this->isWritable()) {
+            if ($this->isWritable()) {
                 return (bool) unlink($this->getRealPath());
             }
+            
             throw new \RuntimeException("unable to delete");
         }    
         
