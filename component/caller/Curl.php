@@ -2,27 +2,37 @@
 namespace Component\Caller {
     class Curl extends \Component\Caller {
         public function __construct() {
-            parent::__construct("curl_");
-            $this->resource = $this->init();
+            parent::__construct("curl_%s");
+            $this->handle = $this->init();
         }
         
-        final public function put(File\Fopen $fopen) {
-            $this->setopt_array([
-                \CURLOPT_INFILE => $fopen->getResource(),
-                \CURLOPT_INFILESIZE => $fopen->getSize(),
-                \CURLOPT_PUT => true,
+        final public function download($handle) {
+            $this->setopt_array([            
+                \CURLOPT_FILE => $handle,
                 \CURLOPT_BINARYTRANSFER => true,
                 \CURLOPT_HEADER => false
             ]);    
+        }
+        
+        final public function put($handle, int $size = 0) {
+            $this->setopt_array([
+                \CURLOPT_INFILE => $handle,
+                \CURLOPT_INFILESIZE => $size,
+                \CURLOPT_PUT => true,
+                \CURLOPT_BINARYTRANSFER => true,
+                \CURLOPT_HEADER => false,
+                \CURLOPT_RETURNTRANSFER => true
+            ]);    
             
-            $fopen->seek(0);
+            \fseek($handle, 0);
         }
         
         final public function post(string $content) {
             $this->setopt_array([
                 \CURLOPT_POSTFIELDS => $content,
                 \CURLOPT_INFILESIZE => \strlen($content),
-                \CURLOPT_POST => true
+                \CURLOPT_POST => true,
+                \CURLOPT_RETURNTRANSFER => true
             ]);            
         }
 

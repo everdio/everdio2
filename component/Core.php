@@ -34,7 +34,7 @@ namespace Component {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();    
-                } catch (\InvalidArgumentException $exception) {   
+                } catch (\RuntimeException $exception) {   
                     throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }

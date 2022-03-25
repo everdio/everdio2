@@ -2,8 +2,8 @@
 namespace Component\Caller {
     class Ftp extends \Component\Caller {
         public function __construct(string $url) {
-            parent::__construct("ftp_");
-            $this->resource = $this->connect($url);
+            parent::__construct("ftp_%s");
+            $this->handle = $this->connect($url);
         }
         
         final public function execute() : string {

@@ -1,19 +1,18 @@
 #!/usr/bin/env php
 <?php
-ini_set("memory_limit", "1536M");
+\ini_set("memory_limit", "1536M");
 
-include_once(__DIR__ . DIRECTORY_SEPARATOR . "everdio.php");
+include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $cli = new \Component\Core\Controller\Model\Cli;
 $cli->server = $_SERVER;
-$cli->parser = new \Component\Parser\Ini;
 $cli->setup();
 
 try {
-    echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . PHP_EOL;
-    flush();
+    echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
+    \flush();
 } catch (\ErrorException | \Exception $ex) {
-    echo \sprintf("\n%s: %s\n\n", get_class($ex), $ex->getMessage());
+    echo \sprintf("\n%s: %s\n\n", \get_class($ex), $ex->getMessage());
     if (isset($cli->request->debug)) {
         echo \sprintf("\n%s\n\n", $ex->getTraceAsString());
     }

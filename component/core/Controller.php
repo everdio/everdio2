@@ -4,11 +4,9 @@ namespace Component\Core {
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
             parent::__construct([                
-                "pid" => new Validation(\getmypid(), [new Validator\IsInteger]),
-                "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
-                "arguments" => new Validation(false, [new Validator\IsArray\Sizeof\Bigger(1)]),
+                "arguments" => new Validation(false, [new Validator\IsArray]),
                 "regex" => new Validation("!\{\{(.+?)\}\}!", [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
             ] + $_parameters);
@@ -22,7 +20,9 @@ namespace Component\Core {
             $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $extension, [new Validator\IsString\IsFile]);
             if ($validation->isValid()) {
                 \ob_start();
-                require $validation->execute();                   
+                
+                require $validation->execute();                 
+                
                 return (string) $this->desanitize($this->caller(\ob_get_clean()));
             }
         }        
