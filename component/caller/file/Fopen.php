@@ -9,7 +9,7 @@ namespace Component\Caller\File {
         public function exists($ttl = false) : bool {                
             return (bool) (!$ttl && $this->getSize()) || ($ttl && $this->getSize() && ($this->getMTime() + $ttl) > time());
         }        
-
+        
         public function getSize() : int {
             $this->seek(0, \SEEK_END);
             return (int) $this->tell();

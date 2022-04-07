@@ -6,10 +6,12 @@ namespace Component\Core {
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
         
-        public function store(array $values) : void {
+        public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 $this->{$field} = $value;
             }
+            
+            return (object) $this;
         }
         
         public function restore(array $parameters = [], array $values = []) : array {

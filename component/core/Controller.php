@@ -16,26 +16,31 @@ namespace Component\Core {
             return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
 
-        public function dispatch(string $path, string $extension) {
-            $validation = new Validation($this->path . \DIRECTORY_SEPARATOR . $path . "." . $extension, [new Validator\IsString\IsFile]);
-            if ($validation->isValid()) {
+        public function dispatch(string $path) {
+            if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();
                 
-                require $validation->execute();                 
+                require $file;
                 
                 return (string) $this->desanitize($this->caller(\ob_get_clean()));
             }
         }        
         
-        private function caller(string $output = NULL, array $matches = [], array $arguments = []) {
+        final protected function caller(string $output, array $matches = []) {
             if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     if (\method_exists($this, \parse_url($match, \PHP_URL_SCHEME))) {
+                        $arguments = [];                        
+                        
                         if (($query = \parse_url(\html_entity_decode($match), \PHP_URL_QUERY))) {
                             \parse_str($query, $arguments);
                         }
-
-                        $output = \str_replace($matches[0][$key], $this->caller(\call_user_func_array([$this, \parse_url($match, \PHP_URL_SCHEME)], \array_values($arguments))), $output);                        
+                        
+                        if (!\is_string($data = \call_user_func_array([$this, \parse_url($match, \PHP_URL_SCHEME)], \array_values($arguments)))) {
+                            $data = $this->dehydrate($data);
+                        }
+                        
+                        $output = \str_replace($matches[0][$key], $data, $output);
                     }
                 }            
             }
@@ -44,12 +49,12 @@ namespace Component\Core {
         }
 
      
-        public function execute(string $path, array $parameters = [], string $extension = "php") {
+        public function execute(string $path, array $parameters = []) {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
             if (isset($controller->path)) {
-                return $controller->dispatch(\basename($path), $extension);        
+                return $controller->dispatch(\basename($path));        
             }
         }
     }    

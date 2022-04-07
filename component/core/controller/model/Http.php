@@ -15,6 +15,16 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);
         }          
         
+        public function dispatch(string $path) {
+            $output = (string) parent::dispatch($path);
+            
+            if (\file_exists(($file = \sprintf("%s/%s.html", $this->path, $path)))) {
+                $output .= $this->desanitize($this->caller(\file_get_contents($file)));
+            }
+            
+            return (string) $output;
+        }        
+        
         public function setup() : void {
             if (isset($this->server["HTTP_REFERER"])) {
                 $this->referer = $this->server["HTTP_REFERER"];

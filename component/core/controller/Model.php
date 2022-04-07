@@ -4,15 +4,15 @@ namespace Component\Core\Controller {
     abstract class Model extends \Component\Core\Controller {    
         abstract public function setup() : void;
         
-        public function dispatch(string $path, string $extension,) {   
-            $validation = new Validation(sprintf("%s/%s.ini", $this->path, $path), [new Validator\IsString\IsFile]);
-            if ($validation->isValid()) {
-                foreach (\array_merge_recursive(\parse_ini_file($validation->execute(), true, \INI_SCANNER_TYPED)) as $parameter => $value) {    
-                    $this->add($parameter, new Validation($value, [new Validator\IsArray, new Validator\IsString, new Validator\IsNumeric]));
+        public function dispatch(string $path) {   
+            if (\file_exists(($file = \sprintf("%s/%s.ini", $this->path, $path)))) {
+                foreach (\array_merge_recursive(\parse_ini_file($file, true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
+                    $this->add($parameter, new \Component\Validation\Parameter($value));
+                    //$this->add($parameter, new Validation($value, [new Validator\IsArray, new Validator\IsString, new Validator\IsNumeric, new Validator\IsObject]));
                 }                         
             }
             
-            return (string) parent::dispatch($path, $extension);
+            return (string) parent::dispatch($path);
         }       
     }
 }

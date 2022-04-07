@@ -86,12 +86,14 @@ namespace Component {
             return (array) \array_diff(\array_keys($this->_parameters), $parameters);
         }
         
-        public function store(array $values) : void {
+        public function store(array $values) : self {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {
                     $this->{$parameter} = $value;
                 }
             }
+            
+            return (object) $this;
         }      
         
         public function restore(array $parameters = [], array $values = []) : array {
