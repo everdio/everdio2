@@ -18,15 +18,15 @@ namespace Component {
         }
 
         final public function __call($name, $arguments) {
-            if (\function_exists(sprintf($this->_call, $name))) {
+            if (\function_exists(\sprintf($this->_call, $name))) {
                 if (isset($this->handle)) {
                     \array_unshift($arguments, $this->handle); 
                 }
                 
-                return \call_user_func_array(sprintf($this->_call, $name), $arguments);            
+                return \call_user_func_array(\sprintf($this->_call, $name), $arguments);            
             }
             
-            throw new \BadFunctionCallException(sprintf("unknown function call %s (%s)", \sprintf($this->_call, $name), $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException(\sprintf("unknown function call %s (%s)", \sprintf($this->_call, $name), $this->dehydrate($arguments)));
         }       
         
         public function __dry() : string {
