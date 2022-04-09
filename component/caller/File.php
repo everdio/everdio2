@@ -11,7 +11,7 @@ namespace Component\Caller {
             return (string) \pathinfo($this->_file, \PATHINFO_EXTENSION);
         }
         
-        public function getBasename(string $extension = null) : string {
+        public function getBasename(string $extension = "") : string {
             return (string) \str_replace($extension, false, \pathinfo($this->_file, \PATHINFO_BASENAME));
         }        
         

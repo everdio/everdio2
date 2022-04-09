@@ -12,7 +12,9 @@ namespace Component\Caller\File {
         
         public function getSize() : int {
             $this->seek(0, \SEEK_END);
-            return (int) $this->tell();
+            $size = $this->tell();
+            $this->seek(0);
+            return (int) $size;
         }
         
         public function __destruct() {

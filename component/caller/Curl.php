@@ -1,8 +1,8 @@
 <?php
 namespace Component\Caller {
     class Curl extends \Component\Caller {
-        public function __construct() {
-            parent::__construct("curl_%s");
+        public function __construct(string $caller = "curl_%s") {
+            parent::__construct($caller);
             $this->handle = $this->init();
         }
         
@@ -36,7 +36,7 @@ namespace Component\Caller {
             ]);            
         }
 
-        final public function execute() {
+        public function execute() {
             if (($response = $this->exec()) === false) {
                 throw new \RuntimeException($this->error());
             }

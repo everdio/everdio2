@@ -14,5 +14,9 @@ namespace Component {
                 throw new \RuntimeException($ex->getMessage());
             }
         }    
+        
+        static public function construct(string $path, bool $create = true, int $mode = 0776, string $group = "www-data") : self {
+            return (object) new Path($path, $create, $mode, $group);
+        }
     }
 }
