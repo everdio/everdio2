@@ -8,7 +8,7 @@ namespace Component\Core\Adapter\Mapper {
                 "primary" => new Validation(false, array(new Validator\IsArray)),
                 "keys" => new Validation(false, array(new Validator\IsArray)),
                 "parents" => new Validation(false, array(new Validator\IsArray)),                
-                "mapping" => new Validation(false, array(new Validator\IsArray))                             
+                "mapping" => new Validation(false, array(new Validator\IsArray))
             ] + $_parameters);
             
             $this->model = __DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl";

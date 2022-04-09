@@ -8,7 +8,8 @@ namespace Component\Core\Parameters {
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl", [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),
-                "use" => new Validation(false, [new Validator\IsString])
+                "use" => new Validation(false, [new Validator\IsString]),
+                "mapper" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);
         }                
     }

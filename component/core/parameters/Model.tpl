@@ -2,8 +2,8 @@
 namespace {{namespace}} {
     class {{class}} extends \Component\Core\Parameters {
         use {{use}};      
-        public function __construct(array $parameters = []) {
-            parent::__construct({{mapper}} + $parameters);
+        public function __construct(array $_parameters = []) {
+            parent::__construct({{mapper}} + $_parameters);
         }
     }
 }
