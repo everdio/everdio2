@@ -12,7 +12,7 @@ namespace Component\Core\Adapter {
                 "mapper" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);
             
-            $this->model = __DIR__ . DIRECTORY_SEPARATOR . "Model.tpl";
+            $this->model = __DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl";
         }                
         
         abstract public function setup() : void;

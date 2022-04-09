@@ -27,7 +27,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
-            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
 
         public function __get(string $parameter) {
@@ -35,11 +35,11 @@ namespace Component {
                 try {
                     return $this->_parameters[$parameter]->execute();    
                 } catch (\RuntimeException $exception) {   
-                    throw new \InvalidArgumentException(sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
+                    throw new \InvalidArgumentException(\sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }
             
-            throw new \InvalidArgumentException (sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException (\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
 
         final public function __unset(string $parameter) {
@@ -47,7 +47,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
             
-            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }      
 
         final public function exists(string $parameter) : bool {
@@ -65,7 +65,7 @@ namespace Component {
                 return (object) $this->_parameters[$parameter];
             }
             
-            throw new \InvalidArgumentException(sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
         
         final public function remove($parameter) : void {
