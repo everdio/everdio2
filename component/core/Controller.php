@@ -29,14 +29,14 @@ namespace Component\Core {
         final protected function caller(string $output, array $matches = []) {
             if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
-                    if (\method_exists($this, \parse_url($match, \PHP_URL_SCHEME))) {
+                    if (($scheme = \parse_url($match, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
                         $arguments = [];                        
                         
                         if (($query = \parse_url(\html_entity_decode($match), \PHP_URL_QUERY))) {
                             \parse_str($query, $arguments);
                         }
                         
-                        if (!\is_string($data = \call_user_func_array([$this, \parse_url($match, \PHP_URL_SCHEME)], \array_values($arguments)))) {
+                        if (!\is_string($data = \call_user_func_array([$this, $scheme], \array_values($arguments)))) {
                             $data = $this->dehydrate($data);
                         }
                         

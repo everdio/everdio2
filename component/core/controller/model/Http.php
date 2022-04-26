@@ -9,7 +9,7 @@ namespace Component\Core\Controller\Model {
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "protocol" => new Validation(false, [new IsString]),
                 "host" => new Validation(false, [new IsString]),  
-                "referer" => new Validation(false, [new IsString\IsPath]),  
+                "referer" => new Validation(false, [new IsString\IsUrl]),  
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
                 "routing" => new Validation(false, [new IsString])
             ] + $_parameters);
@@ -23,7 +23,7 @@ namespace Component\Core\Controller\Model {
             }
             
             return (string) $output;
-        }        
+        }
         
         public function setup() : void {
             if (isset($this->server["HTTP_REFERER"])) {
