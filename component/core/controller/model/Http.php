@@ -19,7 +19,7 @@ namespace Component\Core\Controller\Model {
             $output = (string) parent::dispatch($path);
             
             if (\file_exists(($file = \sprintf("%s/%s.html", $this->path, $path)))) {
-                $output .= $this->desanitize($this->caller(\file_get_contents($file)));
+                $output .= $this->caller(\file_get_contents($file));
             }
             
             return (string) $output;

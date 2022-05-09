@@ -1,8 +1,8 @@
 <?php
 namespace Component {
     trait Helpers {
-        public function slug($string, $replace = "-"){
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\Transliterator::createFromRules(':: Any-Latin;' . ':: NFD;' . ':: [:Nonspacing Mark:] Remove;' . ':: NFC;' . ':: [:Punctuation:] Remove;' . ':: Lower();' . '[:Separator:] > \'-\'')->transliterate($string)), $replace)), $replace);
+        public function slug($string, $replace = "-"){            
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\Transliterator::createFromRules(sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] Remove;:: Lower();[:Separator:] > '%s'", $replace))->transliterate($string)), $replace)), $replace);
         }
         
         public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
@@ -42,14 +42,13 @@ namespace Component {
             return $data;
         }
 
-        public function phrases(string $content, int $min = 40, int $total = 9999, array $sentences = [], int $count = 0) : array {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags($content)) as $sentence) {
+        public function phrases(string $content, int $min = 0, int $total = 9999, array $sentences = [], int $count = 0) : array {
+            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', $content) as $sentence) {
                 if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->words($sentence, 2)) > 1) {
                     $sentences[] = \trim($sentence);
                     $count += \strlen($sentence);
                 }                
             }
-            
             return (array) $sentences;
         }
         

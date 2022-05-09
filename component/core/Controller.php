@@ -22,26 +22,28 @@ namespace Component\Core {
                 
                 require $file;
                 
-                return (string) $this->desanitize($this->caller(\ob_get_clean()));
+                return (string) $this->caller(\ob_get_clean());
             }
         }        
         
-        final protected function caller(string $output, array $matches = []) {
+        final public function call(string $querystring, array $arguments = []) {
+            if (($scheme = \parse_url($querystring, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
+                if (($query = \parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY))) {
+                    \parse_str($query, $arguments);
+                }
+                
+                return \call_user_func_array([$this, $scheme], \array_values($arguments));
+            }    
+        }
+        
+        final public function caller(string $output, array $matches = []) {
             if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
-                    if (($scheme = \parse_url($match, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
-                        $arguments = [];                        
-                        
-                        if (($query = \parse_url(\html_entity_decode($match), \PHP_URL_QUERY))) {
-                            \parse_str($query, $arguments);
-                        }
-                        
-                        if (!\is_string($data = \call_user_func_array([$this, $scheme], \array_values($arguments)))) {
-                            $data = $this->dehydrate($data);
-                        }
-                        
-                        $output = \str_replace($matches[0][$key], $data, $output);
-                    }
+                    if (!\is_string($data = $this->call($match))) {
+                        $data = $this->dehydrate($data);
+                    }                 
+                    
+                    $output = \str_replace($matches[0][$key], $data, $output);
                 }            
             }
             
