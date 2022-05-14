@@ -2,7 +2,8 @@
 namespace Component {
     trait Helpers {
         public function slug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\Transliterator::createFromRules(sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] Remove;:: Lower();[:Separator:] > '%s'", $replace))->transliterate($string)), $replace)), $replace);
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] Remove;:: Lower();[:Separator:] > '%s'", $replace))->transliterate($string)), $replace)), $replace);
+            //return (string) \trim(\preg_replace('/[^A-Za-z0-9-]+/', $replace, \trim(\strtolower($string))), $replace);
         }
         
         public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {

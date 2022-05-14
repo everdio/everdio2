@@ -6,12 +6,16 @@ namespace Component\Caller\Curl {
         }
         
         public function execute(bool $active = NULL) {
-            do {
-                $status = curl_multi_exec($this->getHandle(), $active);
-                if ($active) {
-                    $this->select();
-                }
-            } while ($active && $status == CURLM_OK);
+            try {
+                do {
+                    $status = curl_multi_exec($this->getHandle(), $active);
+                    if ($active) {
+                        $this->select();
+                    }
+                } while ($active && $status == CURLM_OK);
+            } catch (\ErrorException $ex) {
+                throw new \RuntimeException($ex->getMessage());
+            }
         }
     }
 }
