@@ -8,5 +8,5 @@ cache/
 uploads/
 library/
 *.ini
-modules/
+modules/everdio
 application/
