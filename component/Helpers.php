@@ -2,18 +2,21 @@
 namespace Component {
     trait Helpers {
         public function slug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] Remove;:: Lower();[:Separator:] > '%s'", $replace))->transliterate($string)), $replace)), $replace);
-            //return (string) \trim(\preg_replace('/[^A-Za-z0-9-]+/', $replace, \trim(\strtolower($string))), $replace);
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->naming($string, $replace)), $replace)), $replace);
         }
         
-        public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
-            $base = \log(\floatval($size)) / \log(1024);
-            return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
-        }        
+        public function naming($string, $replace =  " "){            
+            return (string) \str_replace("\"", false, \trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate($string), $replace));
+        }                
         
         public function labelize(string $name) : string {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($name))))))));
         }        
+        
+        public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
+            $base = \log(\floatval($size)) / \log(1024);
+            return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
+        }                
         
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
@@ -55,7 +58,7 @@ namespace Component {
         
         
         public function words(string $content, int $min = 5, $max = 9999, array $keywords = [], int $count = 0) : array {
-            $words = \array_count_values(\str_word_count(\strtolower(\strip_tags($content)), 1));            
+            $words = \array_count_values(\str_word_count(\strtolower($content), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {

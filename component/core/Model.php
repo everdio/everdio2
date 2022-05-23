@@ -6,12 +6,20 @@ namespace Component\Core {
             return (string) $this->namespace . "\\" . $this->class;
         }
         
+        protected function getPath() : string {
+            return (string) \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)));
+        }
+        
+        protected function getMapper() : string {
+            return (string) \sprintf("%s/%s.php", $this->getPath(), $this->class);
+        }
+        
         public function __destruct() {
-            $path = new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace))));
+            $path = new \Component\Path($this->getPath());
             
             $model = new Fopen($this->model, "r");
   
-            $mapper = new Fopen(\sprintf("%s/%s.php", $path->getPath(), $this->class), "w+");                                                    
+            $mapper = new Fopen($this->getMapper(), "w+");                                                    
             $template = $this->replace($model->read(\filesize($model->getPath())), ["namespace", "class", "use"], 3);
 
             $this->remove("model");
