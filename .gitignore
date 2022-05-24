@@ -4,9 +4,11 @@
 *.json
 *.csv
 *.txt
+*.ini
+www/
 cache/
 uploads/
 library/
-*.ini
+images/
 modules/everdio
 application/
