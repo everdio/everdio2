@@ -77,10 +77,7 @@ namespace Modules {
         }
         
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
-            if (\sizeof($mapper->restore($mapper->primary)) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
-                $this->store($mapper->restore(\array_keys($this->parents)));
-            }
-            
+            $this->store($mapper->restore($mapper->mapping));
             return (object) $this;
         }
         

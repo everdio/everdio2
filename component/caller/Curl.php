@@ -6,7 +6,7 @@ namespace Component\Caller {
             $this->handle = $this->init();
         }
         
-        final public function download($handle) {
+        final public function get($handle) {
             $this->setopt_array([            
                 \CURLOPT_FILE => $handle,
                 \CURLOPT_BINARYTRANSFER => true,
