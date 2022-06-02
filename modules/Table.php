@@ -1,12 +1,12 @@
 <?php
 namespace Modules {    
     trait Table {
-        private function statement(string $query) : \PDOStatement {
+        final public function statement(string $query) : \PDOStatement {
             try {
                 if (($stm = $this->prepare($query)) && $stm->execute()) {
                     return (object) $stm;
                 }
-            } catch (\Exception $ex) {
+            } catch (\ErrorException | \Exception $ex) {
                 if (isset($stm)) {
                     throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query));
                 } 
@@ -52,9 +52,10 @@ namespace Modules {
                     $parents[] = $parent;
                 }
                 
-                $validations[] = new Table\Select(array_merge($parents, [$this]));
                 $validations[] = new Table\Relation($this, $parents);
             }         
+            
+            $validations[] = new Table\Select(\array_merge($parents, [$this]));
             
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
@@ -71,13 +72,15 @@ namespace Modules {
                     $validations[] = new Table\OrderBy($this, ["desc" => $this->keys]);
                 }
             }
-            
-            $find = new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], "and", "LIKE")], $validations));
+
+            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this], "and", "LIKE")], $validations));
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
         
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
-            $this->store($mapper->restore($mapper->mapping));
+            if (isset($mapper->primary)) {
+                $this->store($mapper->restore($mapper->primary));
+            }
             return (object) $this;
         }
         
@@ -95,7 +98,7 @@ namespace Modules {
                 $filter = new Table\Filter([$this]);
                 try {
                     $this->query(\sprintf("DELETE FROM`%s`.`%s`WHERE%s", $this->database, $this->table, $filter->execute()));    
-                } catch (\Exception $ex) {
+                } catch (\ErrorException | \Exception $ex) {
                     throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->table, $filter->execute()));
                 }
                 

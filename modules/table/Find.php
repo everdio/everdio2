@@ -12,6 +12,8 @@ namespace Modules\Table {
                         $operators[] = $validation->execute();
                     } elseif ($validation instanceof Relation) {
                         $relations[] = $validation->execute();
+                    } elseif ($validation instanceof Join) {
+                        $relations[] = $validation->execute();
                     } elseif ($validation instanceof OrderBy) {
                         $orderby = $validation->execute();
                     } else { 

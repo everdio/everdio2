@@ -5,14 +5,18 @@ namespace Component\Core\Controller {
         abstract public function setup() : void;
         
         public function dispatch(string $path) {   
+            return (string) parent::dispatch($this->getModel($path));
+        }    
+        
+        final public function getModel(string $path, bool $reset = false) : string {
             if (\file_exists(($file = \sprintf("%s/%s.ini", $this->path, $path)))) {
                 foreach (\array_merge_recursive(\parse_ini_file($file, true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
-                    $this->add($parameter, new \Component\Validation\Parameter($value));
+                    $this->add($parameter, new \Component\Validation\Parameter($value), $reset);
                 }                         
-            }
+            }           
             
-            return (string) parent::dispatch($path);
-        }       
+            return (string) $path;
+        }
     }
 }
 

@@ -37,6 +37,7 @@ namespace Modules\Table {
                     case "int":
                     case "point":
                     case "varbinary":
+                    case "float":
                         $parameter = new Validation\Parameter($this->hydrate($value), !empty($row["COLUMN_DEFAULT"]), ($row["IS_NULLABLE"] === "YES" ? false : true), $row["CHARACTER_MAXIMUM_LENGTH"]);     
                         break;
                     case "enum":                        
@@ -53,7 +54,7 @@ namespace Modules\Table {
                         $parameter = new Validation\Parameter(date("Y-m-d H:i:s"), false, ($row["IS_NULLABLE"] === "YES" ? false : true));
                         break;
                     default:
-                        throw new \LogicException(\sprintf("unknown column type %s for `%s`.`%s`", $row["DATA_TYPE"], $this->table, $row["COLUMN_NAME"]));
+                        throw new \LogicException(\sprintf("unknown column type: %s (`%s`.`%s`)", $row["DATA_TYPE"], $this->table, $row["COLUMN_NAME"]));
                 }
 
                 $this->add($this->labelize($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));

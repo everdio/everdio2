@@ -15,15 +15,17 @@ namespace Component\Core {
         final public function isRoute(string $route) : bool {
             return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $route), $this->arguments)) === (string) $route);
         }        
-
-        public function dispatch(string $path) {
+        
+        final public function getController(string $path) {
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();
-                
                 require $file;
-                
                 return (string) $this->caller(\ob_get_clean());
-            }
+            }            
+        }
+
+        public function dispatch(string $path) {
+            return (string) $this->getController($path);
         }        
         
         final public function call(string $querystring, array $arguments = []) {

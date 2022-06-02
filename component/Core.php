@@ -54,7 +54,7 @@ namespace Component {
             return (bool) \array_key_exists($parameter, $this->_parameters);
         }
         
-        final public function add(string $parameter, Validation $validation, $reset = false) {
+        final public function add(string $parameter, Validation $validation, bool $reset = false) {
             if (!$this->exists($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
@@ -68,7 +68,7 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
         
-        final public function remove($parameter) : void {
+        final public function remove(string $parameter) : void {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
