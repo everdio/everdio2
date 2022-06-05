@@ -2,7 +2,7 @@
 namespace Modules\BaseX {
     trait Api {
         use \Modules\Node, \Modules\BaseX;
-        public function query(string $query) : \DOMNodeList {             
+        public function query(string $query) : \DOMNodeList {      
             $api = new $this->api;
             foreach (\array_keys($api::$_queries) as $_query) {
                 if (\str_contains($query, $_query)) {                    

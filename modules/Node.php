@@ -75,14 +75,15 @@ namespace Modules {
                             $this->query($this->parent)->item(0)->removeChild($node);
                         }
                     }
-                }
+                }                
                 
-                unset ($this->current);
-                
-                if ($this->exists($this->label)) {
-                    unset ($this->{$this->label}); 
+                unset ($this->current);       
+            } elseif (isset($this->mapping) || $this->exists($this->label)) {
+                foreach ($this->findAll() as $row) {
+                    $mapper = new $this($row);
+                    $mapper->delete();
                 }
-            }
+            }                 
             
             return (object) $this;
         }

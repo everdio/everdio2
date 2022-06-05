@@ -4,7 +4,9 @@ namespace Modules\Table {
     final class Join extends \Component\Validation {
         public function __construct(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "JOIN", string $operator = "AND", array $operators = []) {
             foreach ($keys as $thatKey => $thisKey) {
-                $operators[] = sprintf("`%s`.`%s`.`%s`=`%s`.`%s`.`%s`", $thatMapper->database, $thatMapper->table, $thatMapper->getField($thatKey), $thisMapper->database, $thisMapper->table, $thisMapper->getField($thisKey));
+                if ($thatMapper->exists($thatKey) && $thisMapper->exists($thisKey)) {
+                    $operators[] = sprintf("`%s`.`%s`.`%s`=`%s`.`%s`.`%s`", $thatMapper->database, $thatMapper->table, $thatMapper->getField($thatKey), $thisMapper->database, $thisMapper->table, $thisMapper->getField($thisKey));
+                }
             }
             
             $filter = new Filter([$thatMapper], $operator);
