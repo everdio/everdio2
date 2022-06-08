@@ -151,10 +151,10 @@ namespace Component {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }        
         
-        final public function search(string $path, string $implode = "", string $wrap = "%s") {    
+        final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $value) {
                 if (isset($this->{$value})) {
-                    return (string) \sprintf($wrap, ($this->{$value} instanceof self ? $this->{$value}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value])), $implode) : (\is_array($this->{$value}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value]))), $this->{$value}) ? $this->{$value}[$key] : (!\is_array($this->{$value}) ? $this->{$value} : ""))));
+                    return (string) \sprintf($wrap, ($this->{$value} instanceof self ? $this->{$value}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value])), $implode) : (\is_array($this->{$value}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value]))), $this->{$value}) ? $this->{$value}[$key] : (\is_array($this->{$value}) && !empty($implode) ? \implode($implode, $this->{$value}) : (!\is_array($this->{$value}) ? $this->{$value} : "")))));
                 }
             }        
         }

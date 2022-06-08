@@ -66,7 +66,7 @@ namespace Modules {
         }
         
         public function delete() : self {
-            if (isset($this->parent)) {                
+            if (isset($this->parent) || isset($this->current)) {                
                 if (isset($this->current) && $this->query($this->current)->item(0)) {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->current)->item(0));    
                 } else {                                
@@ -76,8 +76,7 @@ namespace Modules {
                         }
                     }
                 }                
-                
-                unset ($this->current);       
+                unset ($this->current);                       
             } elseif (isset($this->mapping) || $this->exists($this->label)) {
                 foreach ($this->findAll() as $row) {
                     $mapper = new $this($row);
