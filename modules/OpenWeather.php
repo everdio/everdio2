@@ -10,13 +10,13 @@ namespace Modules {
         }
         
         final public function fetch() : \DOMDocument {
-            if (!\array_key_exists($this->unique($this->diff()), self::$adapters)) {
+            if (!\array_key_exists($this->unique($this->diff()), self::$_adapters)) {
                 $dom = new \DOMDocument;
                 $dom->loadXML($this->execute(), LIBXML_HTML_NOIMPLIED | LIBXML_NOCDATA | LIBXML_NOERROR | LIBXML_NONET | LIBXML_NOWARNING);
-                self::$adapters[$this->unique($this->diff())] = $dom;
+                self::$_adapters[$this->unique($this->diff())] = $dom;
             }
             
-            return (object) self::$adapters[$this->unique($this->diff())];
+            return (object) self::$_adapters[$this->unique($this->diff())];
         }      
     }
 }

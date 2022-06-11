@@ -1,15 +1,16 @@
 #!/usr/bin/env php
 <?php
-\ini_set("memory_limit", "2048M");
+\ini_set("memory_limit", "1536M");
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $cli = new \Component\Core\Controller\Model\Cli;
 $cli->server = $_SERVER;
+$cli->path = __DIR__;
 $cli->setup();
 
 try {
-    echo $cli->execute(__DIR__ . \DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
+    echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
     \flush();
 } catch (\ErrorException | \Exception $ex) {
     echo \sprintf("\n%s: %s\n\n", \get_class($ex), $ex->getMessage());

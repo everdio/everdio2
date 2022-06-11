@@ -159,6 +159,16 @@ namespace Component {
             }        
         }
         
+        final public function callback(string $querystring, array $arguments = []) {
+            if (($scheme = \parse_url($querystring, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
+                if (($query = \parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY))) {
+                    \parse_str($query, $arguments);
+                }
+                
+                return \call_user_func_array([$this, $scheme], \array_values($arguments));
+            }    
+        }        
+        
         final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
             foreach ($this->restore($parameters) as $parameter => $value) {      
                 $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));

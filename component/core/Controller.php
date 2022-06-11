@@ -24,24 +24,14 @@ namespace Component\Core {
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();
                 require $file;
-                return (string) $this->caller(\ob_get_clean());
+                return (string) $this->getCallbacks(\ob_get_clean());
             }            
-        }    
+        }            
         
-        final public function call(string $querystring, array $arguments = []) {
-            if (($scheme = \parse_url($querystring, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
-                if (($query = \parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY))) {
-                    \parse_str($query, $arguments);
-                }
-                
-                return \call_user_func_array([$this, $scheme], \array_values($arguments));
-            }    
-        }
-        
-        final public function caller(string $output, array $matches = []) {
+        final public function getCallbacks(string $output, array $matches = []) {
             if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
-                    if (!\is_string($data = $this->call($match))) {
+                    if (!\is_string($data = $this->callback($match))) {
                         $data = $this->dehydrate($data);
                     }                 
                     
@@ -56,7 +46,7 @@ namespace Component\Core {
         public function execute(string $path, array $parameters = []) {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
-            $controller->path = (!isset($this->path) ? \realpath(\dirname($path)) : \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path)));
+            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 return $controller->dispatch(\basename($path));        
             }

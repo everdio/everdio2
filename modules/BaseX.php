@@ -2,7 +2,7 @@
 namespace Modules {
     trait BaseX {
         protected function initialize() {
-            if (!\array_key_exists(($hash = md5($this->host)), self::$adapters)) {
+            if (!\array_key_exists(($hash = md5($this->host)), self::$_adapters)) {
                 $curl = new \Component\Caller\Curl;
                 $curl->setopt_array([
                     \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
@@ -10,14 +10,13 @@ namespace Modules {
                     \CURLOPT_RETURNTRANSFER => true
                     ]); 
                 
-                self::$adapters[$hash] = $curl;
+                self::$_adapters[$hash] = $curl;
             }
 
-            return (object) self::$adapters[$hash];
+            return (object) self::$_adapters[$hash];
         }
         
         final public function fetch(string $query) : string {    
-            //echo "<!--" . PHP_EOL . $query . PHP_EOL . "-->";
             $this->setopt(\CURLOPT_URL, \sprintf("%s?query=%s", $this->host, \urlencode($query)));
             return (string) $this->execute();
         }        

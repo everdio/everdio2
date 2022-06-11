@@ -6,10 +6,6 @@ namespace Modules\BaseX\Api {
             parent::__construct([
                 "api" => new Validation(false, [new Validator\IsString])
             ]);
-            
-            $this->primary = [
-                "url" => "Url",
-                "slug" => "Slug"];
         }
         
         public function __destruct() {
