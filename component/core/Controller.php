@@ -35,7 +35,7 @@ namespace Component\Core {
                         $data = $this->dehydrate($data);
                     }                 
                     
-                    $output = \str_replace($matches[0][$key], $data, $output);
+                    $output = \str_replace($matches[0][$key], $this->getCallbacks($data), $output);
                 }            
             }
             

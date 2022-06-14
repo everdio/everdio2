@@ -13,11 +13,7 @@ namespace Modules\Node {
                             if ($validation instanceof Filter) {
                                 $xparts[$last] .= \sprintf("[./%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
                             } elseif ($validation instanceof Count) {
-                                if ($filter) {
-                                    $xparts[$last] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $filter), $parts)));    
-                                } else {
-                                    $xparts[$last] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)));    
-                                }
+                                $xparts[$last] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, ($filter ? \array_diff(\explode(\DIRECTORY_SEPARATOR, $filter), $parts) : \array_diff($fparts, $parts))));    
                             }
                         }
                     }

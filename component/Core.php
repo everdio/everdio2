@@ -4,9 +4,7 @@ namespace Component {
         use Helpers, Dryer;
         public function __construct(private array $_parameters = []) {
             foreach ($_parameters as $parameter => $validation) {
-                if ($validation instanceof \Component\Validation) {
-                    $this->_parameters[$parameter] = $validation;
-                }
+                $this->add($parameter, $validation);
             }            
         }
 
@@ -151,12 +149,41 @@ namespace Component {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }        
         
-        final public function search(string $path, string $implode = NULL, string $wrap = "%s") {    
-            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $value) {
-                if (isset($this->{$value})) {
-                    return (string) \sprintf($wrap, ($this->{$value} instanceof self ? $this->{$value}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value])), $implode) : (\is_array($this->{$value}) && \array_key_exists(($key = \implode(false, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$value]))), $this->{$value}) ? $this->{$value}[$key] : (\is_array($this->{$value}) && !empty($implode) ? \implode($implode, $this->{$value}) : (!\is_array($this->{$value}) ? $this->{$value} : "")))));
+        final public function merge(self $core, array $mapping = []) {
+            foreach ($core->restore($this->inter(\array_keys($mapping))) as $parameter => $value) {
+                if ($this->exists($mapping[$parameter])) {
+                    $this->{$mapping[$parameter]} = $value;
                 }
-            }        
+            }
+        }        
+
+        final public function search(string $path) {
+            $needles = \array_reverse(\explode(\DIRECTORY_SEPARATOR, $path));
+            if (isset($this->{\end($needles)})) {
+                return $this->finder($path, $this->restore([\end($needles)]));
+            }
+        }
+
+        final public function finder(string $path, array $haystack) {
+            foreach (($needles = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {
+                if (\array_key_exists($needle, $haystack)) {
+                    if (\sizeof($needles) !== 1) {
+                        if ($haystack[$needle] instanceof self) {
+                            return $this->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff($needles, [$needle])), $haystack[$needle]->restore($haystack[$needle]->diff()));
+                        } else {
+                            if (\is_array($haystack[$needle])) {                                                        
+                                return $this->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff($needles, [$needle])), $haystack[$needle]);
+                            } else {
+                                return $haystack[$needle];    
+                            }                    
+                        }                
+                    } else {
+                        return $haystack[$needle];    
+                    }                        
+                } else {
+                    return "";
+                }
+            }
         }
         
         final public function callback(string $querystring, array $arguments = []) {
