@@ -6,7 +6,7 @@ namespace Component\Core {
             parent::__construct([                
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
-                "arguments" => new Validation(false, [new Validator\IsArray]),
+                "arguments" => new Validation(false, [new Validator\IsString]),
                 "regex" => new Validation("!\{\{(.+?)\}\}!", [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
             ] + $_parameters);
@@ -35,7 +35,7 @@ namespace Component\Core {
                         $data = $this->dehydrate($data);
                     }                 
                     
-                    $output = \str_replace($matches[0][$key], $this->getCallbacks($data), $output);
+                    $output = \str_replace($matches[0][$key], $data, $output);
                 }            
             }
             

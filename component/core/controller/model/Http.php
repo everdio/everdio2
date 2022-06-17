@@ -35,7 +35,7 @@ namespace Component\Core\Controller\Model {
             $this->protocol = $this->server["SERVER_PROTOCOL"];
             $this->host = $this->server["HTTP_HOST"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
-            $this->arguments = \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR))));
+            $this->arguments = \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
             $this->routing = $this->host . $this->server["REQUEST_URI"]; 
         }  
     }
