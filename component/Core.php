@@ -155,43 +155,49 @@ namespace Component {
                     $this->{$mapping[$parameter]} = $value;
                 }
             }
-        }        
+        }
 
         final public function search(string $path) {
-            $needles = \array_reverse(\explode(\DIRECTORY_SEPARATOR, $path));
-            if (isset($this->{\end($needles)})) {
-                return $this->finder($path, $this->restore([\end($needles)]));
+            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
+                if (isset($this->{$parameter})) {
+                    if ($this->{$parameter} instanceof self) {
+                        return $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])));
+                    } else{
+                        if (\is_array($this->{$parameter})) {
+                            return $this->haystack(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $this->{$parameter});
+                        }
+                        return $this->{$parameter};        
+                    }
+                }
+                return (string) false;
             }
+        }             
+        
+        final public function haystack(string $path, array $haystack, array $parts = []) {
+            foreach (($parts = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {    
+                if (\array_key_exists($needle, $haystack)) {
+                    if (\sizeof($parts) !== 1) {
+                        if ($haystack[$needle] instanceof self) {
+                            return $haystack[$needle]->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$needle])));
+                        } else{
+                            if (\is_array($haystack[$needle])) {
+                                return $this->haystack(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$needle])), $haystack[$needle]);
+                            }
+                            return $haystack[$needle];        
+                        }
+                    }
+                    return $haystack[$needle];
+                } 
+                return (string) false;
+            }            
         }
 
-        final public function finder(string $path, array $haystack) {
-            foreach (($needles = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {
-                if (\array_key_exists($needle, $haystack)) {
-                    if (\sizeof($needles) !== 1) {
-                        if ($haystack[$needle] instanceof self) {
-                            return $this->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff($needles, [$needle])), $haystack[$needle]->restore($haystack[$needle]->diff()));
-                        } else {
-                            if (\is_array($haystack[$needle])) {                                                        
-                                return $this->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff($needles, [$needle])), $haystack[$needle]);
-                            } else {
-                                return $haystack[$needle];    
-                            }                    
-                        }                
-                    } else {
-                        return $haystack[$needle];    
-                    }                        
-                } else {
-                    return "";
-                }
-            }
-        }
-        
-        final public function callback(string $querystring, array $arguments = []) {
-            if (($scheme = \parse_url($querystring, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
-                if (($query = \parse_url(\html_entity_decode($querystring), \PHP_URL_QUERY))) {
+        final public function callback(string $url, array $arguments = []) {
+            if (($scheme = \parse_url($url, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
+                if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                     \parse_str($query, $arguments);
                 }
-                
+                           
                 return \call_user_func_array([$this, $scheme], \array_values($arguments));
             }    
         }        

@@ -9,17 +9,19 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);
         }
         
-        final public function setup(array $request = []) : void {
+        final public function setup(array $request = [], array $arguments = []) : void {
             if ($this->server["argc"] >= 2) {
                 $this->route = $this->server["argv"][1];                
                 foreach (\array_slice($this->server["argv"], 2) as $parameters) {
                     if (\strpos($parameters, "--") !== false) {
-                        $this->arguments = [\str_replace("--", false, $parameters)];
+                        $arguments[] = \str_replace("--", false, $parameters);
                     } else {
                         \parse_str($parameters, $request);    
                         $this->request->store($request);
                     }                    
                 }
+                
+                $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
             }      
         }
     }
