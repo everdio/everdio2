@@ -188,6 +188,7 @@ namespace Component {
                     }
                     return $haystack[$needle];
                 } 
+                
                 return (string) false;
             }            
         }

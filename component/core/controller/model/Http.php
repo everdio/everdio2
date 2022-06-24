@@ -22,7 +22,7 @@ namespace Component\Core\Controller\Model {
                 $output .= $this->getCallbacks(\file_get_contents($file));
             }
             
-            return (string) $output;
+            return (string) preg_replace(["/\>[^\S ]+/s", "/[^\S ]+\</s"], [">", "<", "\\1"], $output);
         }
         
         public function setup() : void {

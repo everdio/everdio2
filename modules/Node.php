@@ -59,7 +59,11 @@ namespace Modules {
         }
         
         public function save(string $cdata = NULL) : self {
-            $create = new Node\Create($this, (!$cdata && $this->exists($this->label) && isset($this->{$this->label}) ? $this->{$this->label} : $cdata));
+            if (!$cdata && $this->exists($this->label) && isset($this->{$this->label})) {
+                $cdata = $this->{$this->label};
+            }
+            
+            $create = new Node\Create($this, $cdata);
             $save = new Node\Save($this, $create->execute());
             $map = new Node\Map($this, $save->execute());
             return (object) $map->execute();
