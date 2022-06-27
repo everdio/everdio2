@@ -14,7 +14,7 @@ namespace Component {
                 }
                 return (string) \sprintf("[%s]", \implode(",", $array));                
             } elseif (\is_object($data)) {
-                return (string) ((\method_exists($data, __FUNCTION__)) ? $data->__dry() : "false");
+                return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : "false");
             } elseif ($data === NULL) {
                 return (string) "false";
             } elseif (\is_resource($data)) {

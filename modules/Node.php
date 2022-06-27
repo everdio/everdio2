@@ -18,9 +18,13 @@ namespace Modules {
             return (object) $xpath->query($query);
         }        
         
-        public function count(array $validations = [], string $query = NULL) : int {
+        public function evaluate(string $query) : int {
             $xpath = new \DOMXPath($this->initialize());
-            return (int) $xpath->evaluate($this->prepare($validations) . $query);
+            return (int) $xpath->evaluate($query)->length;
+        }        
+        
+        public function count(array $validations = [], string $query = NULL) : int {
+            return (int) $this->evaluate($this->prepare($validations) . $query);
         }        
         
         public function find(array $validations = [], string $query = NULL) : self {

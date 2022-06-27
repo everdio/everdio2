@@ -21,8 +21,8 @@ namespace Component\Core\Controller\Model {
             if (\file_exists(($file = \sprintf("%s/%s.html", $this->path, $path)))) {
                 $output .= $this->getCallbacks(\file_get_contents($file));
             }
-            
-            return (string) preg_replace(["/\>[^\S ]+/s", "/[^\S ]+\</s"], [">", "<", "\\1"], $output);
+                        
+            return (string) preg_replace(["/\>[^\S ]+/s", "/[^\S ]+\</s", "/>(\s)+</m"], [">", "<", "><"], $output);
         }
         
         public function setup() : void {
