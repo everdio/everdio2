@@ -74,8 +74,8 @@ namespace Modules {
         }
         
         public function delete() : self {
-            if (isset($this->parent) || isset($this->current)) {                
-                if (isset($this->current) && $this->query($this->current)->item(0)) {
+            if (isset($this->parent) && isset($this->current)) {                
+                if ($this->query($this->current)->item(0)) {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->current)->item(0));    
                 } else {                                
                     foreach ($this->query($this->path) as $node) {
