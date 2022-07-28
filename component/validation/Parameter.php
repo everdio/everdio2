@@ -9,6 +9,7 @@ namespace Component\Validation {
                                          new Validator\IsObject, 
                                          new Validator\IsNumeric,
                                          new Validator\IsString, 
+                                         new Validator\IsBool, 
                                          new Validator\IsArray\Intersect($options),
                                          new Validator\IsString\InArray($options),     
                                          new Validator\IsString\IsPath,

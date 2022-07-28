@@ -12,41 +12,57 @@ namespace Component {
             return (string) \get_class($this);
         }
 
-        final public function __invoke(string $parameter) : Validation {
+        public function __invoke(string $parameter) : Validation {
             return (object) $this->get($parameter);
         }            
 
-        final public function __isset(string $parameter) : bool {
-            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
+        public function __isset(string $parameter) : bool {
+            return (bool) $this->isset($parameter);
         }        
-        
+
         public function __set(string $parameter, $value) {
-            if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
-            }
-            
-            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            $this->setValue($parameter, $value);
         }
 
         public function __get(string $parameter) {
+            return $this->getValue($parameter);
+        }
+
+        public function __unset(string $parameter) {
+            $this->unset($parameter);
+        }      
+        
+        public function isset(string $parameter) : bool {
+            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
+        }
+        
+        final public function unset(string $parameter) {
+            if ($this->exists($parameter)) {
+                return (bool) $this->_parameters[$parameter]->setValue(false);
+            }
+            
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
+        }
+        
+        final public function getValue($parameter) {
             if ($this->exists($parameter)) {
                 try {
-                    return $this->_parameters[$parameter]->execute();    
+                    return $this->_parameters[$parameter]->execute();
                 } catch (\RuntimeException $exception) {   
                     throw new \InvalidArgumentException(\sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }
             
-            throw new \InvalidArgumentException (\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
+            throw new \InvalidArgumentException (\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
         }
-
-        final public function __unset(string $parameter) {
+        
+        final public function setValue($parameter, $value) {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->setValue(false);
+                return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
-            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
-        }      
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
+        }
 
         final public function exists(string $parameter) : bool {
             return (bool) \array_key_exists($parameter, $this->_parameters);
@@ -115,7 +131,7 @@ namespace Component {
             
             return (array) $validations;
         }
-        
+
         final public function isStrict(array $parameters = []) : bool {
             return (bool) !\in_array(false, $this->validate($parameters));
         }
@@ -156,7 +172,13 @@ namespace Component {
                 }
             }
         }
-
+        
+        final public function finder(string $path) {
+            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $part) {
+                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$part]))) : $this->{$part}) : $this->callback($part));
+            }
+        }
+        
         final public function search(string $path) {
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
                 if (isset($this->{$parameter})) {
@@ -194,11 +216,11 @@ namespace Component {
         }
 
         final public function callback(string $url, array $arguments = []) {
-            if (($scheme = \parse_url($url, \PHP_URL_SCHEME)) && \method_exists($this, $scheme)) {
+            if (($scheme = \parse_url($url, \PHP_URL_SCHEME))) {
                 if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                     \parse_str($query, $arguments);
                 }
-                           
+
                 return \call_user_func_array([$this, $scheme], \array_values($arguments));
             }    
         }        
@@ -216,7 +238,7 @@ namespace Component {
         }
         
         public function __destruct() {
-            $this->_parameters = [];
+            unset ($this->_parameters);
         }        
     }
 }

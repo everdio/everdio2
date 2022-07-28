@@ -6,16 +6,29 @@ namespace Component\Core {
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
         
+        final public function sizeof(array $parameters = []) : int {
+            return (int) \sizeof($this->restore($this->diff($parameters)));
+        }
+        
         public function store(array $values) : self {
             foreach ($values as $field => $value) {
-                $this->{$field} = $value;
+                if (\is_array($value)) {
+                    $this->{$field} = new self;
+                    $this->{$field}->store($value);
+                } else {
+                    $this->{$field} = $value;
+                }
             }
             
             return (object) $this;
         }
         
         public function restore(array $parameters = [], array $values = []) : array {
-            return (array) parent::restore($this->inter($parameters), $values);
-        }
+            foreach (parent::restore($this->diff($parameters), $values) as $field => $value) {
+                $values[$field] = ($value instanceof self ? $value->restore() : $value);
+            }
+
+            return (array) $values;
+        }        
     }
 }

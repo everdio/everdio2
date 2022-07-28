@@ -41,11 +41,11 @@ namespace Component\Core\Adapter {
             return (bool) (isset($this->keys) && \array_key_exists($parameter, $this->keys));
         }
         
-        final public function view(array $types = [Component\Validator\IsString::TYPE], int $sizeof = 1) : string {
+        final public function view(array $types = [\Component\Validator\IsString::TYPE], int $sizeof = 1) : string {
             return (string) $this->desanitize(\strip_tags(\implode(", ", \array_filter($this->restore(\array_keys($this->label($types, $sizeof)))))));
         }
         
-        final public function label(array $types = [Component\Validator\IsString::TYPE], int $sizeof = 1, array $parameters = []) : array {
+        final public function label(array $types = [\Component\Validator\IsString::TYPE], int $sizeof = 1, array $parameters = []) : array {
             if (isset($this->mapping)) {
                 foreach ($this->parameters($this->mapping) as $parameter => $validation) {
                     if ($validation->has($types)) {
@@ -54,7 +54,7 @@ namespace Component\Core\Adapter {
                 }
             }
             return (array) \array_diff_key($parameters, \array_slice(\array_reverse($parameters), \round($sizeof / 2), \sizeof($parameters) - $sizeof));
-        }
+        }        
 
         final public function __dry() : string {
             return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->mapping)));
