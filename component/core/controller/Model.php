@@ -6,7 +6,7 @@ namespace Component\Core\Controller {
         
         public function dispatch(string $path) {   
             
-            if ($this->host === "droomparadijs.nl") {
+            if ((isset($this->host) && $this->host === "droomparadijs.nl") || strpos($this->path, "droomparadijs2")) {
                 return (string) parent::dispatch($this->getModel($path));
             }
             
