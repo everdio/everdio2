@@ -5,11 +5,7 @@ namespace Component\Core {
             $parameter = new \Component\Validation\Parameter($value, true);
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
-        
-        final public function sizeof(array $parameters = []) : int {
-            return (int) \sizeof($this->restore($this->diff($parameters)));
-        }
-        
+    
         public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {
