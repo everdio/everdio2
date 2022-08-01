@@ -5,7 +5,7 @@ namespace Modules\Node {
         use \Modules\Node;
         public function __construct(array $parameters = []) {
             parent::__construct([
-                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString\Contains(["lib"])]),
+                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl]),
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
                 "tag" => new Validation(false, array(new Validator\IsString)),
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),                
