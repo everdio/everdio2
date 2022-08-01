@@ -32,9 +32,7 @@ namespace Modules {
         final public function post(string $content) {
             $curl = $this->initialize();
             $curl->post($content);
-            $curl->setopt_array([
-                \CURLOPT_URL => $this->host,
-                ]);
+            $curl->setopt(\CURLOPT_URL, $this->host);
             $curl->execute();             
             $curl->close();
         }
@@ -42,9 +40,7 @@ namespace Modules {
         final public function put($handle, int $size = 0) {
             $curl = $this->initialize();
             $curl->put($handle, $size);
-            $curl->setopt_array([
-                \CURLOPT_URL => $this->host,
-            ]);
+            $curl->setopt(\CURLOPT_URL, $this->host);
             $curl->execute();    
             $curl->close();
         }          

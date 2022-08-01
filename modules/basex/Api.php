@@ -1,7 +1,7 @@
 <?php
 namespace Modules\BaseX {
     trait Api {
-        use \Modules\Node, \Modules\BaseX;
+        use \Modules\Node, \Modules\BaseX;        
         public function query(string $query) : \DOMNodeList {      
             $api = new $this->api;
             foreach (\array_keys($api::$_queries) as $_query) {
@@ -12,6 +12,10 @@ namespace Modules\BaseX {
             
             $api::$_queries[$query] = new \DOMXPath($api->fetchDom($query));
             return (object) $api::$_queries[$query]->query(\sprintf("//%s/*", $api->root));
-        }             
+        }      
+        
+        public function evaluate(string $query) : int {
+            return (int) $this->query($query)->length;
+        }                
     }
 }

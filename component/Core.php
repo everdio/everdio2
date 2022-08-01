@@ -100,6 +100,10 @@ namespace Component {
             return (array) \array_diff(\array_keys($this->_parameters), $parameters);
         }
         
+        final public function sizeof(array $parameters = []) : int {
+            return (int) \sizeof($this->inter($parameters));
+        }
+        
         public function store(array $values) : self {
             foreach ($values as $parameter => $value) {
                 if ($this->exists($parameter)) {

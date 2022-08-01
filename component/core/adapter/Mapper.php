@@ -13,6 +13,10 @@ namespace Component\Core\Adapter {
             throw new \LogicException (sprintf("unknown parameter %s", $parameter));
         }
         
+        final public function hasMapping($parameter) : bool {
+            return (bool) isset($this->mapping) && $this->exists($parameter) && \in_array($parameter, $this->mapping);
+        }
+        
         final public function getParameter(string $field) : string {
             if ($this->hasField($field)) {
                 return (string) $this->mapping[$field];
