@@ -48,7 +48,7 @@ namespace Component {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
-                } catch (\RuntimeException $exception) {   
+                } catch (\ValueError $exception) {   
                     throw new \InvalidArgumentException(\sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $exception->getMessage()));
                 }
             }
@@ -229,7 +229,7 @@ namespace Component {
             }    
         }        
         
-        final public function replace(string $content, array $parameters = [], int $instances = 2, string $replace = "{{%s}}") : string {
+        final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}") : string {
             foreach ($this->restore($parameters) as $parameter => $value) {      
                 $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
             }

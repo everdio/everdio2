@@ -28,11 +28,11 @@ namespace Modules {
         }        
         
         public function find(array $validations = [], string $query = NULL) : self {
-            if (($list = $this->query($this->prepare($validations) . $query)) && ($length = $list->length - 1) >= 0) {    
-                $map = new Node\Map($this, $list->item($length));
-                return (object) $map->execute();
+            if (($node = $this->query($this->prepare($validations) . $query)->item(0))) {
+                $map = new Node\Map($this, $node);
+                return (object) $map->execute();                
             }
-            
+
             return (object) $this;
         }
         
@@ -48,10 +48,10 @@ namespace Modules {
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) { 
                 $map = new Node\Map(new $this, $node);
                 $mapper = $map->execute();                 
-                $records[$index + 1] = $mapper->restore($mapper->keys + $mapper->primary + [$mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));
+                $records[$index + 1] = $mapper->restore($mapper->keys + $mapper->primary + [$mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
             }
             
-            return (array) \array_reverse($records);
+            return (array) $records;
         }     
         
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {

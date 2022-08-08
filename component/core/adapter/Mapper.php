@@ -61,7 +61,7 @@ namespace Component\Core\Adapter {
         }        
 
         final public function __dry() : string {
-            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->mapping)));
+            return (string) \sprintf("new \%s(%s)", (string) $this, (isset($this->mapping) ? $this->dehydrate($this->restore($this->mapping)) : false));
         }              
     }
 }
