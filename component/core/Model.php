@@ -19,7 +19,7 @@ namespace Component\Core {
             
             $model = new Fopen($this->model, "r");
   
-            $mapper = new Fopen($this->getMapper(), "w+");                                                    
+            $mapper = new Fopen($this->getMapper(), "w+");
             $template = $this->replace($model->read(\filesize($model->getPath())), ["namespace", "class", "use"], 3);
 
             $this->remove("model");

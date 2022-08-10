@@ -4,7 +4,8 @@ namespace Modules\Table {
     final class Filter extends \Component\Validation {
         public function __construct(array $tables, string $operator = "and", string $expression = "=", array $operators = [], string $additional = NULL) {
             foreach ($tables as $table) {
-                if (isset($table->mapping) && $table->isNormal($table->mapping)) {
+                //if (isset($table->mapping) && $table->isNormal($table->mapping)) {
+                if (isset($table->mapping)) {
                     foreach ($table->restore($table->mapping) as $parameter => $value) {                        
                         if (!empty($value) || !isset($table->get($parameter)->IS_EMPTY)) {
                             if (\substr($table->getField($parameter), 0, 1) == '@') {

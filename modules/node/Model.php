@@ -18,17 +18,11 @@ namespace Modules\Node {
             $this->path = \preg_replace('/\[(.*?)\]/', false, $this->node->getNodePath());  
             $this->label = \ucFirst(\strtolower($this->node->tagName));
             $this->class = \ucFirst(\strtolower($this->node->tagName));
-            $this->tag = $this->node->tagName;
-            
-            if (!isset($this->primary)) {
-                $this->primary = ["current" => "current"];
-            }
-            
-            if (!isset($this->keys)) {
-                $this->keys = ["parent" => "parent"];
-            }
+            $this->tag = $this->node->tagName;     
+            $this->primary = ["current" => "current"];
             
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
+                $this->keys = ["parent" => "parent"];
                 $this->namespace = $this->namespace . \implode("\\", \array_map("ucFirst", \explode(\DIRECTORY_SEPARATOR, \dirname($this->path))));
                 $this->parents = ["parent" => $this->namespace];
             }    
@@ -42,7 +36,9 @@ namespace Modules\Node {
             }
             
             if ($this->node->hasChildNodes() && $this->node->childNodes->length === 1 && $this->node->firstChild->nodeType === \XML_TEXT_NODE) {
-                $this->add($this->label, new Validation(false, [new Validator\NotEmpty, new Validator\NotArray], Validation::STRICT));            
+                $parameter = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);
+                $this->add($this->label, $parameter->getValidation($parameter->getValidators()));
+                //$this->add($this->label, new Validation(false, [new Validator\NotEmpty, new Validator\NotArray], Validation::STRICT));            
             }
             
             $this->remove("node");

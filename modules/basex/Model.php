@@ -23,14 +23,14 @@ namespace Modules\BaseX {
             $xpath = new \DOMXPath($this->fetchDOM($this->query));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
-                if (isset($this->keys)) {
-                    $model->primary = $this->keys;
-                }
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->use = "\Modules\BaseX\Api";
                 $model->setup();
+                if (isset($model->mapping)) {
+                    $model->primary = $model->primary + \array_intersect_key($model->mapping, $this->keys);
+                }
             }                
         }
         

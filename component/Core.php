@@ -16,7 +16,7 @@ namespace Component {
             return (object) $this->get($parameter);
         }            
 
-        public function __isset(string $parameter) : bool {
+        final public function __isset(string $parameter) : bool {
             return (bool) $this->isset($parameter);
         }        
 
@@ -32,7 +32,7 @@ namespace Component {
             $this->unset($parameter);
         }      
         
-        public function isset(string $parameter) : bool {
+        final public function isset(string $parameter) : bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }
         
@@ -53,7 +53,7 @@ namespace Component {
                 }
             }
             
-            throw new \InvalidArgumentException (\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
         }
         
         final public function setValue($parameter, $value) {
@@ -82,7 +82,7 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));
         }
         
-        final public function remove(string $parameter) : void {
+        public function remove(string $parameter) : void {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
@@ -128,7 +128,7 @@ namespace Component {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
                         
-        private function validate(array $parameters = [], array $validations = []) { 
+        final public function validations(array $parameters = [], array $validations = []) { 
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
             }        
@@ -136,18 +136,6 @@ namespace Component {
             return (array) $validations;
         }
 
-        final public function isStrict(array $parameters = []) : bool {
-            return (bool) !\in_array(false, $this->validate($parameters));
-        }
-        
-        final public function isNormal(array $parameters = []) : bool {
-            return (bool) \in_array(true, $this->validate($parameters));
-        }
-        
-        final public function isEmpty(array $parameters = []) : bool {
-            return (bool) !\in_array(true, $this->restore($parameters));
-        }
-        
         final public function import(string $serialized) : void {
             $this->_parameters = \array_merge($this->_parameters, \unserialize($serialized));
         }
@@ -155,12 +143,7 @@ namespace Component {
         final public function export(array $parameters = []) : string {
             return (string) \serialize($this->parameters($parameters));
         }
-        
-        final public function duplicate(self $core, array $parameters = []) : self {
-            $core->import($this->export($parameters));                        
-            return (object) $core;
-        }
-        
+
         final public function querystring(array $parameters = []) : string {
             return (string) \http_build_query($this->restore($this->inter($parameters)));
         }

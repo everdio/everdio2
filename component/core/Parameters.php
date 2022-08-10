@@ -26,5 +26,9 @@ namespace Component\Core {
 
             return (array) $values;
         }        
+        
+        public function test(array $parameters = []) {
+            return (string) \http_build_query(["p" => $this->restore($parameters)]);
+        }
     }
 }
