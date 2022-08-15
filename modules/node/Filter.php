@@ -2,14 +2,18 @@
 namespace Modules\Node {
     use \Component\Validator;
     final class Filter extends \Component\Validation {
-        public function __construct(string $xpath, array $conditions = [], string $operator = "and", array $query = []) {
-            foreach ($conditions as $condition) {
-                if (($condition instanceof \Component\Validation && $condition->isValid())) {
-                    $query[] = $condition->execute();
+        public function __construct(string $xpath, array $validations = [], string $operator = "and", array $xparts = []) {
+            foreach ($validations as $validation) {
+                if (($validation instanceof \Component\Validation && $validation->isValid())) {
+                    $xparts[] = $validation->execute();
                 }
             }            
+            
+            if (\sizeof($xparts)) {
+                $xpath = \sprintf("%s[%s]", $xpath, \implode(\sprintf(" %s ", $operator), $xparts));
+            }
 
-            parent::__construct((\sizeof($query) ? \sprintf("%s[%s]", $xpath, \implode(\sprintf(" %s ", $operator), $query)) : $xpath), [new Validator\NotEmpty]);
+            parent::__construct($xpath, [new Validator\NotEmpty]);
         }
     }
 }

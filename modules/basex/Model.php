@@ -28,8 +28,9 @@ namespace Modules\BaseX {
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->use = "\Modules\BaseX\Api";
                 $model->setup();
+                
                 if (isset($model->mapping)) {
-                    $model->primary = $model->primary + \array_intersect_key($model->mapping, $this->keys);
+                    $model->primary = \array_intersect_key($this->keys, $model->mapping);
                 }
             }                
         }

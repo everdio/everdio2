@@ -10,7 +10,8 @@ namespace Modules\Table {
                 "username" => new Validation(false, array(new Validator\IsString)),
                 "password" => new Validation(false, array(new Validator\IsString)),
                 "database" => new Validation(false, array(new Validator\IsString)),
-                "table" => new Validation(false, array(new Validator\IsString))
+                "table" => new Validation(false, array(new Validator\IsString)),
+                "keys" => new Validation(false, array(new Validator\IsArray))
             ]);
 
             $this->use = "\Modules\Table\Pdo";

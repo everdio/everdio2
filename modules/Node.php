@@ -48,7 +48,7 @@ namespace Modules {
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) { 
                 $map = new Node\Map(new $this, $node);
                 $mapper = $map->execute();                 
-                $records[$index + 1] = $mapper->restore($mapper->keys + $mapper->primary + [$mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
+                $records[$index + 1] = $mapper->restore(["current", "parent", $mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
             }
             
             return (array) $records;
