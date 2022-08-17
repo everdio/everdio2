@@ -27,8 +27,8 @@ namespace Component\Core {
             return (array) $values;
         }        
         
-        public function test(array $parameters = []) {
-            return (string) \http_build_query(["p" => $this->restore($parameters)]);
+        public function arguments(array $parameters = []) : string {
+            return (string) \http_build_query([$this->restore($this->diff($parameters))]);
         }
     }
 }

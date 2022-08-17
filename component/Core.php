@@ -87,7 +87,7 @@ namespace Component {
                 unset ($this->_parameters[$parameter]);
             }
         }
-   
+        
         final public function parameters(array $parameters = []) : array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }
@@ -102,7 +102,7 @@ namespace Component {
         
         final public function sizeof(array $parameters = []) : int {
             return (int) \sizeof($this->inter($parameters));
-        }
+        }          
         
         public function store(array $values) : self {
             foreach ($values as $parameter => $value) {
@@ -122,7 +122,7 @@ namespace Component {
             }
             
             return (array) $values;
-        }
+        }              
         
         final public function reset(array $parameters = []) : void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
@@ -152,20 +152,54 @@ namespace Component {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }        
         
-        final public function merge(self $core, array $mapping = []) {
-            foreach ($core->restore($this->inter(\array_keys($mapping))) as $parameter => $value) {
-                if ($this->exists($mapping[$parameter])) {
-                    $this->{$mapping[$parameter]} = $value;
-                }
+        final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}") : string {
+            foreach ($this->restore($parameters) as $parameter => $value) {      
+                $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
             }
-        }
+            
+            return (string) $content;
+        }             
         
-        final public function finder(string $path) {
+        /*
+         * This function recursively strips a path based string and returns until it can no longer proceed
+         * first checks whenever the path part is a parameter
+         *      second then checks if the parameter it's value is another $this object if so, it will proceed in there (back to first)
+         *      third if the value is not a $this it returns the value (whatever it is)
+         * fourth if the part is not a paramter, it will try a callback
+         * $arguments will be passed on to the callback, this is to make callbacks like 
+         *      finder:?path=find/another/callback:&argument[1]=test&argument[2]=test
+         * work. This will initialize the callback function from the another object that is stored in this object as find and pass
+         * on 2 arguments. If we would add callback:?arguments[1]=test&arguments[2]=test ? will be break the in the second callback
+         */
+        final public function finder(string $path, array $arguments = []) {
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $part) {
-                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$part]))) : $this->{$part}) : $this->callback($part));
+                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, [$arguments]));
             }
         }
-        
+    
+        /*
+         * This function uses the Uniform Resource Locator (URL) to access $this from outside $this
+         * SCHEME = the method within $this scope
+         * QUERY =  the arguments to feed the method with
+         * HOST = any internal PHP function 
+         */
+        final public function callback(string $url,  array  $arguments = []) {
+            if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
+                if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
+                    \parse_str($query, $arguments);
+                }
+
+                if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST))) {
+                    return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
+                }
+
+                return \call_user_func_array([$this, $method], \array_values($arguments));
+            }    
+        }                         
+    
+        /*
+         * deprecated, use finder which is way more awesome
+         */
         final public function search(string $path) {
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
                 if (isset($this->{$parameter})) {
@@ -182,6 +216,9 @@ namespace Component {
             }
         }             
         
+        /*
+         * deprecated, use finder which is way more awesome
+         */        
         final public function haystack(string $path, array $haystack, array $parts = []) {
             foreach (($parts = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {    
                 if (\array_key_exists($needle, $haystack)) {
@@ -200,29 +237,7 @@ namespace Component {
                 
                 return (string) false;
             }            
-        }
-
-        final public function callback(string $url,  array  $arguments = []) {
-            if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
-                if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
-                    \parse_str($query, $arguments);
-                }
-                
-                if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST))) {
-                    return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
-                }
-
-                return \call_user_func_array([$this, $method], \array_values($arguments));
-            }    
         }        
-        
-        final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}") : string {
-            foreach ($this->restore($parameters) as $parameter => $value) {      
-                $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
-            }
-            
-            return (string) $content;
-        }      
 
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
