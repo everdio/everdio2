@@ -2,11 +2,14 @@
 namespace Modules {
     trait Node {              
         private function prepare(array $validations = []) : string {
-            if (isset($this->current)) {
+            
+            if (isset($this->index) && isset($this->parent)) {
+                return (string) $this->parent . \DIRECTORY_SEPARATOR . $this->index;
+            } elseif (isset($this->current)) {
                 return (string) $this->current;
             } elseif (isset($this->parent)) {
                 $filter = new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]);    
-                return (string) $filter->execute();
+                return (string) $filter->execute();                                
             } else {
                 $find = new Node\Find($this->path, \array_merge([new Node\Filter($this->path, [new Node\Condition($this)])], $validations));    
                 return (string) $find->execute();
@@ -44,18 +47,20 @@ namespace Modules {
             if (\sizeof($orderby)) {
                 
             }
-            
+
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) { 
                 $map = new Node\Map(new $this, $node);
                 $mapper = $map->execute();                 
-                $records[$index + 1] = $mapper->restore(["current", "parent", $mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
+                $records[$index + 1] = $mapper->restore(["index", "current", "parent", $mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
             }
             
             return (array) $records;
         }     
         
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
-            if (isset($mapper->current) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
+            if (isset($mapper->index) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
+                $this->parent = $mapper->parent . DIRECTORY_SEPARATOR . $mapper->index;
+            } elseif (isset($mapper->current) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
                 $this->parent = $mapper->current;
             }
             
@@ -74,24 +79,27 @@ namespace Modules {
         }
         
         public function delete() : self {
+            /* using new index*/
+            if (isset($this->index) && isset($this->parent)) {
+                if ($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0)) {
+                    $this->query($this->parent)->item(0)->removeChild($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0));    
+                }
+                
+                unset ($this->index);
+            }
+            
+            /* using new index*/
             if (isset($this->parent) && isset($this->current)) {                
                 if ($this->query($this->current)->item(0)) {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->current)->item(0));    
-                } else {                                
-                    foreach ($this->query($this->path) as $node) {
-                        if ($node->parentNode->getNodePath() === $this->parent) {
-                            $this->query($this->parent)->item(0)->removeChild($node);
-                        }
-                    }
-                }                
+                }
                 unset ($this->current);                       
-            } elseif (isset($this->mapping) || $this->exists($this->label)) {
+            } elseif (isset($this->mapping) || isset($this->{$this->label})) {
                 foreach ($this->findAll() as $row) {
                     $mapper = new $this($row);
                     $mapper->delete();
                 }
             }                 
-            
             return (object) $this;
         }
     }

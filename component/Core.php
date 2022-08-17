@@ -202,7 +202,7 @@ namespace Component {
             }            
         }
 
-        final public function callback(string $url, array $arguments = []) {
+        final public function callback(string $url,  array  $arguments = []) {
             if (($scheme = \parse_url($url, \PHP_URL_SCHEME))) {
                 if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                     \parse_str($query, $arguments);
