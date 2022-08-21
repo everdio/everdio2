@@ -171,9 +171,9 @@ namespace Component {
          * work. This will initialize the callback function from the another object that is stored in this object as find and pass
          * on 2 arguments. If we would add callback:?arguments[1]=test&arguments[2]=test ? will be break the in the second callback
          */
-        final public function finder(string $path, array $arguments = []) {
-            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $part) {
-                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, [$arguments]));
+        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
+            foreach (\explode($seperator, $path) as $part) {
+                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, [$arguments]));
             }
         }
     

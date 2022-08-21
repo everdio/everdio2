@@ -88,7 +88,7 @@ namespace Modules {
                 unset ($this->index);
             }
             
-            /* using new index*/
+            /* using old current    */
             if (isset($this->parent) && isset($this->current)) {                
                 if ($this->query($this->current)->item(0)) {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->current)->item(0));    

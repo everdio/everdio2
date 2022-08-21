@@ -7,8 +7,7 @@ namespace Component\Core {
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsString]),
-                "regex" => new Validation("!\{\{(.+?)\}\}!", [new Validator\IsString]),
-                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
+                "regex" => new Validation("!\{\{(.+?)\}\}!", [new Validator\IsString])
             ] + $_parameters);
         }        
         
