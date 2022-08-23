@@ -6,7 +6,7 @@ namespace Component\Core {
             $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
         }
     
-        public function store(array $values) : self {
+        final public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {
                     $this->{$field} = new self;
@@ -19,7 +19,7 @@ namespace Component\Core {
             return (object) $this;
         }
         
-        public function restore(array $parameters = [], array $values = []) : array {
+        final public function restore(array $parameters = [], array $values = []) : array {
             foreach (parent::restore($this->diff($parameters), $values) as $field => $value) {
                 $values[$field] = ($value instanceof self ? $value->restore() : $value);
             }
@@ -27,8 +27,12 @@ namespace Component\Core {
             return (array) $values;
         }        
         
-        public function arguments(array $parameters = []) : string {
+        final public function arguments(array $parameters = []) : string {
             return (string) \http_build_query([$this->restore($this->diff($parameters))]);
         }
+        
+        final public function implode(string $seperator = ", ") : string {
+            return (string) \implode($seperator, (array) $this->restore());
+        }        
     }
 }
