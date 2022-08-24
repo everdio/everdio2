@@ -31,7 +31,7 @@ namespace Component\Core {
             if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     if (!\is_string($data = $this->callback($match))) {
-                        $data = $this->dehydrate($data);
+                        $data = \str_replace("false", false, $this->dehydrate($data));
                     }                 
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
