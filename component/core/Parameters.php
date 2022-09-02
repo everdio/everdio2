@@ -9,7 +9,9 @@ namespace Component\Core {
         final public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {
-                    $this->{$field} = new self;
+                    if (!isset($this->{$field})) {
+                        $this->{$field} = new self;
+                    }
                     $this->{$field}->store($value);
                 } else {
                     $this->{$field} = $value;

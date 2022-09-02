@@ -168,8 +168,6 @@ namespace Component {
          * fourth if the part is not a paramter, it will try a callback
          * $arguments will be passed on to the callback, this is to make callbacks like 
          *      finder:?path=find/another/callback:&argument[1]=test&argument[2]=test
-         * work. This will initialize the callback function from the another object that is stored in this object as find and pass
-         * on 2 arguments. If we would add callback:?arguments[1]=test&arguments[2]=test ? will be break the in the second callback
          */
         final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
             foreach (\explode($seperator, $path) as $part) {
@@ -178,10 +176,10 @@ namespace Component {
         }
     
         /*
-         * This function uses the Uniform Resource Locator (URL) to access $this from outside $this
-         * SCHEME = the method within $this scope
-         * QUERY =  the arguments to feed the method with
-         * HOST = any internal PHP function 
+         * This function uses the Uniform Resource Locator (URL) to access methods within $this
+         * SCHEME = any method within $this scope
+         * optional: HOST = any internal PHP function 
+         * optional: QUERY =  the arguments to feed the method with
          */
         final public function callback(string $url,  array  $arguments = []) {
             if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
