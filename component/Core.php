@@ -188,10 +188,22 @@ namespace Component {
                 }
 
                 if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST))) {
-                    return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
+                    try {
+                        return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
+                    } catch (\TypeError  $ex) {
+                        throw new \BadFunctionCallException(\sprintf("unknown function `%s`", $function));
+                    } catch (\ErrorException $ex) {
+                        throw new \InvalidArgumentException(\sprintf("invalid arguments `%s` for function `%s`", $this->dehydrate($arguments), $function));
+                    }
                 }
 
-                return \call_user_func_array([$this, $method], \array_values($arguments));
+                try {
+                    return \call_user_func_array([$this, $method], \array_values($arguments));
+                } catch (\TypeError  $ex) {
+                    throw new \BadMethodCallException(\sprintf("unknown method `%s` in `%s`", $method, \get_class($this)));
+                } catch (\ErrorException $ex) {
+                    throw new \InvalidArgumentException(\sprintf("invalid arguments `%s` for method `%s` in `%s`", $this->dehydrate($arguments), $method, \get_class($this)));
+                }
             }    
         }                         
     

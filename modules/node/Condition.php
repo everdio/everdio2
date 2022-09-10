@@ -2,7 +2,7 @@
 namespace Modules\Node {
     use \Component\Validator;
     final class Condition extends \Component\Validation {
-        public function __construct(\Component\Core\Adapter\Mapper $mapper, string $operator = "and", string $expression = "=", string $match = "text()", array $conditions = []) {            
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, string $operator = "and", string $expression = "=", string $match = "text()", array $key = [], array $conditions = []) {            
             if (isset($mapper->index) && preg_match_all("/\[(\d+)\]/", $mapper->index, $key)) {
                 parent::__construct($key[1][0], [new Validator\IsNumeric]);
             } else {
