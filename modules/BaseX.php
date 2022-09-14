@@ -2,7 +2,7 @@
 namespace Modules {
     trait BaseX {
         protected function initialize() {
-            if (!\array_key_exists(($hash = md5($this->host)), self::$_adapters)) {
+            if (!\array_key_exists(($hash = \md5($this->host)), self::$_adapters)) {
                 $curl = new \Component\Caller\Curl;
                 $curl->setopt_array([
                     \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
