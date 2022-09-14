@@ -2,7 +2,6 @@
 namespace Modules {
     trait Node {              
         private function prepare(array $validations = []) : string {
-            
             if (isset($this->index) && isset($this->parent)) {
                 return (string) $this->parent . \DIRECTORY_SEPARATOR . $this->index;
             } elseif (isset($this->current)) {
@@ -43,16 +42,16 @@ namespace Modules {
             if ($limit) {
                 $validations[] = new Node\Position($this->path, $position, $limit);
             }
-            
-            if (\sizeof($orderby)) {
-                
-            }
 
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) { 
                 $map = new Node\Map(new $this, $node);
                 $mapper = $map->execute();                 
                 $records[$index + 1] = $mapper->restore(["index", "current", "parent", $mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
             }
+            
+            if (\sizeof($orderby)) {
+                \array_multisort($orderby, \SORT_ASC, $records);
+            }            
             
             return (array) $records;
         }     
