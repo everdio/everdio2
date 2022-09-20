@@ -5,7 +5,7 @@ namespace Modules\BaseX {
         public function query(string $query) : \DOMNodeList {      
             $api = new $this->api;
             foreach (\array_keys($api::$_queries) as $_query) {
-                if (\str_contains($query, $_query)) {      
+                if (\str_contains(\str_replace(["(", ")"], false, $query), \str_replace(["(", ")"], false, $_query))) {      
                     return (object) $api::$_queries[$_query]->query($query);
                 }
             } 

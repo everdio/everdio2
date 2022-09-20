@@ -3,12 +3,12 @@ namespace Modules {
     trait Node {              
         private function prepare(array $validations = []) : string {
             if (isset($this->index) && isset($this->parent)) {
-                return (string) $this->parent . \DIRECTORY_SEPARATOR . $this->index;
+                return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);
             } elseif (isset($this->current)) {
-                return (string) $this->current;
+                return (string) \sprintf("(%s)", $this->current);
             } elseif (isset($this->parent)) {
                 $filter = new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]);    
-                return (string) $filter->execute();                                
+                return (string) \sprintf("(%s)", $filter->execute());
             } else {
                 $find = new Node\Find($this->path, \array_merge([new Node\Filter($this->path, [new Node\Condition($this)])], $validations));    
                 return (string) $find->execute();

@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Node {
     final class Find extends \Component\Validation {
-        public function __construct(string $xpath, array $validations = [], string $wrap = "%s") {
+        public function __construct(string $xpath, array $validations = [], string $wrap = "(%s)") {
             $xparts = $parts = \explode(\DIRECTORY_SEPARATOR, \preg_replace('/\[(.*?)\]/', false, $xpath));
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {    
