@@ -16,7 +16,7 @@ namespace Modules {
             return (object) self::$_adapters[$hash];
         }
         
-        final public function fetch(string $query) : string {    
+        final public function fetch(string $query) : string {
             $this->setopt(\CURLOPT_URL, \sprintf("%s?query=%s", $this->host, \urlencode($query)));
             return (string) $this->execute();
         }        

@@ -1,17 +1,16 @@
 <?php
 namespace Modules\BaseX {
+    /*
+     * overriding Node query() and evaluate()
+     */
     trait Api {
         use \Modules\Node, \Modules\BaseX;        
-        public function query(string $query) : \DOMNodeList {      
-            $api = new $this->api;
-            foreach (\array_keys($api::$_queries) as $_query) {
-                if (\str_contains(\str_replace(["(", ")"], false, $query), \str_replace(["(", ")"], false, $_query))) {      
-                    return (object) $api::$_queries[$_query]->query($query);
-                }
-            } 
+        public function query(string $query) : \DOMNodeList {     
+            if (isset($this->api)) {
+                return (object) $this->api::construct()->query($query);
+            }
             
-            $api::$_queries[$query] = new \DOMXPath($api->fetchDom($query));
-            return (object) $api::$_queries[$query]->query(\sprintf("//%s/*", $api->root));
+            throw new \RuntimeException("unknown or invalid API");
         }      
         
         public function evaluate(string $query) : int {
