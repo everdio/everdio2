@@ -46,18 +46,18 @@ namespace Component {
             return $data;
         }
 
-        public function phrases(string $content, int $min = 0, int $total = 9999, array $sentences = [], int $count = 0) : array {
+        public function phrases(string $content, int $min = 0, int $total = 99999, array $sentences = [], int $count = 0) : array {
             foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', $content) as $sentence) {
-                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->words($sentence, 2)) > 1) {
+                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->words($sentence))) {
                     $sentences[] = \trim($sentence);
                     $count += \strlen($sentence);
                 }                
             }
+            
             return (array) $sentences;
         }
-        
-        
-        public function words(string $content, int $min = 5, $max = 9999, array $keywords = [], int $count = 0) : array {
+
+        public function words(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0) : array {
             $words = \array_count_values(\str_word_count(\strtolower($content), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {

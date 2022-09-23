@@ -15,7 +15,7 @@ namespace {{namespace}} {
         
         public function query(string $query) : \DOMNodelist {
             foreach (\array_keys(self::$_queries) as $_query) {
-                if (\str_contains(\str_replace(["(", ")"], false, $query), \str_replace(["(", ")"], false, $_query))) {      
+                if (\str_contains(\str_replace(")", false, $query), \str_replace(")", false, $_query))) {      
                     return (object) self::$_queries[$_query]->query($query);
                 }
             } 

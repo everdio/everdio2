@@ -1,7 +1,7 @@
 <?php
 namespace Modules\BaseX {
     /*
-     * overriding Node query() and evaluate()
+     * overriding Modules\Node query() and evaluate()
      */
     trait Api {
         use \Modules\Node, \Modules\BaseX;        
