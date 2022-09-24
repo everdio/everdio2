@@ -14,13 +14,13 @@ namespace Modules {
 
                                         //continue or break on static value
                                         if ((isset($this->continue->{$label}->{$key}) && $this->continue->{$label}->{$key} != $this->controller->{$label}->{$key}) || (isset($this->break->{$label}->{$key}) && $this->break->{$label}->{$key} == $this->controller->{$label}->{$key})) {
-                                            unset ($this->controller->{$label});
+                                            unset ($this->controller->{$label}->{$key});
                                             return;
                                         }              
 
                                         //is or isnot on callback value
                                         if ((isset($this->is->{$label}->{$key}) && $this->callback($this->is->{$label}->{$key}) !== $this->controller->{$label}->{$key}) || (isset($this->isnot->{$label}->{$key}) && $this->callback($this->isnot->{$label}->{$key}) === $this->controller->{$label}->{$key})) {
-                                            unset ($this->controller->{$label});                                            
+                                            unset ($this->controller->{$label}->{$key});                                            
                                             return;
                                         }
                                         

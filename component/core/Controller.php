@@ -35,8 +35,10 @@ namespace Component\Core {
                     }                 
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
-                }            
+                }                            
             }
+            
+            
             
             return (string) $output;
         }

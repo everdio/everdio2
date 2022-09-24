@@ -191,18 +191,18 @@ namespace Component {
                     try {
                         return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
                     } catch (\TypeError  $ex) {
-                        throw new \BadFunctionCallException(\sprintf("unknown function `%s`", $function));
+                        throw new \BadFunctionCallException($ex->getMessage());
                     } catch (\ErrorException $ex) {
-                        throw new \InvalidArgumentException(\sprintf("invalid arguments `%s` for function `%s`", $this->dehydrate($arguments), $function));
+                        throw new \InvalidArgumentException($ex->getMessage());
                     }
                 }
 
                 try {
                     return \call_user_func_array([$this, $method], \array_values($arguments));
                 } catch (\TypeError  $ex) {
-                    throw new \BadMethodCallException(\sprintf("unknown method `%s` in `%s`", $method, \get_class($this)));
+                    throw new \BadMethodCallException($ex->getMessage());
                 } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException(\sprintf("invalid arguments `%s` for method `%s` in `%s`", $this->dehydrate($arguments), $method, \get_class($this)));
+                    throw new \InvalidArgumentException($ex->getMessage());
                 }
             }    
         }                         
