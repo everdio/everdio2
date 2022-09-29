@@ -5,19 +5,26 @@ namespace Modules {
             if (isset($this->library) && isset($this->controller) && isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
-                        $call = ($this->library->{$label} === (string) $this ? clone $this : new $this->library->{$label});
+                        $call = ($this->library->{$label} === (string) $this ? $this : new $this->library->{$label});
                         if ($call instanceof \Component\Core) {
                             foreach ($callbacks as $key => $callback) {                                
-                                try {                      
+                                try {            
+                                   //echo $parameter . " / " . $label . " / " . $key . " :: " . $this->getCallbacks($callback) . PHP_EOL;
+                                    
                                     if (\is_string($key)) {
                                         $this->controller->store([$label => [$key => $call->callback($this->getCallbacks($callback))]]);
 
                                         //continue or break on static value
-                                        if ((isset($this->continue->{$label}->{$key}) && $this->continue->{$label}->{$key} != $this->controller->{$label}->{$key}) || (isset($this->break->{$label}->{$key}) && $this->break->{$label}->{$key} == $this->controller->{$label}->{$key})) {
+                                        if (isset($this->continue->{$label}->{$key}) && $this->continue->{$label}->{$key} != $this->controller->{$label}->{$key}) {
                                             unset ($this->controller->{$label}->{$key});
                                             return;
-                                        }              
-
+                                        }
+                                        
+                                        if (isset($this->break->{$label}->{$key}) && $this->break->{$label}->{$key} == $this->controller->{$label}->{$key}) {
+                                            unset ($this->controller->{$label}->{$key});
+                                            return;                                            
+                                        }
+                                        
                                         //is or isnot on callback value
                                         if ((isset($this->is->{$label}->{$key}) && $this->callback($this->is->{$label}->{$key}) !== $this->controller->{$label}->{$key}) || (isset($this->isnot->{$label}->{$key}) && $this->callback($this->isnot->{$label}->{$key}) === $this->controller->{$label}->{$key})) {
                                             unset ($this->controller->{$label}->{$key});                                            
@@ -45,11 +52,11 @@ namespace Modules {
                                         $call->callback($this->getCallbacks($callback));
                                     }      
                                     
-                                } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException  $ex) {
-                                    throw new \RuntimeException(\sprintf("%s while processing %s/%s/%s", $ex->getMessage(), $label, $key, $callback), false, $ex);
+                                } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException | \UnexpectedValueException $ex) {
+                                    throw new \LogicException(\sprintf("%s while processing %s/%s::%s", $ex->getMessage(), $label, $key, $callback), false, $ex);
                                 } 
                             }                            
-                        }                       
+                        }                      
                     }
                 }                
             }                          
