@@ -11,10 +11,15 @@ namespace Modules\BaseX {
             }
             
             throw new \RuntimeException("unknown or invalid API");
-        }      
+        }    
         
         public function evaluate(string $query) : int {
-            return (int) $this->query($query)->length;
-        }                
+            if (isset($this->api)) {
+                return (int) $this->api::construct()->fetch(sprintf("count(%s)", $query));
+            }            
+            
+            throw new \RuntimeException("unknown or invalid API");
+            
+        }           
     }
 }

@@ -1,11 +1,15 @@
 <?php
 namespace Component\Core {
     class Parameters extends \Component\Core {
-        public function __set(string $field, $value) : void {
-            $parameter = new \Component\Validation\Parameter($value, true);
-            $this->add($field, $parameter->getValidation($parameter->getValidators()), true);
+        final public function __set(string $field, $value) : void {
+            $this->set($field, $value);
         }
-    
+        
+        final public function set(string $field, $value) : void {
+            $parameter = new \Component\Validation\Parameter($value, true);
+            $this->add($field, $parameter->getValidation($parameter->getValidators()), true);           
+        }
+
         final public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {

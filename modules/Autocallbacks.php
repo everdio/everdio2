@@ -2,7 +2,7 @@
 namespace Modules {
     trait Autocallbacks {
         final public function autocallbacks(string $parameter) {  
-            if (isset($this->library) && isset($this->controller) && isset($this->{$parameter})) {                
+            if (isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
                         $call = ($this->library->{$label} === (string) $this ? $this : new $this->library->{$label});
@@ -47,13 +47,12 @@ namespace Modules {
                                             $this->data->{$label}->{$key} = $this->controller->{$label}->{$key};
                                             unset ($this->controller->{$label}->{$key});
                                         }
-                                        
                                     } else {
                                         $call->callback($this->getCallbacks($callback));
                                     }      
                                     
                                 } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException | \UnexpectedValueException $ex) {
-                                    throw new \LogicException(\sprintf("%s while processing %s/%s::%s", $ex->getMessage(), $label, $key, $callback), false, $ex);
+                                    throw new \LogicException(\sprintf("%s while processing %s/%s::%s", $ex->getMessage(), $label, $key, $callback));
                                 } 
                             }                            
                         }                      

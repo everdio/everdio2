@@ -36,7 +36,7 @@ namespace Component {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }
         
-        final public function unset(string $parameter) {
+        public function unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
