@@ -34,24 +34,17 @@ namespace Modules {
                                         //foreach loop
                                         if (isset($this->foreach->{$label}->{$key}) && isset($this->controller->{$label}->{$key})) {
                                             foreach ($this->controller->{$label}->{$key}->restore() as $foreach) {
-                                                $this->data->store([$label => [$key => $foreach]]); 
+                                                $this->controller->store([$label => [$key => $foreach]]); 
                                                 $this->callback($this->getCallbacks($this->foreach->{$label}->{$key}));
-                                                unset ($this->data->{$label}->{$key});
+                                                unset ($this->controller->{$label}->{$key});
                                             }                   
                                             
-                                            unset ($this->controller->{$label}->{$key});
-                                        }
-
-                                        //store data
-                                        if (isset($this->data->{$label}) && $this->data->{$label}->exists($key) && isset($this->controller->{$label}->{$key})) {
-                                            $this->data->{$label}->{$key} = $this->controller->{$label}->{$key};
-                                            unset ($this->controller->{$label}->{$key});
                                         }
                                     } else {
                                         $call->callback($this->getCallbacks($callback));
                                     }      
                                     
-                                } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException | \UnexpectedValueException $ex) {
+                                } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException | \UnexpectedValxeException $ex) {
                                     throw new \LogicException(\sprintf("%s while processing %s/%s::%s", $ex->getMessage(), $label, $key, $callback));
                                 } 
                             }                            
