@@ -9,7 +9,7 @@ namespace Modules {
                         if ($call instanceof \Component\Core) {
                             foreach ($callbacks as $key => $callback) {                                
                                 try {            
-                                   //echo $parameter . " / " . $label . " / " . $key . " :: " . $this->getCallbacks($callback) . PHP_EOL;
+                                   //echo $parameter . " => controller / " . $label . " / " . $key . " :: " . $this->getCallbacks($callback) . PHP_EOL;
                                     
                                     if (\is_string($key)) {
                                         $this->controller->store([$label => [$key => $call->callback($this->getCallbacks($callback))]]);

@@ -30,7 +30,7 @@ namespace Component {
 
         public function __unset(string $parameter) {
             $this->unset($parameter);
-        }      
+        }     
         
         final public function isset(string $parameter) : bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
@@ -48,8 +48,8 @@ namespace Component {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
-                } catch (\ValueError $ex) {   
-                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $ex->getMessage()), false, $ex);
+                } catch (\ValueError $ex) {    
+                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter `%s::%s`: %s", \get_class($this), $parameter, $ex->getMessage()));
                 }
             }
             
@@ -102,7 +102,7 @@ namespace Component {
         
         final public function sizeof(array $parameters = []) : int {
             return (int) \sizeof($this->inter($parameters));
-        }          
+        }         
         
         public function store(array $values) : self {
             foreach ($values as $parameter => $value) {
@@ -112,7 +112,7 @@ namespace Component {
             }
             
             return (object) $this;
-        }      
+        }     
         
         public function restore(array $parameters = [], array $values = []) : array {
             foreach ($this->inter($parameters) as $parameter) {
@@ -122,7 +122,7 @@ namespace Component {
             }
             
             return (array) $values;
-        }              
+        }             
         
         final public function reset(array $parameters = []) : void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
@@ -153,7 +153,7 @@ namespace Component {
         }        
         
         final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}") : string {
-            foreach ($this->restore($parameters) as $parameter => $value) {      
+            foreach ($this->restore($parameters) as $parameter => $value) {     
                 $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
             }
             
@@ -163,11 +163,11 @@ namespace Component {
         /*
          * This function recursively strips a path based string and returns until it can no longer proceed
          * first checks whenever the path part is a parameter
-         *      second then checks if the parameter it's value is another $this object if so, it will proceed in there (back to first)
-         *      third if the value is not a $this it returns the value (whatever it is)
+         *     second then checks if the parameter it's value is another $this object if so, it will proceed in there (back to first)
+         *     third if the value is not a $this it returns the value (whatever it is)
          * fourth if the part is not a paramter, it will try a callback
          * $arguments will be passed on to the callback, this is to make callbacks like 
-         *      finder:?path=find/another/callback:&argument[1]=test&argument[2]=test
+         *     finder:?path=find/another/callback:&argument[1]=test&argument[2]=test
          */
         final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
             foreach (\explode($seperator, $path) as $part) {
@@ -179,27 +179,24 @@ namespace Component {
          * This function uses the Uniform Resource Locator (URL) to access methods within $this
          * SCHEME = any method within $this scope
          * optional: HOST = any internal PHP function 
-         * optional: QUERY =  the arguments to feed the method with
+         * optional: QUERY = the arguments to feed the method with
          */
-        final public function callback(string $url,  array  $arguments = []) {
+        final public function callback(string $url, array $arguments = []) {
             if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
                 if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                     \parse_str($query, $arguments);
                 }
 
-                if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST))) {
-                    try {
-                        return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
-                    } catch (\TypeError  $ex) {
-                        throw new \BadFunctionCallException($ex->getMessage());
-                    } catch (\ErrorException $ex) {
-                        throw new \InvalidArgumentException($ex->getMessage());
-                    }
-                }
-
                 try {
+                    if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST)) && \function_exists($function)) {
+                        try {
+                            return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
+                        } catch (\TypeError $ex) {
+                            throw new \BadFunctionCallException($ex->getMessage());
+                        }
+                    }                    
                     return \call_user_func_array([$this, $method], \array_values($arguments));
-                } catch (\TypeError  $ex) {
+                } catch (\TypeError $ex) {
                     throw new \BadMethodCallException($ex->getMessage());
                 } catch (\ErrorException $ex) {
                     throw new \InvalidArgumentException($ex->getMessage());
