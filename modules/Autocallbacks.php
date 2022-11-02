@@ -38,14 +38,13 @@ namespace Modules {
                                                 $this->callback($this->getCallbacks($this->foreach->{$label}->{$key}));
                                                 unset ($this->controller->{$label}->{$key});
                                             }                   
-                                            
                                         }
                                     } else {
                                         $call->callback($this->getCallbacks($callback));
                                     }      
                                     
                                 } catch (\BadMethodCallException | \BadFunctionCallException | \InvalidArgumentException | \UnexpectedValxeException $ex) {
-                                    throw new \LogicException(\sprintf("%s while processing %s/%s::%s", $ex->getMessage(), $label, $key, $callback));
+                                    throw new \LogicException(\sprintf("%s with %s while processing %s/%s::%s", \get_class($ex), $ex->getMessage(), $label, $key, $callback));
                                 } 
                             }                            
                         }                      

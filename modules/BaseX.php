@@ -17,7 +17,7 @@ namespace Modules {
         }
         
         final public function fetch(string $query) : string {
-            $this->setopt(\CURLOPT_URL, \sprintf("%s?query=%s", $this->host, \urlencode($query)));
+            $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
         }        
 

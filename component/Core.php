@@ -122,7 +122,11 @@ namespace Component {
             }
             
             return (array) $values;
-        }             
+        }         
+
+        public function querystring(array $parameters = []) : string {
+            return (string) \http_build_query($this->restore($this->inter($parameters)));
+        }        
         
         final public function reset(array $parameters = []) : void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
@@ -144,9 +148,6 @@ namespace Component {
             return (string) \serialize($this->parameters($parameters));
         }
 
-        final public function querystring(array $parameters = []) : string {
-            return (string) \http_build_query($this->restore($this->inter($parameters)));
-        }
 
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
@@ -188,10 +189,10 @@ namespace Component {
                 }
 
                 try {
-                    if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST)) && \function_exists($function)) {
+                    if (($function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST))) {
                         try {
                             return \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments)));
-                        } catch (\TypeError $ex) {
+                        } catch (\TypeError $ex) {                            
                             throw new \BadFunctionCallException($ex->getMessage());
                         }
                     }                    
