@@ -6,8 +6,7 @@ namespace Component\Core {
             parent::__construct([                
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
-                "arguments" => new Validation(false, [new Validator\IsString]),
-                "regex" => new Validation("!\{\{(.+?)\}\}!", [new Validator\IsString])
+                "arguments" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);
         }        
         
@@ -28,7 +27,7 @@ namespace Component\Core {
         }            
         
         final public function getCallbacks(string $output, array $matches = []) {
-            if (\is_string($output) && \preg_match_all($this->regex, $output, $matches, \PREG_PATTERN_ORDER)) {
+            if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     if (!\is_string($data = $this->callback($match))) {
                         $data = \str_replace("false", false, $this->dehydrate($data));
