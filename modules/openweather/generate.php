@@ -1,9 +1,9 @@
 <?php
 
-foreach ($this->openweather["api"] as $api => $url) {
+foreach ($this->openweather->api->restore() as $api => $url) {
     $model = new \Modules\OpenWeather\Model;
-    $model->store($this->model);
-    $model->store($this->openweather);
+    $model->store($this->model->restore());
+    $model->store($this->openweather->restore());
     $model->class = $this->labelize($api);
     $model->url = $url;
     $model->setup();

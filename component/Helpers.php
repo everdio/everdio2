@@ -1,16 +1,16 @@
 <?php
 namespace Component {
     trait Helpers {
-        public function slug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->naming($string, $replace)), $replace)), $replace);
-        }
-        
         public function naming($string, $replace =  " "){            
             return (string) \str_replace("\"", false, \trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate($string), $replace));
-        }                
+        } 
         
-        public function labelize(string $name) : string {
-            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($name))))))));
+        public function slug($string, $replace = "-"){            
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->naming($string, $replace)), $replace)), $replace);
+        }                       
+        
+        public function labelize(string $string) : string {
+            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($this->naming($string)))))))));
         }        
         
         public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
