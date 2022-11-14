@@ -179,16 +179,14 @@ namespace Component {
         /*
          * This function uses the Uniform Resource Locator (URL) to access methods within $this
          * SCHEME = any method within $this scope
-         * optional: HOST = any internal PHP function 
+         * optional: HOST = any internal PHP function to 1) pass process a method return or 2) processing standalone
          * optional: QUERY = the arguments to feed the method with
          */
         final public function callback(string $url, array $arguments = []) {
             $function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST);
-            
             if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }            
-            
             if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
                 try {
                     return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments))) : \call_user_func_array([$this, $method], \array_values($arguments)));

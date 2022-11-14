@@ -27,7 +27,7 @@ namespace Modules {
                                     }
 
                                     //is or isnot on callback value
-                                    if ((isset($this->is->{$label}->{$key}) && $this->callback($this->is->{$label}->{$key}) !== $this->controller->{$label}->{$key}) || (isset($this->isnot->{$label}->{$key}) && $this->callback($this->isnot->{$label}->{$key}) === $this->controller->{$label}->{$key})) {
+                                    if ((isset($this->is->{$label}->{$key}) && $this->callback($this->is->{$label}->{$key}) != $this->controller->{$label}->{$key}) || (isset($this->isnot->{$label}->{$key}) && $this->callback($this->isnot->{$label}->{$key}) == $this->controller->{$label}->{$key})) {
                                         unset ($this->controller->{$label}->{$key});                                            
                                         return;
                                     }

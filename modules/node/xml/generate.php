@@ -12,5 +12,5 @@ foreach ($xpath->query("//*") as $node) {
     $model->store($this->model->restore());
     $model->node = \dom_import_simplexml($node);
     $model->use = "\Modules\Node\Xml";        
-    $model->setup();           
+    $model->setup();          
 }

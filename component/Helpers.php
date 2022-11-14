@@ -28,7 +28,7 @@ namespace Component {
                     $data[$key] = $this->sanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \htmlspecialchars(\addslashes($data));
+                return (string) \htmlspecialchars(\addslashes(\strip_tags($data)));
             }
             
             return $data;
