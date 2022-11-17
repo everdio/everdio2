@@ -1,6 +1,7 @@
 <?php
 namespace Component {
     trait Helpers {
+        
         public function naming($string, $replace =  " "){            
             return (string) \str_replace("\"", false, \trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate($string), $replace));
         } 
@@ -69,6 +70,11 @@ namespace Component {
             
             return (array) $keywords;
         }        
+        
+        public function dateformat(string $date, string $format) : string {
+            $dateformatter = new \Component\Caller\DateFormatter($format);
+            return (string) $dateformatter->format($date);
+        }
     }
 }
 

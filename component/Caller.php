@@ -27,8 +27,8 @@ namespace Component {
             }
             
             throw new \BadFunctionCallException(\sprintf("unknown function call %s (%s)", \sprintf($this->_call, $name), $this->dehydrate($arguments)));
-        }       
-        
+        }      
+
         public function __dry() : string {
             return (string) \sprintf("new %s(%s)", (string) $this, $this->_call);
         }        
