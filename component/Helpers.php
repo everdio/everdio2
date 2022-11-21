@@ -70,11 +70,6 @@ namespace Component {
             
             return (array) $keywords;
         }        
-        
-        public function dateformat(string $date, string $format) : string {
-            $dateformatter = new \Component\Caller\DateFormatter($format);
-            return (string) $dateformatter->format($date);
-        }
     }
 }
 

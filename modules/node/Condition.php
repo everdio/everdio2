@@ -9,19 +9,27 @@ namespace Modules\Node {
                 if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || (isset($mapper->mapping) && \sizeof(($values = $mapper->restore($mapper->mapping))))) {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value)) {
-                            $conditions[$parameter] = \sprintf((\is_numeric($value) ? "@%s%s%s" : "@%s%s'%s'"), $mapper->getField($parameter), $expression, $value);
-                        }
+                            $conditions[$parameter] = $this->getCondition($mapper->get($parameter), $mapper->getField($parameter), $expression, $value);
+                        }                       
                     }                
                 }
 
                 if (isset($mapper->{$mapper->label})) {
-                    $conditions[$mapper->label] = \sprintf((\is_numeric($mapper->{$mapper->label}) ? "%s%s%s" : "%s%s'%s'"), $match, $expression, \trim($mapper->{$mapper->label}));
+                    $conditions[$mapper->label] = \sprintf((\is_numeric($mapper->{$mapper->label}) ? "%s %s %s" : "%s %s '%s'"), $match, $expression, \trim($mapper->{$mapper->label}));
                 }            
 
                 if (\sizeof($conditions)) {            
                     parent::__construct(\implode(\sprintf(" %s ", \strtolower($operator)), $conditions), [new Validator\IsString]);
                 }
             }
+        }
+        
+        private function getCondition(\Component\Validation $validation, string $field, string $expression, $value) : string {
+            if(isset($validation->IS_NUMERIC)) {
+                return (string) \sprintf("@%s%s%s", $field, $expression, $value);
+            } else {
+                return (string) \sprintf("@%s%s'%s'", $field, $expression, $value);
+            }            
         }
     }
 }

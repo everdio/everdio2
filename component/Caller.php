@@ -1,8 +1,10 @@
 <?php
 namespace Component {
     abstract class Caller {
-        use Helpers, Dryer;
+        use Helpers, Dryer, Finder;
+        
         private $_call;
+        
         protected $handle;
 
         public function __construct($_call) {
@@ -21,7 +23,7 @@ namespace Component {
             if (\function_exists(\sprintf($this->_call, $name))) {
                 if (isset($this->handle)) {
                     \array_unshift($arguments, $this->handle); 
-                }
+                }               
                 
                 return \call_user_func_array(\sprintf($this->_call, $name), $arguments);            
             }

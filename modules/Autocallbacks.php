@@ -5,21 +5,22 @@ namespace Modules {
             if (isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
-                        $call = ($this->library->{$label} === (string) $this ? $this : new $this->library->{$label});
-                        foreach ($callbacks as $key => $callback) {                                
+                        $call = ($this->library->{$label} === \get_class($this) ? $this : new $this->library->{$label});
+                        foreach ($callbacks as $key => $callback) {                              
                             if (isset($this->request->_debug)) {
                                 echo $parameter . " => controller / " . $label . " / " . $key . " :: " . $this->getCallbacks($callback) . PHP_EOL;
                             }                
 
                             if (\is_string($key)) {
-                                $this->controller->store([$label => [$key => ($call instanceof \Component\Core ? $call->callback($this->getCallbacks($callback)) : $this->getCallbacks($callback))]]);
+                                $this->controller->store([$label => [$key => $call->callback($this->getCallbacks($callback))]]);
 
-                                //continue or break on static value
+                                //break if static value is not controller value
                                 if (isset($this->continue->{$label}->{$key}) && $this->continue->{$label}->{$key} != $this->controller->{$label}->{$key}) {
                                     unset ($this->controller->{$label}->{$key});
                                     return;
                                 }
 
+                                //continue if static value is controller value
                                 if (isset($this->break->{$label}->{$key}) && $this->break->{$label}->{$key} == $this->controller->{$label}->{$key}) {
                                     unset ($this->controller->{$label}->{$key});
                                     return;                                            

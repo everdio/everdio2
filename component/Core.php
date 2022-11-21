@@ -1,7 +1,7 @@
 <?php
 namespace Component {
     abstract class Core {
-        use Helpers, Dryer;
+        use Helpers, Dryer, Finder;
         public function __construct(private array $_parameters = []) {
             foreach ($_parameters as $parameter => $validation) {
                 $this->add($parameter, $validation);
@@ -160,50 +160,7 @@ namespace Component {
             
             return (string) $content;
         }             
-        
-        /*
-         * This function recursively strips a path based string and returns until it can no longer proceed
-         * first checks whenever the path part is a parameter
-         *     second then checks if the parameter it's value is another $this object if so, it will proceed in there (back to first)
-         *     third if the value is not a $this it returns the value (whatever it is)
-         * fourth if the part is not a paramter, it will try a callback
-         * $arguments will be passed on to the callback, this is to make callbacks like 
-         *     finder:?path=find/another/callback:&argument[1]=test&argument[2]=test
-         */
-        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
-            foreach (\explode($seperator, $path) as $part) {
-                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, $arguments));
-            }
-        }
-    
-        /*
-         * This function uses the Uniform Resource Locator (URL) to access methods within $this
-         * SCHEME = any method within $this scope
-         * optional: HOST = any internal PHP function to 1) pass process a method return or 2) processing standalone
-         * optional: QUERY = the arguments to feed the method with
-         */
-        final public function callback(string $url, array $arguments = []) {
-            $function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST);
-            if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
-                \parse_str($query, $arguments);
-            }            
-            if (($method = \parse_url($url, \PHP_URL_SCHEME))) {
-                try {
-                    return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments))) : \call_user_func_array([$this, $method], \array_values($arguments)));
-                } catch (\TypeError $ex) {
-                    throw new \BadMethodCallException($ex->getMessage());
-                } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException($ex->getMessage());
-                }                              
-            } elseif ($function) {
-                try {
-                    return \call_user_func_array($function, \array_values($arguments));
-                } catch (\TypeError $ex) {                            
-                    throw new \BadFunctionCallException($ex->getMessage());
-                }
-            }               
-        }                         
-    
+   
         /*
          * deprecated, use finder which is way more awesome
          */
