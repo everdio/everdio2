@@ -1,8 +1,8 @@
 <?php
 namespace Component\Core {
     class Parameters extends \Component\Core {
-        final public function __set(string $field, $value) : void {
-            $this->set($field, $value);
+        final public function __set(string $parameter, $value) {
+            return $this->set($parameter, $value);
         }
         
         final public function set(string $field, $value) : void {

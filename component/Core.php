@@ -7,44 +7,8 @@ namespace Component {
                 $this->add($parameter, $validation);
             }            
         }
-
-        public function __toString() : string {
-            return (string) \get_class($this);
-        }
-
-        public function __invoke(string $parameter) : Validation {
-            return (object) $this->get($parameter);
-        }            
-
-        final public function __isset(string $parameter) : bool {
-            return (bool) $this->isset($parameter);
-        }        
-
-        public function __set(string $parameter, $value) {
-            $this->setValue($parameter, $value);
-        }
-
-        public function __get(string $parameter) {
-            return $this->getValue($parameter);
-        }
-
-        public function __unset(string $parameter) {
-            $this->unset($parameter);
-        }     
         
-        final public function isset(string $parameter) : bool {
-            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
-        }
-        
-        public function unset(string $parameter) {
-            if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->setValue(false);
-            }
-            
-            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
-        }
-        
-        final public function getValue($parameter) {
+        public function __get($parameter) {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
@@ -56,9 +20,29 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
         }
         
-        final public function setValue($parameter, $value) {
+        public function __set(string $parameter, $value) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
+            }
+            
+            throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            
+        }        
+
+        public function __toString() : string {
+            return (string) \get_class($this);
+        }
+
+        public function __invoke(string $parameter) : Validation {
+            return (object) $this->get($parameter);
+        }            
+
+        public function __isset(string $parameter) : bool {
+            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
+        }        
+
+        public function __unset(string $parameter) {
+            if ($this->exists($parameter)) {
+                return (bool) $this->_parameters[$parameter]->setValue(false);
             }
             
             throw new \InvalidArgumentException(\sprintf("unknown parameter `%s` in %s", $parameter, \get_class($this)));            

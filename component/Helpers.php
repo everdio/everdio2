@@ -1,9 +1,8 @@
 <?php
 namespace Component {
     trait Helpers {
-        
         public function naming($string, $replace =  " "){            
-            return (string) \str_replace("\"", false, \trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate($string), $replace));
+            return (string) \strip_tags(\nl2br(\trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\html_entity_decode($string, \ENT_QUOTES | \ENT_HTML5)), $replace)));
         } 
         
         public function slug($string, $replace = "-"){            
@@ -48,7 +47,7 @@ namespace Component {
         }
 
         public function phrases(string $content, int $min = 0, int $total = 99999, array $sentences = [], int $count = 0) : array {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', $content) as $sentence) {
+            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
                 if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->words($sentence))) {
                     $sentences[] = \trim($sentence);
                     $count += \strlen($sentence);
@@ -59,7 +58,7 @@ namespace Component {
         }
 
         public function words(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0) : array {
-            $words = \array_count_values(\str_word_count(\strtolower($content), 1));            
+            $words = \array_count_values(\str_word_count(\strtolower(\strip_tags(\nl2br($content))), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {

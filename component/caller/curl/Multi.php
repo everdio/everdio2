@@ -12,7 +12,7 @@ namespace Component\Caller\Curl {
                     if ($active) {
                         $this->select();
                     }
-                } while ($active && $status == CURLM_OK);
+                } while ($active && $status == \CURLM_OK);
             } catch (\ErrorException $ex) {
                 throw new \RuntimeException($ex->getMessage());
             }
