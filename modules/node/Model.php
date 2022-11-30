@@ -29,8 +29,8 @@ namespace Modules\Node {
             if ($this->node->hasAttributes()) {
                 foreach ($this->node->attributes as $attribute) {
                     $parameter = new \Component\Validation\Parameter((!empty(\trim($attribute->value)) ? \trim($attribute->value) : false), false, true);
-                    $this->add($this->labelize($attribute->nodeName), $parameter->getValidation($parameter->getValidators()));
-                    $this->mapping = [$attribute->nodeName => $this->labelize($attribute->nodeName)];
+                    $this->add($this->getLabelized($attribute->nodeName), $parameter->getValidation($parameter->getValidators()));
+                    $this->mapping = [$attribute->nodeName => $this->getLabelized($attribute->nodeName)];
                 }            
             }
             

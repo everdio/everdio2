@@ -7,7 +7,7 @@ namespace Modules\Node {
             
             if ($mapper->exists("index")) {
                 $parts = \explode(\DIRECTORY_SEPARATOR, $node->getNodePath());
-                $mapper->index = end($parts);
+                $mapper->index = \end($parts);
             }
             
             if (isset($node->parentNode)) {
@@ -16,13 +16,13 @@ namespace Modules\Node {
                 if (isset($mapper->mapping)) {                
                     foreach ($mapper->mapping as $attribute => $parameter) {
                         if ($mapper->exists($parameter)) {
-                            $mapper->{$parameter} = $node->getAttribute($attribute);
+                            $mapper->{$parameter} = \html_entity_decode($node->getAttribute($attribute), \ENT_QUOTES | \ENT_HTML5);
                         }
                     }
                 }
 
                 if ($mapper->exists($mapper->label)) {
-                    $mapper->{$mapper->label} = trim($node->nodeValue);           
+                    $mapper->{$mapper->label} = \html_entity_decode($node->nodeValue, \ENT_QUOTES | \ENT_HTML5);
                 }
             }
             

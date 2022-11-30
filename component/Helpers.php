@@ -1,19 +1,19 @@
 <?php
 namespace Component {
     trait Helpers {
-        public function naming($string, $replace =  " "){            
-            return (string) \strip_tags(\nl2br(\trim(\Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\html_entity_decode($string, \ENT_QUOTES | \ENT_HTML5)), $replace)));
+        public function getName($string, $replace =  " "){            
+            return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim($string), \ENT_QUOTES | \ENT_HTML5))));
         } 
         
-        public function slug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->naming($string, $replace)), $replace)), $replace);
+        public function getSlug($string, $replace = "-"){            
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->getName($string, $replace)), $replace)), $replace);
         }                       
         
-        public function labelize(string $string) : string {
-            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($this->naming($string)))))))));
-        }        
+        public function getLabelized(string $string) : string {
+            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($this->getName($string)))))))));
+        }         
         
-        public function formatsize($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
+        public function getSizeformat($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
             $base = \log(\floatval($size)) / \log(1024);
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }                
@@ -28,7 +28,7 @@ namespace Component {
                     $data[$key] = $this->sanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \htmlspecialchars(\addslashes(\strip_tags($data)));
+                return (string) \htmlspecialchars($data, \ENT_COMPAT | \ENT_HTML5);
             }
             
             return $data;
@@ -40,24 +40,13 @@ namespace Component {
                     $data[$key] = $this->desanitize($value);
                 }
             } elseif (\is_string($data)) {
-                return (string) \rawurldecode(\htmlspecialchars_decode(\str_replace("\\\\", "\\", $data)));
+                return (string) \html_entity_decode($data, \ENT_QUOTES | \ENT_HTML5);
             }
             
             return $data;
         }
-
-        public function phrases(string $content, int $min = 0, int $total = 99999, array $sentences = [], int $count = 0) : array {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
-                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->words($sentence))) {
-                    $sentences[] = \trim($sentence);
-                    $count += \strlen($sentence);
-                }                
-            }
-            
-            return (array) $sentences;
-        }
-
-        public function words(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0) : array {
+        
+        public function getWords(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0) : array {
             $words = \array_count_values(\str_word_count(\strtolower(\strip_tags(\nl2br($content))), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
@@ -68,6 +57,17 @@ namespace Component {
             }
             
             return (array) $keywords;
+        }        
+        
+        public function getLines(string $content, int $min = 0, int $total = 99999, array $sentences = [], int $count = 0) : array {
+            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
+                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {
+                    $sentences[] = \trim($sentence);
+                    $count += \strlen($sentence);
+                }                
+            }
+            
+            return (array) $sentences;
         }        
     }
 }

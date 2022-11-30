@@ -10,8 +10,8 @@ namespace Component\Core {
             ] + $_parameters);
         }        
         
-        final public function isRoute(string $arguments) : bool {
-            return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $arguments), $this->arguments)) === (string) $arguments);
+        final public function isRoute(string $path) : bool {
+            return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $path), \explode(\DIRECTORY_SEPARATOR, $this->arguments))) === (string) $path);
         }
 
         public function dispatch(string $path) {

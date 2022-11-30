@@ -7,8 +7,8 @@ $stm->execute();
 foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
     $model = new \Modules\Table\Model;
     $model->store($this->pdo);
-    $model->label = $this->labelize($table);
-    $model->class = $this->labelize($table);
+    $model->label = $this->getLabelized($table);
+    $model->class = $this->getLabelized($table);
     $model->namespace = $this->model["namespace"];
     $model->table = $table;
     $model->setup();

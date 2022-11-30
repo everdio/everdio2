@@ -13,7 +13,6 @@ namespace Modules\Node {
             
             if ($cdata) {
                 $element->appendChild($mapper->createCDATASection(\preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $cdata)));
-                //$element->appendChild($mapper->createCDATASection($cdata));
             }            
             
             if (isset($mapper->mapping)) {
