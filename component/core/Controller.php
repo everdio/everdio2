@@ -47,7 +47,15 @@ namespace Component\Core {
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
-                return $controller->dispatch(\basename($path));        
+                try {
+                    return $controller->dispatch(\basename($path));        
+                } catch (\UnexpectedValueException $ex) {
+                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                } catch (\InvalidArgumentException $ex) {
+                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                } catch (\ErrorException | \Exception $ex) {
+                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                }                
             }
         }
     }    

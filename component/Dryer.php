@@ -20,7 +20,7 @@ namespace Component {
             } elseif (\is_resource($data)) {
                 return (string) \get_resource_type($data);
             } else {
-                throw new \RuntimeException (\sprintf("%s %s", $data, \gettype($data)));
+                throw new \ValueError (\sprintf("unexpected data type %s", \gettype($data)));
             }
         }
 

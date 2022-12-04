@@ -1,4 +1,5 @@
 #!/usr/bin/env php
+
 <?php
 \ini_set("memory_limit", "1536M");
 \ini_set("display_errors", 1);
@@ -13,10 +14,8 @@ $cli->setup();
 try {
     echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
     \flush();
-} catch (\ErrorException | \Exception $ex) {
-    echo \sprintf("\n%s: %s\n\n", \get_class($ex), $ex->getMessage());
-    if (isset($cli->request->_debug)) {
-        echo \sprintf("\n%s\n\n", $ex->getTraceAsString());
-    }
+} catch (\RuntimeException $ex) {
+    echo \sprintf("Everdio returns a %s, %s\n\n", \get_class($ex), $ex->getMessage());
+    \flush();
 }
 exit;
