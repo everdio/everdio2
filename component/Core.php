@@ -8,16 +8,16 @@ namespace Component {
             }            
         }
         
-        public function __get($parameter) {
+        public function __get(string $parameter) {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
                 } catch (\ValueError $ex) {    
-                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter %s", $parameter), 0, $ex);
+                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter %s in %s", $parameter, (string) $this), 0, $ex);
                 }
             }
             
-            throw new \InvalidArgumentException(\sprintf("unknown parameter %s", $parameter));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter %s in %s", $parameter, (string) $this));
         }
         
         public function __set(string $parameter, $value) {
@@ -25,7 +25,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
             
-            throw new \InvalidArgumentException(\sprintf("unknown parameter %s", $parameter));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter %s in %s", $parameter, (string) $this));
         }        
 
         public function __toString() : string {
@@ -34,7 +34,7 @@ namespace Component {
 
         public function __invoke(string $parameter) : Validation {
             return (object) $this->get($parameter);
-        }            
+        }
 
         public function __isset(string $parameter) : bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
@@ -45,7 +45,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
             
-            throw new \InvalidArgumentException(\sprintf("unknown parameter %s", $parameter));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter %s in %s", $parameter, (string) $this));
         }
 
         final public function exists(string $parameter) : bool {
@@ -63,7 +63,7 @@ namespace Component {
                 return (object) $this->_parameters[$parameter];
             }
             
-            throw new \InvalidArgumentException(\sprintf("unknown parameter %s", $parameter));
+            throw new \InvalidArgumentException(\sprintf("unknown parameter %s in %s", $parameter, (string) $this));
         }
         
         public function remove(string $parameter) : void {

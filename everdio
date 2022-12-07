@@ -15,6 +15,9 @@ try {
     echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
     \flush();
 } catch (\RuntimeException $ex) {
+    if (isset($cli->request->_debug)) {
+        throw $ex;
+    }
     echo \sprintf("Everdio returns a %s, %s\n\n", \get_class($ex), $ex->getMessage());
     \flush();
 }

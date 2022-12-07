@@ -17,8 +17,9 @@ namespace Component\Core\Controller\Model {
                     if (\strpos($parameters, "--") !== false) {
                         $arguments[] = \str_replace("--", false, $parameters);
                     } else {
-                        \parse_str($parameters, $request);    
-                        $this->request->store($request);
+                        \parse_str($parameters, $request);
+                        $this->request->store(\array_merge_recursive($request, $this->request->restore()));
+                        
                     }                    
                 }
                 

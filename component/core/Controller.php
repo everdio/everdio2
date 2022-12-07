@@ -46,6 +46,7 @@ namespace Component\Core {
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
+            
             if (isset($controller->path)) {
                 try {
                     return $controller->dispatch(\basename($path));        
@@ -53,7 +54,7 @@ namespace Component\Core {
                     throw new \RuntimeException($ex->getMessage(), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
                     throw new \RuntimeException($ex->getMessage(), 0, $ex);
-                } catch (\ErrorException | \Exception $ex) {
+                } catch (\ErrorException | \TypeError $ex) {
                     throw new \RuntimeException($ex->getMessage(), 0, $ex);
                 }                
             }
