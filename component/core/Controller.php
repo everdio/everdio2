@@ -51,11 +51,11 @@ namespace Component\Core {
                 try {
                     return $controller->dispatch(\basename($path));        
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                    throw new \RuntimeException(\sprintf("invalid value for parameter `%s`: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
-                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                    throw new \RuntimeException(\sprintf("parameter `%s` required", $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException | \TypeError $ex) {
-                    throw new \RuntimeException($ex->getMessage(), 0, $ex);
+                    throw new \RuntimeException(\sprintf("error: %s", $ex->getMessage()), 0, $ex);
                 }                
             }
         }

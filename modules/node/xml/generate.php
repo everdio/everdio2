@@ -8,9 +8,10 @@ $xml->load($this->model->document, \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | 
 
 $xpath = new \DOMXPath($xml);
 foreach ($xpath->query("//*") as $node) {
+
     $model = new \Modules\Node\Xml\Model;
     $model->store($this->model->restore());
-    $model->node = \dom_import_simplexml($node);
+    $model->node = $node;
     $model->use = "\Modules\Node\Xml";        
     $model->setup();          
 }

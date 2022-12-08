@@ -3,7 +3,7 @@ namespace Modules\Node {
     use \Component\Validator;
     final class Create extends \Component\Validation {
         public function __construct(\Component\Core\Adapter\Mapper $mapper, string $cdata = NULL) {
-            if (isset($mapper->parent) && isset($mapper->index)) {
+            if (isset($mapper->index)) {
                 $element = $mapper->query($mapper->parent . \DIRECTORY_SEPARATOR . $mapper->index)->item(0);
             } elseif (isset($mapper->current)) {
                 $element = $mapper->query($mapper->current)->item(0);

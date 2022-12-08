@@ -10,7 +10,7 @@ namespace Modules\BaseX {
                 return (object) $this->api::construct()->query($query);
             }
             
-            throw new \RuntimeException("unknown or invalid API");
+            throw new \LogicException("unknown or invalid API");
         }    
         
         public function evaluate(string $query) : int {
@@ -18,7 +18,7 @@ namespace Modules\BaseX {
                 return (int) $this->api::construct()->fetch(sprintf("count(%s)", $query));
             }            
             
-            throw new \RuntimeException("unknown or invalid API");
+            throw new \LogicException("unknown or invalid API");
             
         }           
     }

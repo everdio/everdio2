@@ -1,12 +1,13 @@
 <?php
 namespace Modules {
     trait OpenWeather {
-        public function initialize() {            
+        public function initialize() {       
+            echo "<!--" . \sprintf("%s?%s", $this->url, \urldecode($this->querystring(["appid", "lang", "units", "lat", "lon", "mode"]))) . "-->" . PHP_EOL;
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true, 
                 \CURLOPT_RETURNTRANSFER => true, 
-                \CURLOPT_URL => sprintf("%s?%s", $this->url, \urldecode(\http_build_query($this->restore(["appid", "lang", "units", "lat", "lon", "mode"]))))]);
+                \CURLOPT_URL => \sprintf("%s?%s", $this->url, \urldecode($this->querystring(["appid", "lang", "units", "lat", "lon", "mode"])))]);
             return (object) $curl;
         }
         
@@ -15,7 +16,7 @@ namespace Modules {
                 $xml = new \DOMDocument("1.0", "UTF-8");
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = false;
-                $xml->loadXML($this->execute(), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                
+                $xml->loadXML($this->execute(), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
                 
                 self::$_adapters[$this->unique($this->diff())] = $xml;
             }

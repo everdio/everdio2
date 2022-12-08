@@ -3,7 +3,9 @@ namespace Modules\Node {
     use \Component\Validator;
     final class Map extends \Component\Validation {
         public function __construct(\Component\Core $mapper, \DOMElement $node) {
-            $mapper->current = $node->getNodePath();         
+            if ($mapper->exists("current")) {
+                $mapper->current = $node->getNodePath();         
+            }
             
             if ($mapper->exists("index")) {
                 $parts = \explode(\DIRECTORY_SEPARATOR, $node->getNodePath());

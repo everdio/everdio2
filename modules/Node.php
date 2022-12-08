@@ -58,7 +58,7 @@ namespace Modules {
         
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
             if (isset($mapper->index) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
-                $this->parent = $mapper->parent . DIRECTORY_SEPARATOR . $mapper->index;
+                $this->parent = (isset($mapper->parent) ? $mapper->parent : $mapper->path) . \DIRECTORY_SEPARATOR .  $mapper->index;
             } elseif (isset($mapper->current) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
                 $this->parent = $mapper->current;
             }

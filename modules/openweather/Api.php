@@ -3,7 +3,12 @@ namespace Modules\OpenWeather {
     trait Api {
         use \Modules\Node, \Modules\OpenWeather;
         public function query(string $query) : \DOMNodeList {
-            return (object) $this->xpath($this->request::construct(["lat" => $this->lat, "lon" => $this->lon, "lang" => $this->lang])->fetch($query))->query($query);
+            if (isset($this->api)) {
+                $xpath = new \DOMXPath($this->api::construct()->store($this->restore(["lat", "lon", "lang"]))->fetch());
+                return (object) $xpath->query($query);
+            }
+            
+            throw new \LogicException("unknown or invalid API");
         }
     }
 }
