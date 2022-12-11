@@ -17,6 +17,6 @@ try {
     if (isset($cli->request->_debug)) {
         throw $ex;
     }
-    echo \sprintf("Everdio: %s\n\n", $ex->getMessage());
+    echo \sprintf("\n\nEverdio: %s\n\n", $ex->getMessage());
 }
 exit;

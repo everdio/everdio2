@@ -2,7 +2,6 @@
 namespace Modules {
     trait OpenWeather {
         public function initialize() {       
-            echo "<!--" . \sprintf("%s?%s", $this->url, \urldecode($this->querystring(["appid", "lang", "units", "lat", "lon", "mode"]))) . "-->" . PHP_EOL;
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true, 
