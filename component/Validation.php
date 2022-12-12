@@ -35,7 +35,7 @@ namespace Component {
                 return (object) $this->validators[$validator];
             }
             
-            throw new \LogicException(sprintf("unknown validator %s", $validator));
+            throw new \LogicException(\sprintf("unknown validator %s", $validator));
         }
         
         public function has(array $types) : bool { 

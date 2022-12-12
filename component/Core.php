@@ -132,7 +132,6 @@ namespace Component {
             return (string) \serialize($this->parameters($parameters));
         }
 
-
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
         }        
@@ -186,11 +185,11 @@ namespace Component {
                 return (string) false;
             }            
         }        
-
+        
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
-        
+
         public function __destruct() {
             unset ($this->_parameters);
         }        

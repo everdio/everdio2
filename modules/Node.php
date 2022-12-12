@@ -22,14 +22,14 @@ namespace Modules {
         
         public function evaluate(string $query) : int {
             $xpath = new \DOMXPath($this->initialize());
-            return (int) $xpath->evaluate(sprintf("count(%s)", $query));
+            return (int) $xpath->evaluate(\sprintf("count(%s)", $query));
         }        
         
-        public function count(array $validations = [], string $query = NULL) : int {
+        public function count(array $validations = [], string $query = null) : int {
             return (int) $this->evaluate($this->prepare($validations) . $query);
         }        
         
-        public function find(array $validations = [], string $query = NULL) : self {
+        public function find(array $validations = [], string $query = null) : self {
             if (($node = $this->query($this->prepare($validations) . $query)->item(0))) {
                 $map = new Node\Map($this, $node);
                 return (object) $map->execute();                
@@ -38,15 +38,16 @@ namespace Modules {
             return (object) $this;
         }
         
-        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $records = []) : array {
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = null, array $records = []) : array {
             if ($limit) {
                 $validations[] = new Node\Position($this->path, $position, $limit);
             }
+            
+            $copy = new $this;
 
-            foreach ($this->query($this->prepare($validations) . $query) as $index => $node) { 
-                $map = new Node\Map(new $this, $node);
-                $mapper = $map->execute();                 
-                $records[$index + 1] = $mapper->restore(["index", "current", "parent", $mapper->label] + (isset($mapper->mapping) ? $mapper->mapping : []));                
+            foreach ($this->query($this->prepare($validations) . $query) as $index => $node) {
+                $map = new Node\Map($copy, $node);
+                $records[$index + 1] = $map->execute()->restore(["index", "current", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
             }
             
             if (\sizeof($orderby)) {
@@ -66,7 +67,7 @@ namespace Modules {
             return (object) $this;
         }
         
-        public function save(string $cdata = NULL) : self {
+        public function save(string $cdata = null) : self {
             if (!$cdata && $this->exists($this->label) && isset($this->{$this->label})) {
                 $cdata = $this->{$this->label};
             }

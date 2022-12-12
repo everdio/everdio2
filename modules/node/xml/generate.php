@@ -1,6 +1,4 @@
 <?php
-\libxml_use_internal_errors(false);
-
 $xml = new \DOMDocument("1.0", "UTF-8");
 $xml->preserveWhiteSpace = false;
 $xml->formatOutput = false;

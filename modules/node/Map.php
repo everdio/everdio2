@@ -2,7 +2,7 @@
 namespace Modules\Node {
     use \Component\Validator;
     final class Map extends \Component\Validation {
-        public function __construct(\Component\Core $mapper, \DOMElement $node) {
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, \DOMElement $node) {
             if ($mapper->exists("current")) {
                 $mapper->current = $node->getNodePath();         
             }

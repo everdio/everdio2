@@ -21,10 +21,11 @@ namespace Modules {
             return (string) $this->execute();
         }        
 
-        final public function fetchDOM(string $query) : \DOMDocument {
+        final public function fetchXml(string $query) : \DOMDocument {
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = false;
+            $dom->recover = true;
             $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->fetch($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
             return (object) $dom;
         }
