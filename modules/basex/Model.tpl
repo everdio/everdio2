@@ -20,7 +20,7 @@ namespace {{namespace}} {
                 }
             } 
             
-            self::$_queries[$query] = new \DOMXPath($this->fetchDom($query));
+            self::$_queries[$query] = new \DOMXPath($this->fetchXml($query));
             return (object) self::$_queries[$query]->query(\sprintf("//%s/*", $this->root));            
         }
     }

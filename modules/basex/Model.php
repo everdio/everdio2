@@ -20,7 +20,7 @@ namespace Modules\BaseX {
         }   
  
         public function setup() : void {
-            $xpath = new \DOMXPath($this->fetchDOM($this->query));
+            $xpath = new \DOMXPath($this->fetchXml($this->query));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);

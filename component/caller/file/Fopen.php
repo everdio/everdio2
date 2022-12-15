@@ -16,9 +16,5 @@ namespace Component\Caller\File {
             $this->seek(0);
             return (int) $size;
         }
-        
-        public function __destruct() {
-            $this->close();
-        }
     }
 }

@@ -4,6 +4,7 @@ namespace Component\Core {
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
             parent::__construct([                
+                "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "arguments" => new Validation(false, [new Validator\IsString])
@@ -16,7 +17,11 @@ namespace Component\Core {
 
         public function dispatch(string $path) {
             return (string) $this->getController($path);
-        }           
+        }      
+        
+        final public function getTime(int $round = 3) {
+            return (float) \round(\microtime(true) - $this->time, $round);
+        }
         
         final public function getController(string $path) {
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
@@ -29,9 +34,17 @@ namespace Component\Core {
         final public function getCallbacks(string $output, array $matches = []) {
             if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
-                    if (!\is_string($data = $this->callback($match))) {
-                        $data = \str_replace("false", false, $this->dehydrate($data));
-                    }                 
+                    try {
+                        if (!\is_string($data = $this->callback($match))) {
+                            $data = \str_replace("false", false, $this->dehydrate($data));
+                        }                 
+                    } catch (\InvalidArgumentException $ex) {
+                        throw new \RuntimeException(\sprintf("invalid arguments %s in %s", $ex->getPrevious()->getMessage(), $match));
+                    } catch (\BadMethodCallException $ex) {
+                        throw new \RuntimeException(\sprintf("bad method call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                    } catch (\BadFunctionCallException $ex) { 
+                        throw new \RuntimeException(\sprintf("bad function call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                    }
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
                 }                            
@@ -51,11 +64,11 @@ namespace Component\Core {
                 try {
                     return $controller->dispatch(\basename($path));        
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \RuntimeException(\sprintf("invalid value for parameter `%s`: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
-                    throw new \RuntimeException(\sprintf("parameter `%s` required", $ex->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException | \TypeError $ex) {
-                    throw new \RuntimeException(\sprintf("error: %s", $ex->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
                 }                
             }
         }

@@ -5,9 +5,5 @@ namespace Component\Caller\File {
             parent::__construct("gz%s", $_file);
             $this->handle = $this->open($_file, $compression);
         }       
-
-        public function __destruct() {
-            $this->close();
-        }
     }
 }

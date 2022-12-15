@@ -5,6 +5,7 @@
 *.csv
 *.txt
 *.ini
+*.out
 www/
 cache/
 uploads/

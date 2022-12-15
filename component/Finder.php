@@ -19,15 +19,15 @@ namespace Component {
                 try {                    
                     return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments))) : \call_user_func_array([$this, $method], \array_values($arguments)));
                 } catch (\TypeError $ex) {
-                    throw new \BadMethodCallException($ex->getMessage());
+                    throw new \BadMethodCallException($ex->getMessage(), 0, $ex);
                 } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException($ex->getMessage());
+                    throw new \InvalidArgumentException($ex->getMessage(), 0, $ex);
                 }                              
             } elseif ($function) {
                 try {
                     return \call_user_func_array($function, \array_values($arguments));
                 } catch (\TypeError $ex) {                            
-                    throw new \BadFunctionCallException($ex->getMessage());
+                    throw new \BadFunctionCallException($ex->getMessage(), 0, $ex);
                 }
             }                
         }                         

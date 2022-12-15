@@ -22,5 +22,10 @@ namespace Component\Caller {
         public function delete() {
             return unlink($this->_file);
         }        
+        
+        
+        public function __destruct() {
+            $this->close();
+        }        
     }
 }
