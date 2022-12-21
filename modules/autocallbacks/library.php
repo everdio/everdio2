@@ -4,5 +4,8 @@ if ($this->request->sizeof(["library", "controller"])) {
         $this->library->store([$library => $this->getCallbacks($namespace)]);        
     }
     
+    $dir = new \Component\Caller\Dir($this->request->library);
+    print_r($dir->recursive());
+    
     print_r($this->library->restore());
 }

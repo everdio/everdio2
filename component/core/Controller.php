@@ -23,6 +23,10 @@ namespace Component\Core {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
         
+        final public function getMemory(int $precision = 10) {
+           return $this->getSizeformat(\memory_get_peak_usage(true), $precision);
+        }        
+        
         final public function getController(string $path) {
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();
@@ -39,11 +43,11 @@ namespace Component\Core {
                             $data = \str_replace("false", false, $this->dehydrate($data));
                         }                 
                     } catch (\InvalidArgumentException $ex) {
-                        throw new \RuntimeException(\sprintf("invalid arguments %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("invalid arguments %s in %s", $ex->getPrevious()->getMessage(), $match));
                     } catch (\BadMethodCallException $ex) {
-                        throw new \RuntimeException(\sprintf("bad method call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getPrevious()->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) { 
-                        throw new \RuntimeException(\sprintf("bad function call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getPrevious()->getMessage(), $match));
                     }
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
@@ -64,12 +68,14 @@ namespace Component\Core {
                 try {
                     return $controller->dispatch(\basename($path));        
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \RuntimeException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
+                    throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
-                    throw new \RuntimeException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
+                    throw new \LogicException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException | \TypeError $ex) {
-                    throw new \RuntimeException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
-                }                
+                    throw new \LogicException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
+                } catch (\LogicException $ex) {
+                    throw $ex;
+                }
             }
         }
     }    

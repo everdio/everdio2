@@ -10,7 +10,7 @@ namespace Modules\BaseX {
         }    
         
         public function evaluate(string $query) : int {
-            return (int) $this->api::construct()->fetch(sprintf("count(%s)", $query));
+            return (int) $this->api::construct()->fetch(\sprintf("count%s", $query));
         }           
     }
 }

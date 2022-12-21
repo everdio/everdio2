@@ -13,10 +13,11 @@ $cli->setup();
 
 try {
     echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
-} catch (\RuntimeException $ex) {
+} catch (\LogicException $ex) {
     if (isset($cli->request->_debug)) {
-        throw $ex;
+        throw \RuntimeException($ex->getMessage(), 0, $ex);
     }
+    
     echo \sprintf("\n\nEverdio: %s\n\n", $ex->getMessage());
 }
 exit;
