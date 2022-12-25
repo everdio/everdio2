@@ -21,7 +21,7 @@ namespace Modules\Node {
                 }
 
                 if (isset($mapper->{$mapper->label})) {
-                    $conditions[$mapper->label] = \sprintf((\is_numeric($mapper->{$mapper->label}) ? "%s %s %s" : "%s %s \"%s\""), $match, $expression, \html_entity_decode($mapper->{$mapper->label}, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
+                    $conditions[$mapper->label] = \sprintf((\is_numeric($mapper->{$mapper->label}) ? "%s%s%s" : "%s%s\"%s\""), $match, $expression, \html_entity_decode($mapper->{$mapper->label}, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
                 }            
 
                 if (\sizeof($conditions)) {            

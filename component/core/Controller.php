@@ -54,8 +54,6 @@ namespace Component\Core {
                 }                            
             }
             
-            
-            
             return (string) $output;
         }
 
