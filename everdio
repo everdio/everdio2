@@ -17,7 +17,7 @@ if (!isset($cli->route)) {
     exit;
 }
 
-echo $cli->echo(\sprintf("Starting `%s`", $cli->route), ["yellow", "blackbg", "bold"]) . \PHP_EOL . \PHP_EOL;
+echo $cli->echo(\sprintf("Processing `%s`", $cli->route), ["yellow", "blackbg", "bold"]) . \PHP_EOL . \PHP_EOL;
 try {
     echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
 } catch (\LogicException $ex) {
@@ -28,5 +28,5 @@ try {
     echo $cli->echo(\sprintf("Exception; %s", $ex->getMessage()), ["yellow", "blackbg", "bold"]) . \PHP_EOL;
 }
 
-echo $cli->echo(\sprintf("Finnished in %ss with max %s memory...", $cli->getTime(), $cli->getMemory()), ["bold", "yellow"]) . \PHP_EOL;
+echo $cli->echo(\sprintf("Processed in %ss and %s memory consumption", $cli->getTime(), $cli->getMemory()), ["bold", "yellow"]) . \PHP_EOL;
 exit;
