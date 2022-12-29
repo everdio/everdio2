@@ -17,6 +17,7 @@ namespace Modules {
         }
         
         final public function fetch(string $query) : string {
+            //echo \PHP_EOL . \PHP_EOL . "<!--" . $query . "-->" . \PHP_EOL . \PHP_EOL;
             $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
         }        

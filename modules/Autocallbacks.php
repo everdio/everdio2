@@ -1,7 +1,7 @@
 <?php   
 namespace Modules {
     trait Autocallbacks {
-        final public function autocallbacks(string $parameter) {  
+        final public function autocallbacks(string $parameter, bool $all = false) {  
             if (isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
@@ -9,7 +9,7 @@ namespace Modules {
                         foreach ($callbacks as $id => $callback) {                              
                             try {
                                 if (isset($this->request->_debug)) {
-                                    echo $parameter . " => controller / " . $label . " / " . $id . " :: " . $this->getCallbacks($callback) . PHP_EOL;
+                                    echo "<!--autocallback: " . $parameter . " => controller / " . $label . " / " . $id . " :: " . $this->getCallbacks($callback) . "-->" . PHP_EOL;
                                 }
                                                             
                                 if (\is_string($id)) {
@@ -48,7 +48,7 @@ namespace Modules {
                                 throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                             } catch (\InvalidArgumentException $ex) {
                                 throw new \LogicException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
-                            } catch (\ErrorException | \TypeError $ex) {
+                            } catch (\ErrorException | \TypeError | \Error $ex) {
                                 throw new \LogicException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
                             } catch (\LogicException $ex) {
                                 throw $ex;

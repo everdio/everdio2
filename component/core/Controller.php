@@ -69,7 +69,7 @@ namespace Component\Core {
                     throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
                     throw new \LogicException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
-                } catch (\ErrorException | \TypeError $ex) {
+                } catch (\ErrorException | \TypeError | \Error $ex) {
                     throw new \LogicException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
                 } catch (\LogicException $ex) {
                     throw $ex;
