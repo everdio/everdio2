@@ -1,7 +1,7 @@
 <?php   
 namespace Modules {
     trait Autocallbacks {
-        final public function autocallbacks(string $parameter, bool $all = false) {  
+        final public function autocallbacks(string $parameter) : void {
             if (isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
@@ -49,7 +49,7 @@ namespace Modules {
                             } catch (\InvalidArgumentException $ex) {
                                 throw new \LogicException(\sprintf("parameter %s required", $ex->getMessage()), 0, $ex);
                             } catch (\ErrorException | \TypeError | \Error $ex) {
-                                throw new \LogicException(\sprintf("error %s", $ex->getMessage()), 0, $ex);
+                                throw new \LogicException($ex->getMessage(), 0, $ex);
                             } catch (\LogicException $ex) {
                                 throw $ex;
                             }

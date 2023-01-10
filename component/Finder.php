@@ -29,7 +29,7 @@ namespace Component {
                 } catch (\TypeError $ex) {                            
                     throw new \BadFunctionCallException($ex->getMessage(), 0, $ex);
                 }
-            }                
+            }         
         }                         
     }
 }

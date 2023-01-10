@@ -59,15 +59,15 @@ namespace Component {
             return (array) $keywords;
         }        
         
-        public function getLines(string $content, int $min = 0, int $total = 99999, array $sentences = [], int $count = 0) : array {
+        public function getLines(string $content, int $min = 0, int $total = 99999, array $lines = [], int $count = 0) : array {
             foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
                 if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {
-                    $sentences[] = \trim($sentence);
+                    $lines[] = \trim($sentence);
                     $count += \strlen($sentence);
                 }                
             }
             
-            return (array) $sentences;
+            return (array) $lines;
         }        
     }
 }
