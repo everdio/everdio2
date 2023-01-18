@@ -146,7 +146,6 @@ namespace Component {
    
         /*
          * deprecated, use finder which is way more awesome
-         */
         final public function search(string $path) {
             foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
                 if (isset($this->{$parameter})) {
@@ -163,9 +162,7 @@ namespace Component {
             }
         }             
         
-        /*
          * deprecated, use finder which is way more awesome
-         */        
         final public function haystack(string $path, array $haystack, array $parts = []) {
             foreach (($parts = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {    
                 if (\array_key_exists($needle, $haystack)) {
@@ -185,6 +182,8 @@ namespace Component {
                 return (string) false;
             }            
         }        
+         * 
+         */
         
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);

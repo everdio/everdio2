@@ -5,15 +5,10 @@ namespace Component\Core\Controller {
         abstract public function setup() : void;
         
         public function dispatch(string $path) {   
-            
-            if ((isset($this->host) && $this->host === "droomparadijs.nl") || strpos($this->path, "droomparadijs2")) {
-                return (string) parent::dispatch($this->getModel($path));
-            }
-            
-            return (string) parent::dispatch($this->getModel2($path));
-            
+            return (string) parent::dispatch($this->getModel($path));
         }    
         
+        /*
         final public function getModel(string $path, bool $reset = false) : string {
             if (\file_exists(($file = \sprintf("%s/%s.ini", $this->path, $path)))) {
                 foreach (\array_merge_recursive(\parse_ini_file($file, true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
@@ -22,8 +17,10 @@ namespace Component\Core\Controller {
             }           
             return (string) $path;
         }
+         * 
+         */
 
-        final public function getModel2(string $path, bool $reset = false) : string {
+        final public function getModel(string $path, bool $reset = false) : string {
             if (\file_exists(($file = \sprintf("%s/%s.ini", $this->path, $path)))) {
                 foreach (\array_merge_recursive(\parse_ini_file($file, true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
                     if (\is_array($value)) {
