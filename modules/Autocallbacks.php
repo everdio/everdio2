@@ -5,7 +5,7 @@ namespace Modules {
             if (isset($this->{$parameter})) {                
                 foreach ($this->{$parameter}->restore() as $label => $callbacks) {
                     if (isset($this->library->{$label}) ) {
-                        $call = ($this->library->{$label} === \get_class($this) ? $this : new $this->library->{$label});
+                        $core = ($this->library->{$label} === \get_class($this) ? $this : new $this->library->{$label});
                         foreach ($callbacks as $id => $callback) {                              
                             try {
                                 if (isset($this->request->_debug)) {
@@ -13,7 +13,7 @@ namespace Modules {
                                 }
                                                             
                                 if (\is_string($id)) {
-                                    $this->controller->store([$label => [$id => $call->callback($this->getCallbacks($callback))]]);
+                                    $this->controller->store([$label => [$id => $core->callback($this->getCallbacks($callback))]]);
 
                                     //break if static value is not controller value
                                     if (isset($this->continue->{$label}->{$id}) && $this->continue->{$label}->{$id} != $this->controller->{$label}->{$id}) {
@@ -42,7 +42,7 @@ namespace Modules {
                                         }                   
                                     }
                                 } else {
-                                    $call->callback($this->getCallbacks($callback));
+                                    $core->callback($this->getCallbacks($callback));
                                 }      
                             } catch (\UnexpectedValueException $ex) {
                                 throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);

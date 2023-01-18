@@ -13,7 +13,7 @@ namespace Component {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($this->getName($string)))))))));
         }         
         
-        public function getSizeformat($size, $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
+        public function getSizeformat($size, int $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
             $base = \log(\floatval($size)) / \log(1024);
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }                

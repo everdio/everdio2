@@ -23,7 +23,7 @@ namespace Component\Core {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
         
-        final public function getMemory(int $precision = 10) {
+        final public function getMemory(int $precision = 2) {
            return $this->getSizeformat(\memory_get_peak_usage(true), $precision);
         }        
         
@@ -35,7 +35,7 @@ namespace Component\Core {
             }            
         }            
         
-        final public function getCallbacks(string $output, array $matches = []) {
+        final public function getCallbacks(string $output, array $matches = []) : string {
             if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     try {
