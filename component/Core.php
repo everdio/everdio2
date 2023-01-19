@@ -143,47 +143,6 @@ namespace Component {
             
             return (string) $content;
         }             
-   
-        /*
-         * deprecated, use finder which is way more awesome
-         
-        final public function search(string $path) {
-            foreach (\explode(\DIRECTORY_SEPARATOR, $path) as $parameter) {
-                if (isset($this->{$parameter})) {
-                    if ($this->{$parameter} instanceof self) {
-                        return $this->{$parameter}->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])));
-                    } else{
-                        if (\is_array($this->{$parameter})) {
-                            return $this->haystack(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$parameter])), $this->{$parameter});
-                        }
-                        return $this->{$parameter};        
-                    }
-                }
-                return (string) false;
-            }
-        }             
-        
-        final public function haystack(string $path, array $haystack, array $parts = []) {
-            foreach (($parts = \explode(\DIRECTORY_SEPARATOR, $path)) as $needle) {    
-                if (\array_key_exists($needle, $haystack)) {
-                    if (\sizeof($parts) !== 1) {
-                        if ($haystack[$needle] instanceof self) {
-                            return $haystack[$needle]->search(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$needle])));
-                        } else{
-                            if (\is_array($haystack[$needle])) {
-                                return $this->haystack(\implode(\DIRECTORY_SEPARATOR, \array_diff(\explode(\DIRECTORY_SEPARATOR, $path), [$needle])), $haystack[$needle]);
-                            }
-                            return $haystack[$needle];        
-                        }
-                    }
-                    return $haystack[$needle];
-                } 
-                
-                return (string) false;
-            }            
-        }
-         * 
-         */        
         
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
