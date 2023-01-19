@@ -18,6 +18,7 @@ if (!isset($cli->route)) {
 }
 
 echo $cli->echo(\sprintf("Processing `%s`", $cli->route), ["yellow", "blackbg", "bright"]) . \PHP_EOL . \PHP_EOL;
+
 try {
     echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->route) . \PHP_EOL;
 } catch (\Exception $ex) {

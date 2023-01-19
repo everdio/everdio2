@@ -5,7 +5,15 @@ namespace Component\Core\Controller {
         abstract public function setup() : void;
         
         public function dispatch(string $path) {   
+            
+            /*
+            if ((isset($this->host) && $this->host === "droomparadijs.nl") || strpos($this->path, "droomparadijs2")) {
+                return (string) parent::dispatch($this->getModel($path));
+            }
+             */
+            
             return (string) parent::dispatch($this->getModel($path));
+            
         }    
         
         /*
