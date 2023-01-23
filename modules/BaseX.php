@@ -1,8 +1,8 @@
 <?php
 namespace Modules {
-    trait BaseX {
-        protected function initialize() {
-            if (!\array_key_exists(($hash = \md5($this->host)), self::$_adapters)) {
+    trait BaseX {        
+        final protected function initialize() : object {
+            if (!\array_key_exists(($key = $this->unique($this->diff())), self::$_adapters)) {
                 $curl = new \Component\Caller\Curl;
                 $curl->setopt_array([
                     \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
@@ -10,33 +10,23 @@ namespace Modules {
                     \CURLOPT_RETURNTRANSFER => true
                     ]); 
                 
-                self::$_adapters[$hash] = $curl;
+                self::$_adapters[$key] = $curl;
             }
 
-            return (object) self::$_adapters[$hash];
-        }
-        
-        final public function fetch(string $query) : string {
-            //echo "<!--" . $query . "-->" . \PHP_EOL;
+            return (object) self::$_adapters[$key];
+        }            
+  
+        final public function query(string $query) : string {
+            //echo "<!-- raw: " . $query . "-->" . \PHP_EOL;
             $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
-        }        
-
-        final public function fetchXml(string $query) : \DOMDocument {
-            $dom = new \DOMDocument("1.0", "UTF-8");
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = false;
-            $dom->recover = true;
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->fetch($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
-            return (object) $dom;
-        }
-
+        }           
+        
         final public function post(string $content) {
             $curl = $this->initialize();
             $curl->post($content);
             $curl->setopt(\CURLOPT_URL, $this->host);
             $curl->execute();             
-            $curl->close();
         }
         
         final public function put($handle, int $size = 0) {
@@ -44,7 +34,6 @@ namespace Modules {
             $curl->put($handle, $size);
             $curl->setopt(\CURLOPT_URL, $this->host);
             $curl->execute();    
-            $curl->close();
         }          
     }
 }

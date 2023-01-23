@@ -3,46 +3,46 @@ namespace Modules {
     trait Autocallbacks {
         final public function autocallbacks(string $parameter) : void {
             if (isset($this->{$parameter})) {                
-                foreach ($this->{$parameter}->restore() as $label => $callbacks) {
-                    if (isset($this->library->{$label}) ) {
-                        $core = ($this->library->{$label} === \get_class($this) ? $this : new $this->library->{$label});
-                        foreach ($callbacks as $id => $callback) {                              
+                foreach ($this->{$parameter}->restore() as $object => $callbacks) {
+                    if (isset($this->library->{$object}) ) {
+                        $finder = ($this->library->{$object} === \get_class($this) ? $this : new $this->library->{$object});
+                        foreach ($callbacks as $label => $callback) {                              
                             try {
-                                if (isset($this->request->_debug)) {
-                                    echo "<!--autocallback: " . $parameter . " => controller / " . $label . " / " . $id . " :: " . $this->getCallbacks($callback) . "-->" . PHP_EOL;
+                                if (isset($this->request->{$this->debug})) {
+                                    echo "<!--autocallback: " . $parameter . "/controller/" . $object . "/" . $label  . "-->" . PHP_EOL;
                                 }
                                                             
-                                if (\is_string($id)) {
-                                    $this->controller->store([$label => [$id => $core->callback($this->getCallbacks($callback))]]);
+                                if (\is_string($label)) {
+                                    $this->controller->store([$object => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                     //break if static value is not controller value
-                                    if (isset($this->continue->{$label}->{$id}) && $this->continue->{$label}->{$id} != $this->controller->{$label}->{$id}) {
-                                        unset ($this->controller->{$label}->{$id});
+                                    if (isset($this->continue->{$object}->{$label}) && $this->continue->{$object}->{$label} != $this->controller->{$object}->{$label}) {
+                                        unset ($this->controller->{$object}->{$label});
                                         return;
                                     }
 
                                     //continue if static value is controller value
-                                    if (isset($this->break->{$label}->{$id}) && $this->break->{$label}->{$id} == $this->controller->{$label}->{$id}) {
-                                        unset ($this->controller->{$label}->{$id});
+                                    if (isset($this->break->{$object}->{$label}) && $this->break->{$object}->{$label} == $this->controller->{$object}->{$label}) {
+                                        unset ($this->controller->{$object}->{$label});
                                         return;                                            
                                     }
 
                                     //is or isnot on callback value
-                                    if ((isset($this->is->{$label}->{$id}) && $this->callback($this->is->{$label}->{$id}) != $this->controller->{$label}->{$id}) || (isset($this->isnot->{$label}->{$id}) && $this->callback($this->isnot->{$label}->{$id}) == $this->controller->{$label}->{$id})) {
-                                        unset ($this->controller->{$label}->{$id});                                            
+                                    if ((isset($this->is->{$object}->{$label}) && $this->callback($this->is->{$object}->{$label}) != $this->controller->{$object}->{$label}) || (isset($this->isnot->{$object}->{$label}) && $this->callback($this->isnot->{$object}->{$label}) == $this->controller->{$object}->{$label})) {
+                                        unset ($this->controller->{$object}->{$label});                                            
                                         return;
                                     }
 
                                     //foreach loop
-                                    if (isset($this->foreach->{$label}->{$id}) && isset($this->controller->{$label}->{$id})) {
-                                        foreach ($this->controller->{$label}->{$id}->restore() as $key => $foreach) {
-                                            $this->controller->store([$label => [$id => $foreach]]); 
-                                            $this->callback($this->getCallbacks($this->foreach->{$label}->{$id}));
-                                            unset ($this->controller->{$label}->{$id});
+                                    if (isset($this->foreach->{$object}->{$label}) && isset($this->controller->{$object}->{$label})) {
+                                        foreach ($this->controller->{$object}->{$label}->restore() as $key => $foreach) {
+                                            $this->controller->store([$object => [$label => $foreach]]); 
+                                            $this->callback($this->getCallbacks($this->foreach->{$object}->{$label}));
+                                            unset ($this->controller->{$object}->{$label});
                                         }                   
                                     }
                                 } else {
-                                    $core->callback($this->getCallbacks($callback));
+                                    $finder->callback($this->getCallbacks($callback));
                                 }      
                             } catch (\UnexpectedValueException $ex) {
                                 throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);

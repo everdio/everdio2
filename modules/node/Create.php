@@ -5,8 +5,6 @@ namespace Modules\Node {
         public function __construct(\Component\Core\Adapter\Mapper $mapper, string $cdata = NULL) {
             if (isset($mapper->parent) && isset($mapper->index)) {
                 $element = $mapper->query($mapper->parent . \DIRECTORY_SEPARATOR . $mapper->index)->item(0);
-            } elseif (isset($mapper->current)) {
-                $element = $mapper->query($mapper->current)->item(0);
             } else {
                 $element = $mapper->createElement(\strtolower($mapper->label));
             }

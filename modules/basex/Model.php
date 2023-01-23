@@ -20,7 +20,13 @@ namespace Modules\BaseX {
         }   
  
         public function setup() : void {
-            $xpath = new \DOMXPath($this->fetchXml($this->query));
+            $dom = new \DOMDocument("1.0", "UTF-8");
+            $dom->preserveWhiteSpace = false;
+            $dom->substituteEntities = false;
+            $dom->formatOutput = false; 
+            $dom->recover = true;
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->query($this->query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+            $xpath = new \DOMXPath($dom);
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
@@ -28,11 +34,11 @@ namespace Modules\BaseX {
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->use = "\Modules\BaseX\Api";
                 $model->setup();
-                
+
                 if (isset($model->mapping)) {
                     $model->primary = \array_intersect_key($this->keys, $model->mapping);
                 }
-            }                
+            }                       
         }
         
         public function __destruct() {

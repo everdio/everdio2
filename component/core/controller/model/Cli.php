@@ -5,7 +5,6 @@ namespace Component\Core\Controller\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])]),
-                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "execute" => new Validation(false, [new Validator\IsString\IsPath]),
                 "styles" => new Validation([
                     "bright" => 1, 

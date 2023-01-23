@@ -7,6 +7,8 @@ namespace Component\Core {
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
+                "debug" => new Validation(false, [new Validator\IsString]),
+                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);
         }        
@@ -27,7 +29,7 @@ namespace Component\Core {
            return $this->getSizeformat(\memory_get_peak_usage(true), $precision);
         }        
         
-        final public function getController(string $path) {
+        final public function getController(string $path) {            
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();
                 require $file;
@@ -35,7 +37,7 @@ namespace Component\Core {
             }            
         }            
         
-        final public function getCallbacks(string $output, array $matches = []) : string {
+        final public function getCallbacks(string $output, array $matches = []) : string {            
             if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     try {

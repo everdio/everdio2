@@ -4,8 +4,6 @@ namespace Modules {
         private function prepare(array $validations = []) : string {
             if (isset($this->index) && isset($this->parent)) {
                 return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);
-            } elseif (isset($this->current)) {
-                return (string) \sprintf("(%s)", $this->current);
             } elseif (isset($this->parent)) {
                 $filter = new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]);    
                 return (string) \sprintf("(%s)", $filter->execute());
@@ -22,7 +20,7 @@ namespace Modules {
         
         public function evaluate(string $query) : int {
             $xpath = new \DOMXPath($this->initialize());
-            return (int) $xpath->evaluate(\sprintf("count(%s)", $query));
+            return (int) $xpath->evaluate(\sprintf("count%s", $query));
         }        
         
         public function count(array $validations = [], string $query = null) : int {
@@ -47,7 +45,7 @@ namespace Modules {
 
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) {
                 $map = new Node\Map($copy, $node);
-                $records[$index + 1] = $map->execute()->restore(["index", "current", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
+                $records[$index + 1] = $map->execute()->restore(["index", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
             }
             
             if (\sizeof($orderby)) {
@@ -60,8 +58,6 @@ namespace Modules {
         public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
             if (isset($mapper->index) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
                 $this->parent = (isset($mapper->parent) ? $mapper->parent : $mapper->path) . \DIRECTORY_SEPARATOR .  $mapper->index;
-            } elseif (isset($mapper->current) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
-                $this->parent = $mapper->current;
             }
             
             return (object) $this;
@@ -79,21 +75,11 @@ namespace Modules {
         }
         
         public function delete() : self {
-            /* using new index*/
             if (isset($this->index) && isset($this->parent)) {
                 if ($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0)) {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0));    
                 }
-                
                 unset ($this->index);
-            }
-            
-            /* using old current    */
-            if (isset($this->parent) && isset($this->current)) {                
-                if ($this->query($this->current)->item(0)) {
-                    $this->query($this->parent)->item(0)->removeChild($this->query($this->current)->item(0));    
-                }
-                unset ($this->current);                       
             } elseif (isset($this->mapping) || isset($this->{$this->label})) {
                 foreach ($this->findAll() as $row) {
                     $mapper = new $this($row);

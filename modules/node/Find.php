@@ -2,7 +2,7 @@
 namespace Modules\Node {
     final class Find extends \Component\Validation {
         public function __construct(string $xpath, array $validations = [], string $wrap = "(%s)") {
-            $xparts = $parts = \explode(\DIRECTORY_SEPARATOR, \preg_replace('/\[(.*?)\]/', false, $xpath));
+            $xparts = $parts = \explode(\DIRECTORY_SEPARATOR, \preg_replace("/\[(.*?)\]/", false, $xpath));
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {    
                     if (\array_key_exists(($last = \array_key_last(\array_intersect(($fparts = \explode(\DIRECTORY_SEPARATOR, ($fpath = \preg_replace('/\[(.*?)\]/', false, ($filter = $validation->execute()))))), $parts))), $xparts)) {
