@@ -4,8 +4,8 @@ namespace Modules\BaseX {
      * overriding Modules\Node query() and evaluate()
      */
     trait Api {
-        use \Modules\Node, \Modules\BaseX;                      
-      
+        use \Modules\Node, \Modules\BaseX;      
+
         public function query(string $query) : \DOMNodeList {     
             $api = new $this->api;
             
@@ -44,12 +44,12 @@ namespace Modules\BaseX {
                     $fragment = new \Modules\Node\Fragment(str_replace(["(", ")"], false, $_query), \str_replace(["(", ")"], false, $query));
                     if ($fragment->isValid()) {
                         $xpath = new \DOMXpath($api::$_queries[$_query]);
-                        return (int) $xpath->evaluate(\sprintf("count%s", $fragment->execute()));
+                        return (int) $xpath->evaluate(\sprintf("count(%s)", $fragment->execute()));
                     }
                 } 
             }            
             
-            return (int) $this->api::construct()->query(\sprintf("count%s", $query));
+            return (int) $this->api::construct()->query(\sprintf("count(%s)", $query));
         }         
     }
 }

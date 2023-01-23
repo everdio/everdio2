@@ -15,6 +15,7 @@ namespace Modules {
         }            
   
         final public function query(string $query) : string {
+            //echo "<!-- raw " . $query . "-->" . \PHP_EOL;
             $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
         }           
