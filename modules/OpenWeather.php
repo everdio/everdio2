@@ -12,18 +12,15 @@ namespace Modules {
         }        
 
         final public function fetch() : \DOMDocument {
-            if (!\array_key_exists($this->unique($this->diff()), self::$_adapters)) {
+            if (!\array_key_exists(($key = $this->unique($this->inter(["appid", "lang", "units", "lat", "lon", "mode"]))), self::$_adapters)) {
                 $xml = new \DOMDocument("1.0", "UTF-8");
                 $xml->preserveWhiteSpace = false;
-                $xml->substituteEntities = false;
                 $xml->formatOutput = false; 
-                $xml->recover = true;
-                $xml->loadXML($this->execute(), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
-                
-                self::$_adapters[$this->unique($this->diff())] = $xml;
+                $xml->loadXML($this->execute(), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+                self::$_adapters[$key] = $xml;
             }
             
-            return (object) self::$_adapters[$this->unique($this->diff())];
+            return (object) self::$_adapters[$key];
         }      
     }
 }

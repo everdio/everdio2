@@ -22,10 +22,8 @@ namespace Modules\BaseX {
         public function setup() : void {
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
-            $dom->substituteEntities = false;
             $dom->formatOutput = false; 
-            $dom->recover = true;
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->query($this->query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->query($this->query), $this->root), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
             $xpath = new \DOMXPath($dom);
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;

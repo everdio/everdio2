@@ -10,8 +10,7 @@ namespace Component\Caller {
             $this->setopt_array([            
                 \CURLOPT_FILE => $handle,
                 \CURLOPT_BINARYTRANSFER => true,
-                \CURLOPT_HEADER => false
-            ]);    
+                \CURLOPT_HEADER => false]);    
         }
         
         final public function put($handle, int $size = 0) {
@@ -21,8 +20,7 @@ namespace Component\Caller {
                 \CURLOPT_PUT => true,
                 \CURLOPT_BINARYTRANSFER => true,
                 \CURLOPT_HEADER => false,
-                \CURLOPT_RETURNTRANSFER => true
-            ]);    
+                \CURLOPT_RETURNTRANSFER => true]);    
             
             \fseek($handle, 0);
         }
@@ -32,8 +30,7 @@ namespace Component\Caller {
                 \CURLOPT_POSTFIELDS => $content,
                 \CURLOPT_INFILESIZE => \strlen($content),
                 \CURLOPT_POST => true,
-                \CURLOPT_RETURNTRANSFER => true
-            ]);            
+                \CURLOPT_RETURNTRANSFER => true]);            
         }
 
         public function execute() {
