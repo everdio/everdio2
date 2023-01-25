@@ -7,7 +7,6 @@ namespace Component\Core {
         }
 
         public function __destruct() {
-            
             $this->mapper = $this->__dry();
             
             $path = new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace))));

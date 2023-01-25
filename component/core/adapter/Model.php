@@ -5,6 +5,7 @@ namespace Component\Core\Adapter {
         use \Component\Core\Model;
         public function __construct(array $_parameters = []) {
             parent::__construct([
+                "adapter" => new Validation(false, [new Validator\IsArray]),
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl", [new Validator\IsString\IsFile]),
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),

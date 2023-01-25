@@ -15,22 +15,16 @@ namespace Modules\BaseX {
             ]);
             
             $this->use = "\Modules\BaseX";
-            $this->class = "Api";
-            $this->model = __DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl";
         }   
  
         public function setup() : void {
-            $dom = new \DOMDocument("1.0", "UTF-8");
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = false; 
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->query($this->query), $this->root), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
-            $xpath = new \DOMXPath($dom);
+            $xpath = new \DOMXPath($this->getDOMDocument($this->query));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->adapter = $this->adapter;
                 $model->node = $node;
-                $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->use = "\Modules\BaseX\Api";
+                $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);                
                 $model->setup();
 
                 if (isset($model->mapping)) {

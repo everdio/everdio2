@@ -11,23 +11,23 @@ $cli->server = $_SERVER;
 $cli->path = __DIR__;
 $cli->setup();
 
-echo $cli->echo("Everdio Commandline", ["bright", "green", "underline"]) . \PHP_EOL . \PHP_EOL;
+$cli->echo("Everdio Commandline", ["bright", "green", "underline"], \PHP_EOL . \PHP_EOL);
 if (!isset($cli->execute)) {
-    echo $cli->echo("Nothing to execute", ["red"]) . \PHP_EOL . \PHP_EOL;    
+    $cli->echo("Nothing to execute", ["red"], \PHP_EOL . \PHP_EOL);
     exit;
 }
 
-echo $cli->echo(\sprintf("Processing `%s`", $cli->execute), ["yellow", "blackbg", "bright"]) . \PHP_EOL . \PHP_EOL;
+$cli->echo(\sprintf("Processing `%s`", $cli->execute), ["yellow", "blackbg", "bright"], \PHP_EOL . \PHP_EOL);
 
 try {
-    echo $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute) . \PHP_EOL;
+    $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
 } catch (\Exception $ex) {
     if (isset($cli->request->_debug)) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
 
-    echo \PHP_EOL . $cli->echo($ex->getMessage(), ["red", "blackbg"]) . \PHP_EOL . \PHP_EOL;
+    $cli->echo($ex->getMessage(), ["red", "blackbg"], \PHP_EOL . \PHP_EOL);
 }
 
-echo $cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getMemory()), ["bright", "yellow"]) . \PHP_EOL;
+$cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getMemory()), ["bright", "yellow"]);
 exit;

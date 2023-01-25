@@ -9,10 +9,12 @@ namespace Modules\OpenWeather\Api {
                 "lon" => new Validation(false, [new Validator\IsFloat]),                
                 "api" => new Validation(false, [new Validator\IsString])
             ]);
+            
+            $this->use = "\Modules\OpenWeather\Api";
         }
         
         public function __destruct() {
-            $this->remove("document");
+            $this->remove("document");  
             parent::__destruct();
         }
     }

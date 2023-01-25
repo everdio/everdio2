@@ -18,13 +18,13 @@ namespace Modules\OpenWeather {
         }
 
         public function setup() : void {         
-            $xpath = new \DOMXPath($this->fetch());
+            $xpath = new \DOMXPath($this->getAdapter($this->unique(["url"])));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\OpenWeather\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->adapter = $this->adapter;
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->use = "\Modules\OpenWeather\Api";
                 $model->setup();     
             }                                     
         }

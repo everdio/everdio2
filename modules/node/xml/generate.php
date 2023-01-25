@@ -1,15 +1,22 @@
 <?php
-$xml = new \DOMDocument("1.0", "UTF-8");
-$xml->preserveWhiteSpace = false;
-$xml->formatOutput = false; 
-$xml->load($this->model->document, \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+if ($this instanceof \Component\Core\Controller\Model\Cli) {
+    $this->echo(\sprintf("Generating %s .. ", $this->model->document), ["cyan"], false);
 
-$xpath = new \DOMXPath($xml);
-foreach ($xpath->query("//*") as $node) {
+    $dom = new \DOMDocument("1.0", "UTF-8");
+    $dom->preserveWhiteSpace = false;
+    $dom->formatOutput = false; 
+    $dom->recover = true;
+    $dom->substituteEntities = false;
+    $dom->load($this->model->document, \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);    
 
-    $model = new \Modules\Node\Xml\Model;
-    $model->store($this->model->restore());
-    $model->node = $node;
-    $model->use = "\Modules\Node\Xml";        
-    $model->setup();          
+    $xpath = new \DOMXPath($dom);
+    foreach ($xpath->query("//*") as $node) {
+        $model = new \Modules\Node\Xml\Model;
+        $model->store($this->model->restore());
+        $model->node = $node;
+        $model->use = "\Modules\Node\Xml";        
+        $model->setup();    
+    }
+
+    $this->echo("done", ["green"], \PHP_EOL . \PHP_EOL);
 }

@@ -14,13 +14,13 @@ namespace Modules {
         }
 
         public function query(string $query) : \DOMNodeList {
-            $xpath = new \DOMXPath($this->initialize());
+            $xpath = new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
             return (object) $xpath->query($query);
         }        
         
         public function evaluate(string $query) : int {
-            $xpath = new \DOMXPath($this->initialize());
-            return (int) $xpath->evaluate(\sprintf("count(%s)", $query));
+            $xpath = new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
+            return (int) $xpath->evaluate(\sprintf("count%s", $query));
         }        
         
         public function count(array $validations = [], string $query = null) : int {
