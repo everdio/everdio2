@@ -9,7 +9,6 @@ namespace Modules\Node {
                 $xparts = \array_filter(\explode(\DIRECTORY_SEPARATOR, \preg_replace("/\[(.*?)\]/", false, $xpath)));
                 $first = \reset($xparts);
                 $last = \end($xparts);
-             
                 parent::__construct(\sprintf($wrap, \sprintf("/%s/%s%s", $first, $last, \str_replace($xpath, false, $xfragment))), [new \Component\Validator\IsString\IsXPath]);
             }
         }
@@ -18,7 +17,6 @@ namespace Modules\Node {
          *  removing anything outside the outer () and and trimes the () away completely; clean xpath
          */
         private function _clean(string $xpath) : string {
-            
             return (string) \trim(\str_replace(preg_replace("/\(.*\)/", false, $xpath), false, $xpath), "()");
         }
     }

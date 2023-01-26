@@ -1,6 +1,5 @@
 <?php
 namespace Component {
-    use FilesystemIterator, RecursiveIteratorIterator;
     class Path extends \RecursiveIteratorIterator {
         public function __construct(string $path, int $mode = 0776, string $group = "www-data") {
             try {

@@ -37,7 +37,7 @@ namespace Modules\BaseX {
                     }
                 }
 
-                return (int) $this->api::construct()->query(\sprintf("count%s", $query));
+                return (int) $this->api::construct()->getResponse(\sprintf("count%s", $query));
             }
             
             throw new \LogicException("API not set");

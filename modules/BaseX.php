@@ -18,14 +18,14 @@ namespace Modules {
             $dom->formatOutput = false; 
             $dom->recover = true;
             $dom->substituteEntities = false;  
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->query($query), $this->root), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($query), $this->root), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
             return (object) $dom;
         }
         
-        final public function query(string $query) : string {
+        final public function getResponse(string $query) : string {
             echo "<!-- query: " . $query . " -->" . \PHP_EOL;
             $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
-        }         
+        }        
     }
 }

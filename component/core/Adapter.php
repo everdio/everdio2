@@ -2,24 +2,24 @@
 namespace Component\Core {
     abstract class Adapter extends \Component\Core {
         static private $_adapters = [];
+
+        /*
+         * returns the mapper adapter object
+         */
+        abstract protected function __init() : object;        
+                
         /*
          * in order to save resources we store the adapter in a static array
          */
         protected function getAdapter(string $key) {
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
-                echo "<!-- __init: " . get_class(self::$_adapters[$key]) . ": " . $key . " -->" . \PHP_EOL;
+                echo "<!-- __init adapter: " . get_class(self::$_adapters[$key]) . ": " . $key . " -->" . \PHP_EOL;
             }
             
             return self::$_adapters[$key];
         }
 
-        /*
-         * returns the mapper adapter object
-         */
-        abstract protected function __init() : object;        
-        
-        
         /*
          * redirects methods via the adapter
          */
