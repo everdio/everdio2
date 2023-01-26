@@ -14,7 +14,7 @@ namespace Component\Core {
         protected function getAdapter(string $key) {
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
-                echo "<!-- __init adapter: " . get_class(self::$_adapters[$key]) . ": " . $key . " -->" . \PHP_EOL;
+                //echo "<!-- __init adapter: " . get_class(self::$_adapters[$key]) . ": " . $key . " -->" . \PHP_EOL;
             }
             
             return self::$_adapters[$key];

@@ -23,7 +23,7 @@ namespace Modules {
         }
         
         final public function getResponse(string $query) : string {
-            echo "<!-- query: " . $query . " -->" . \PHP_EOL;
+            //echo "<!-- query: " . $query . " -->" . \PHP_EOL;
             $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
             return (string) $this->execute();
         }        

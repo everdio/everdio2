@@ -14,7 +14,7 @@ namespace Modules\OpenWeather {
                 "lon" => new Validation(false, [new Validator\IsFloat])
             ]);
             
-            $this->use = "\Modules\OpenWeather";            
+            $this->use = "\Modules\OpenWeather";
         }
 
         public function setup() : void {         

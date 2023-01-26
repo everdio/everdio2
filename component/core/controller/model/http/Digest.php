@@ -20,7 +20,7 @@ namespace Component\Core\Controller\Model\Http {
             return (array) $digest;            
         }
 
-        final public function getResponse($password, array $digest) : string {
+        final public function getAuthorization($password, array $digest) : string {
             return (string) \md5(sprintf("%s:%s:%s:%s:%s:%s", $password, $digest["nonce"], $digest["nc"], $digest["cnonce"], $digest["qop"], \md5(\sprintf("%s:%s", \strtoupper($this->method), $digest["uri"]))));            
         }
 
