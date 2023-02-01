@@ -9,6 +9,7 @@ include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 $cli = new \Component\Core\Controller\Model\Cli;
 $cli->server = $_SERVER;
 $cli->path = __DIR__;
+$cli->debug = "_debug";
 $cli->setup();
 
 $cli->echo("Everdio Commandline", ["bright", "green", "underline"], \PHP_EOL . \PHP_EOL);
@@ -22,7 +23,7 @@ $cli->echo(\sprintf("Processing `%s`", $cli->execute), ["yellow", "blackbg", "br
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
 } catch (\Exception $ex) {
-    if (isset($cli->request->_debug)) {
+    if (isset($cli->request->{$cli->debug})) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
 

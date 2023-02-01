@@ -8,6 +8,7 @@ namespace Modules {
             $curl->setopt_array([
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
                 \CURLOPT_USERPWD => \sprintf("%s:%s", $this->username, $this->password), 
+                \CURLOPT_ENCODING => "",
                 \CURLOPT_RETURNTRANSFER => true]); 
             return (object) $curl;               
         }    

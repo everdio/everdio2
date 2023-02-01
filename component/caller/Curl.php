@@ -4,13 +4,13 @@ namespace Component\Caller {
         public function __construct(string $caller = "curl_%s") {
             parent::__construct($caller);
             $this->handle = $this->init();
+            $this->setopt(\CURLOPT_HTTPHEADER, ["Connection: keep-alive"]);
         }
         
         final public function get($handle) {
             $this->setopt_array([            
                 \CURLOPT_FILE => $handle,
-                \CURLOPT_BINARYTRANSFER => true,
-                \CURLOPT_HEADER => false]);    
+                \CURLOPT_BINARYTRANSFER => true]);    
         }
         
         final public function put($handle, int $size = 0) {
@@ -19,7 +19,6 @@ namespace Component\Caller {
                 \CURLOPT_INFILESIZE => $size,
                 \CURLOPT_PUT => true,
                 \CURLOPT_BINARYTRANSFER => true,
-                \CURLOPT_HEADER => false,
                 \CURLOPT_RETURNTRANSFER => true]);    
             
             \fseek($handle, 0);
