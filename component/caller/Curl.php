@@ -1,8 +1,8 @@
 <?php
 namespace Component\Caller {
     class Curl extends \Component\Caller {
-        public function __construct(string $caller = "curl_%s") {
-            parent::__construct($caller);
+        public function __construct(string $_call = "curl_%s") {
+            parent::__construct($_call);
             $this->handle = $this->init();
             $this->setopt(\CURLOPT_HTTPHEADER, ["Connection: keep-alive"]);
         }
@@ -10,6 +10,7 @@ namespace Component\Caller {
         final public function get($handle) {
             $this->setopt_array([            
                 \CURLOPT_FILE => $handle,
+                \CURLOPT_CUSTOMREQUEST => "GET",
                 \CURLOPT_BINARYTRANSFER => true]);    
         }
         
@@ -28,8 +29,14 @@ namespace Component\Caller {
             $this->setopt_array([
                 \CURLOPT_POSTFIELDS => $content,
                 \CURLOPT_INFILESIZE => \strlen($content),
-                \CURLOPT_POST => true,
+                \CURLOPT_CUSTOMREQUEST => "POST",
                 \CURLOPT_RETURNTRANSFER => true]);            
+        }
+        
+        final public function delete() {
+            $this->setopt_array([
+                \CURLOPT_CUSTOMREQUEST => "DELETE",
+                \CURLOPT_RETURNTRANSFER => true]);
         }
 
         public function execute() {

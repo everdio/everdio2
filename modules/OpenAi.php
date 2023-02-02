@@ -5,8 +5,7 @@ namespace Modules {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_HTTPHEADER => ["Content-Type: application/json", \sprintf("Authorization: Bearer %s", $this->key)],
-                \CURLOPT_RETURNTRANSFER => true
-                ]); 
+                \CURLOPT_RETURNTRANSFER => true]); 
 
             return (object) $curl;
         }

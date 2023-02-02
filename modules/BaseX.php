@@ -13,7 +13,7 @@ namespace Modules {
             return (object) $curl;               
         }    
         
-        final public function getDOMDocument(string $query) : \DOMDocument {
+        final public function getDOMDocument(string $query) : \DOMDocument {         
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = false; 
