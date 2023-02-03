@@ -23,7 +23,7 @@ namespace Modules\BaseX {
                 return (object) $xpath->query(\sprintf("//%s/*", $api->root)); 
             }
             
-            throw new \LogicException("API not set");
+            throw new \LogicException("API does not exist");
         }    
         
         public function evaluate(string $query) : int {
@@ -36,11 +36,11 @@ namespace Modules\BaseX {
                         return (int) $xpath->evaluate(\sprintf("count%s", $fragment->execute()));
                     }
                 }
-
-                return (int) $this->api::construct()->getResponse(\sprintf("count%s", $query));
+                
+                return (int) $api->getResponse(\sprintf("count%s", $query));
             }
             
-            throw new \LogicException("API not set");
+            throw new \LogicException("API does not exist");
         }         
     }
 }

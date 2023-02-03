@@ -19,15 +19,20 @@ namespace Component\Core {
 
         public function dispatch(string $path) {
             return (string) $this->getController($path);
-        }      
+        }    
+        
+        final public function getSubstring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
+            return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
+        }         
         
         final public function getTime(int $round = 3) {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
         
-        final public function getMemory(int $precision = 2) {
-           return $this->getSizeformat(\memory_get_peak_usage(true), $precision);
-        }        
+        final public function getMemory(int $precision = 5, $suffixes = ['B', 'kB', 'MB', 'GB']) : string {
+            $base = \log(\floatval(\memory_get_peak_usage(true))) / \log(1024);
+            return (string) \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
+        }                
         
         final public function getController(string $path) {            
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {

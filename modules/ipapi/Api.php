@@ -8,7 +8,7 @@ namespace Modules\IpApi {
                 return (object) $xpath->query($query);
             }
             
-            throw new \LogicException("API not set");
+            throw new \LogicException("API does not exist");
         }
         
         public function evaluate(string $query) : int {
@@ -17,7 +17,7 @@ namespace Modules\IpApi {
                 return (int) $xpath->evaluate(\sprintf("count%s", $query));
             }
             
-            throw new \LogicException("API not set");
+            throw new \LogicException("API does not exist");
         }        
     }
 }
