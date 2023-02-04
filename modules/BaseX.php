@@ -8,7 +8,6 @@ namespace Modules {
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true, 
                 \CURLOPT_RETURNTRANSFER => true,                 
-                \CURLOPT_CUSTOMREQUEST => "GET",
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
                 \CURLOPT_USERPWD => \sprintf("%s:%s", $this->username, $this->password), 
                 \CURLOPT_ENCODING => "",                
@@ -31,13 +30,14 @@ namespace Modules {
         final public function getResponse(string $query) : string {
             $memcache = new \Memcached("basex");
             if (!\sizeof($memcache->getServerList())) {
-                $memcache->addServer("127.0.0.1", 11211, 100);
+                $memcache->addServer("127.0.0.1", 11211);
             }            
 
             if (!$memcache->get(\md5($query))) {
-                //echo "<!-- query: " . $query . " key: " . md5($query) . " -->" . \PHP_EOL;
-                $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
-                $memcache->add(\md5($query), $this->execute(), \time() + 300);
+                $this->setopt_array([
+                    \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
+                    \CURLOPT_CUSTOMREQUEST => "GET"]);
+                $memcache->set(\md5($query), $this->execute(), 300);
             }
 
             return (string) $memcache->get(\md5($query));
@@ -46,7 +46,9 @@ namespace Modules {
         /*
         final public function getResponse(string $query) : string {
             //echo "<!-- query: " . $query . " -->" . \PHP_EOL;
-            $this->setopt(\CURLOPT_URL, \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)));
+            $this->setopt_array([
+                \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
+                \CURLOPT_CUSTOMREQUEST => "GET"]);
             return (string) $this->execute();            
         }
          * 
