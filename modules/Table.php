@@ -16,8 +16,8 @@ namespace Modules {
         }    
         
         final public function __set(string $parameter, $value) {
-            if (!empty($value) && (!is_array($value) && $this->get($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
-                $value = explode(",", $value);
+            if (!empty($value) && (!\is_array($value) && $this->get($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
+                $value = \explode(",", $value);
             }
             
             return (bool) parent::__set($parameter, $value);
@@ -94,7 +94,7 @@ namespace Modules {
         }
         
         public function delete() : self {
-            if (sizeof($this->restore($this->mapping))) {
+            if (\sizeof($this->restore($this->mapping))) {
                 $filter = new Table\Filter([$this]);
                 try {
                     $this->query(\sprintf("DELETE FROM`%s`.`%s`WHERE%s", $this->database, $this->table, $filter->execute()));    

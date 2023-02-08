@@ -30,5 +30,5 @@ try {
     $cli->echo($ex->getMessage(), ["red", "blackbg"], \PHP_EOL . \PHP_EOL);
 }
 
-$cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getMemory()), ["bright", "yellow"]);
+$cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bright", "yellow"]);
 exit;

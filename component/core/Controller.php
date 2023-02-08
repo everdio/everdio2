@@ -28,12 +28,7 @@ namespace Component\Core {
         final public function getTime(int $round = 3) {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
-        
-        final public function getMemory(int $precision = 5, $suffixes = ['B', 'kB', 'MB', 'GB']) : string {
-            $base = \log(\floatval(\memory_get_peak_usage(true))) / \log(1024);
-            return (string) \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
-        }                
-        
+  
         final public function getController(string $path) {            
             if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
                 \ob_start();

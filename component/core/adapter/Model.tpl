@@ -6,8 +6,8 @@ namespace {{namespace}} {
             parent::__construct({{mapper}} + $_parameters);
         }
         
-        static public function construct() : self {
-            return (object) new {{class}}();
+        static public function construct(array $_parameters = []) : self {
+            return (object) new {{class}}($_parameters);
         }                
     }
 }

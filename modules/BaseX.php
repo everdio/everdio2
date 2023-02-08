@@ -1,23 +1,20 @@
 <?php
 namespace Modules {
-    trait BaseX {        
+    trait BaseX {
         static public $_queries = [];
         
         final protected function __init() : object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true, 
-                \CURLOPT_RETURNTRANSFER => true,                 
+                \CURLOPT_RETURNTRANSFER => true,           
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
                 \CURLOPT_USERPWD => \sprintf("%s:%s", $this->username, $this->password), 
-                \CURLOPT_ENCODING => "",                
-                \CURLOPT_TCP_FASTOPEN => true,
-                \CURLOPT_SSL_VERIFYPEER => false,
-                \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]); 
+                \CURLOPT_ENCODING => ""]); 
             return (object) $curl;
         }    
-        
-        final public function getDOMDocument(string $query) : \DOMDocument {         
+
+        final public function getDOMDocument(string $query) : \DOMDocument {     
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = false; 
@@ -28,30 +25,25 @@ namespace Modules {
         }
         
         final public function getResponse(string $query) : string {
-            $memcache = new \Memcached("basex");
+            $memcache = new \Memcached($this->database);
+            $memcache->setOption(\Memcached::OPT_NO_BLOCK, true);
+            $memcache->setOption(\Memcached::HASH_DEFAULT, true);
+            $memcache->setOption(\Memcached::OPT_COMPRESSION, true);
+            $memcache->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
+            
             if (!\sizeof($memcache->getServerList())) {
                 $memcache->addServer("127.0.0.1", 11211);
             }            
 
             if (!$memcache->get(\md5($query))) {
+                //echo "<!--md5: " . \md5($query) . " query: " . $query . " -->" . \PHP_EOL;
                 $this->setopt_array([
                     \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
                     \CURLOPT_CUSTOMREQUEST => "GET"]);
-                $memcache->set(\md5($query), $this->execute(), 300);
+                $memcache->add(\md5($query), $this->execute(), 900);
             }
-
+            
             return (string) $memcache->get(\md5($query));
         } 
-        
-        /*
-        final public function getResponse(string $query) : string {
-            //echo "<!-- query: " . $query . " -->" . \PHP_EOL;
-            $this->setopt_array([
-                \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
-                \CURLOPT_CUSTOMREQUEST => "GET"]);
-            return (string) $this->execute();            
-        }
-         * 
-         */
     }
 }

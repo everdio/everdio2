@@ -20,7 +20,7 @@ namespace Component\Caller {
         }        
         
         public function delete() {
-            return unlink($this->_file);
+            return \unlink($this->_file);
         }        
         
         

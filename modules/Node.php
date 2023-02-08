@@ -41,10 +41,9 @@ namespace Modules {
                 $validations[] = new Node\Position($this->path, $position, $limit);
             }
             
-            $copy = new $this;
-
+            $mapper = new $this;
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) {
-                $map = new Node\Map($copy, $node);
+                $map = new Node\Map($mapper, $node);
                 $records[$index + 1] = $map->execute()->restore(["index", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
             }
             

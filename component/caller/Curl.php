@@ -4,7 +4,11 @@ namespace Component\Caller {
         public function __construct(string $_call = "curl_%s") {
             parent::__construct($_call);
             $this->handle = $this->init();
-            $this->setopt(\CURLOPT_HTTPHEADER, ["Connection: keep-alive"]);
+            $this->setopt_array([
+                \CURLOPT_HTTPHEADER => ["Connection: keep-alive"],
+                \CURLOPT_TCP_FASTOPEN => true,
+                \CURLOPT_SSL_VERIFYPEER => false,
+                \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]);
         }
         
         final public function get($handle) {
