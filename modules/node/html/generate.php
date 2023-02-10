@@ -19,5 +19,5 @@ if ($this instanceof Component\Core\Controller\Model\Cli) {
         $model->setup();
     }   
     
-    $this->echo("done", ["green"], \PHP_EOL . \PHP_EOL);
+    $this->echo("done", ["green"], 2);
 }

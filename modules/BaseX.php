@@ -2,7 +2,7 @@
 namespace Modules {
     trait BaseX {
         static public $_queries = [];
-        
+
         final protected function __init() : object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
@@ -12,8 +12,8 @@ namespace Modules {
                 \CURLOPT_USERPWD => \sprintf("%s:%s", $this->username, $this->password), 
                 \CURLOPT_ENCODING => ""]); 
             return (object) $curl;
-        }    
-
+        }   
+        
         final public function getDOMDocument(string $query) : \DOMDocument {     
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
@@ -40,10 +40,20 @@ namespace Modules {
                 $this->setopt_array([
                     \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
                     \CURLOPT_CUSTOMREQUEST => "GET"]);
-                $memcache->add(\md5($query), $this->execute(), 1800);
+                $memcache->add(\md5($query), $this->execute(), 3600);
             }
             
             return (string) $memcache->get(\md5($query));
         } 
+        
+        /*
+        final public function getResponse(string $query) : string {
+            //echo "<!-- query: " . $query . " -->" . \PHP_EOL;
+            $this->setopt_array([
+                \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
+                \CURLOPT_CUSTOMREQUEST => "GET"]);
+            return (string) $this->execute();            
+        }
+         */        
     }
 }

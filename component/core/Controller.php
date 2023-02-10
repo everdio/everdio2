@@ -1,17 +1,18 @@
 <?php
 namespace Component\Core {
-    use \Component\Validation, \Component\Validator;
+    use \Component\Validation, \Component\Validator, \Component\Caller\File\Fopen;
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
             parent::__construct([                
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "pid" => new Validation(\getmypid(), [new Validator\IsInteger]),
+                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
+                "priority" => new Validation(-5, [new Validator\IsInteger]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString])
-            ] + $_parameters);
+            ] + $_parameters);     
         }
         
         final public function isRoute(string $path) : bool {

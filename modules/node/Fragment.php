@@ -14,7 +14,7 @@ namespace Modules\Node {
         }
         
         /*
-         *  removing anything outside the outer () and and trimes the () away completely; clean xpath
+         *  removing anything outside the outer () and  trimes the () away completely; clean xpath
          */
         private function _clean(string $xpath) : string {
             return (string) \trim(\str_replace(preg_replace("/\(.*\)/", false, $xpath), false, $xpath), "()");
