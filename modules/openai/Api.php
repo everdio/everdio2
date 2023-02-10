@@ -6,7 +6,7 @@ namespace Modules\OpenAi {
         public function __construct() {
             parent::__construct([
                 "url" => new Validation("https://api.openai.com/v1/completions", [new Validator\IsString\IsUrl]),
-                "key" => new Validation("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", [new Validator\IsString]),
+                "key" => new Validation(false, [new Validator\IsString]),
                 "adapter" => new Validation(["openai"], [new Validator\IsArray]),
                 "model" => new Validation(false, [new Validator\IsString\InArray(["text-davinci-003", "text-curie-001", "text-babbage-001", "text-ada-001"])]),
                 "prompt" => new Validation(false, [new Validator\IsString]),
