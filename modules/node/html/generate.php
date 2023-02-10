@@ -1,7 +1,7 @@
 <?php
 
 if ($this instanceof Component\Core\Controller\Model\Cli) {
-    $this->echo(\sprintf("Generating %s .. ", $this->model->document), ["cyan"], false);
+    $this->echo(\sprintf("Generating %s .. ", $this->model->document), ["cyan"], 0);
     
     $dom = new \DOMDocument("1.0", "UTF-8");
     $dom->preserveWhiteSpace = false;

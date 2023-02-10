@@ -5,6 +5,8 @@
 namespace Modules\BaseX {
     trait Api {
         use \Modules\Node, \Modules\BaseX;       
+
+        
         public function query(string $query) : \DOMNodeList {   
             if (isset($this->api)) {
                 $api = new $this->api;

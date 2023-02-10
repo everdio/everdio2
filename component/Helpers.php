@@ -69,18 +69,6 @@ namespace Component {
             
             return (string) \implode($implode, $lines);
         }       
-                
-        
-        public function getLines(string $content, int $min = 0, int $total = 99999, array $lines = [], int $count = 0) : array {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
-                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {
-                    $lines[] = \trim($sentence);
-                    $count += \strlen($sentence);
-                }                
-            }
-            
-            return (array) $lines;
-        }        
     }
 }
 

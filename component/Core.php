@@ -72,6 +72,9 @@ namespace Component {
             }
         }
         
+        /*
+         * 
+         */
         final public function parameters(array $parameters = []) : array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }

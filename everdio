@@ -12,13 +12,14 @@ $cli->path = __DIR__;
 $cli->debug = "_debug";
 $cli->setup();
 
-$cli->echo("Everdio Commandline", ["bright", "green", "underline"], \PHP_EOL . \PHP_EOL);
+$cli->echo("Everdio Commandline", ["bright", "green", "underline"], 2);
 if (!isset($cli->execute)) {
-    $cli->echo("Nothing to execute", ["red"], \PHP_EOL . \PHP_EOL);
+    $cli->echo("Nothing to execute", ["red"], 2);
     exit;
 }
 
-$cli->echo(\sprintf("Processing `%s`", $cli->execute), ["yellow", "blackbg", "bright"], \PHP_EOL . \PHP_EOL);
+$cli->echo(\sprintf("Processing `%s` with pid ", $cli->execute), ["white", "blackbg", "bright"], 0);
+$cli->echo(\sprintf("`%s`", $cli->pid), ["green"], 2);
 
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
@@ -27,8 +28,8 @@ try {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
 
-    $cli->echo($ex->getMessage(), ["red", "blackbg"], \PHP_EOL . \PHP_EOL);
+    $cli->echo($ex->getMessage(), ["red", "blackbg"], 2);
 }
 
-$cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bright", "yellow"]);
+$cli->echo(\sprintf("Processed in %ss with %s memory consumption", $cli->getTime(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bright", "yellow"], 2);
 exit;

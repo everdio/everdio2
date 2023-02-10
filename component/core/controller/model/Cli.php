@@ -31,8 +31,8 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);
         }
         
-        final public function echo(string $text, array $formats = ["white", "blackbg"], string $nl = \PHP_EOL) {
-            \fwrite(\STDERR, (\sprintf("\033[%sm%s\033[0m%s", \implode(";", \array_flip(\array_intersect(\array_flip($this->styles), $formats))), $text, $nl)));
+        final public function echo(string $text, array $formats = ["white", "blackbg"], int $breaks = 1) {
+            \fwrite(\STDERR, (\sprintf("\033[%sm%s\033[0m%s", \implode(";", \array_flip(\array_intersect(\array_flip($this->styles), $formats))), $text, \str_repeat(\PHP_EOL, $breaks))));
         }
         
         final public function setup(array $request = [], array $arguments = []) : void {

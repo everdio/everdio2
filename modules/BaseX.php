@@ -40,7 +40,7 @@ namespace Modules {
                 $this->setopt_array([
                     \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
                     \CURLOPT_CUSTOMREQUEST => "GET"]);
-                $memcache->add(\md5($query), $this->execute(), 900);
+                $memcache->add(\md5($query), $this->execute(), 1800);
             }
             
             return (string) $memcache->get(\md5($query));
