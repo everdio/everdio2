@@ -51,7 +51,7 @@ namespace Component\Caller {
             return (string) \trim($response);
         }
 
-        public function __destruct() {
+        public function __destruct() {            
             $this->close();
         }
     }

@@ -12,21 +12,19 @@ namespace Component\Caller\File\Fopen {
         public function writePair(string $parameter, $value) {
             $this->write(\sprintf("%s = %s;\n", $parameter, $this->dehydrate($value)));
         }
-        
-        public function writePairArray(array $array) {
-            foreach ($array as $parameter => $value) {
-                $this->writePair($parameter, $value);
-            }
-        }
-        
+
         public function writeKeyPair(string $key, string $parameter, $value) {
             $this->write(\sprintf("%s[%s] = %s;\n", $key, $parameter, $this->dehydrate($value)));
         }
-        
-        public function writeKeyPairArray(array $array) {
-            foreach ($array as $key => $values) {
-                foreach ($values as $parameter => $value) {
-                    $this->writeKeyPair($key, $parameter, $value);  
+
+        public function writeArray(array $array) {
+            foreach ($array as $key1 => $value1) {
+                if (is_array($value1)) {
+                    foreach ($value1 as $key2 => $value2) {
+                        $this->writeKeyPair($key1, $key2, $value2);
+                    }
+                } else {
+                    $this->writePair($key1, $value1);
                 }
             }
         }

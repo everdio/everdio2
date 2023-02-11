@@ -18,7 +18,14 @@ namespace Modules\BaseX {
         }   
  
         public function setup() : void {
-            $xpath = new \DOMXPath($this->getDOMDocument($this->query));
+            $dom = new \DOMDocument("1.0", "UTF-8");
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = false; 
+            $dom->recover = true;
+            $dom->substituteEntities = false;  
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($this->query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
+            
+            $xpath = new \DOMXPath($dom);
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);

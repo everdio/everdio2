@@ -34,6 +34,13 @@ namespace Component {
             } elseif (\is_bool($data)) {
                 return (bool) $data;
             } elseif (\is_string($data)) {
+                if (\str_starts_with($data, "[") && \str_ends_with($data, "]")) {
+                    if (\is_array(($array = \explode(",", \trim($data, "[]"))))) {
+                        foreach ($array as $value) {
+                        }
+                    }
+                }
+                
                 return (string) $data;
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {

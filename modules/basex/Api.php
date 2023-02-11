@@ -36,7 +36,7 @@ namespace Modules\BaseX {
                     }
                 }
                 
-                return (int) $api->getResponse(\sprintf("count%s", $query));
+                return (int) $api->getCachedResponse(\sprintf("count%s", $query));
             }
             
             throw new \LogicException("API not set");
