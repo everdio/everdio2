@@ -50,6 +50,7 @@ namespace Component {
             $words = \array_count_values(\str_word_count(\strtolower(\strip_tags(\nl2br($content))), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
+                $word = $this->getName($word);
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
                     $keywords[] = \trim($word);
                     $count += \strlen($word);
