@@ -59,13 +59,13 @@ namespace Component\Core {
             }
             
             return (string) $output;
-        }
+        }        
 
         public function execute(string $path, array $parameters = []) {      
             $controller = new $this;
             $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-            
+
             if (isset($controller->path)) {
                 try {
                     return $controller->dispatch(\basename($path));        
