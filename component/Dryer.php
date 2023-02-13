@@ -7,7 +7,7 @@ namespace Component {
             } elseif (\is_bool($data)) {
                 return (string) ($data === true ? "true" : "false");            
             } elseif (\is_string($data)) {
-                return (string) \sprintf("\"%s\"", \addcslashes($data, "\""));
+                return (string) \sprintf("'%s'", $data);
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
