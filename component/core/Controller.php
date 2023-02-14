@@ -5,19 +5,41 @@ namespace Component\Core {
         public function __construct(array $_parameters = []) {
             parent::__construct([                
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
-                "priority" => new Validation(-5, [new Validator\IsInteger]),
+                "pm" => new Validation(false, [new Validator\IsString]),
+                "pid" => new Validation(posix_getpid(), [new Validator\IsInteger]),
+                "threshold" => new Validation([-20 => 1, -10 => 10, 0 => 60, 10 => 120, 19 => 180], [new Validator\IsArray]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString])
-            ] + $_parameters);     
+            ] + $_parameters);    
         }
+
+        final public function throttle(int $time = 0) : int {
+            foreach (\glob("/proc/*/status") as $entry) {
+                $fopen = new \Component\Caller\File\Fopen($entry, "r");
+                if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {                    
+                    $time += \time() - \filectime($fopen->getPath());
+                }
+            }
+            
+            foreach ($this->threshold as $priority => $limit) {
+                if ($time <= $limit) {
+                    return (int) $priority;
+                }
+            }
+            
+            return (int) $priority;
+        }
+        
+        final public function renice(int $priority = 0) {
+            \exec(\sprintf("renice %s %s", $priority, $this->pid));
+        }        
         
         final public function isRoute(string $path) : bool {
             return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $path), \explode(\DIRECTORY_SEPARATOR, $this->arguments))) === (string) $path);
-        }
+        }        
 
         public function dispatch(string $path) {
             return (string) $this->getController($path);

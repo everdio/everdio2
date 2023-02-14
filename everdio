@@ -10,7 +10,9 @@ $cli = new \Component\Core\Controller\Model\Cli;
 $cli->server = $_SERVER;
 $cli->path = __DIR__;
 $cli->debug = "_debug";
+$cli->pm = "php";
 $cli->setup();
+$cli->renice($cli->throttle());
 
 $cli->echo("Everdio Commandline", ["bright", "green", "underline"], 2);
 if (!isset($cli->execute)) {
@@ -21,7 +23,7 @@ if (!isset($cli->execute)) {
 $cli->echo(\sprintf("Processing "), ["white", "bright"], 0);
 $cli->echo(\sprintf("`%s`", $cli->execute), ["green"], 0);
 $cli->echo(\sprintf(" with pid ", $cli->execute), ["white", "blackbg", "bright"], 0);
-$cli->echo(\sprintf("`%s`", $cli->pid), ["green"], 2);
+$cli->echo(\sprintf("`%s`", $cli->pid), ["green"]);
 
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
