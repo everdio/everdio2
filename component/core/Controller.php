@@ -61,9 +61,9 @@ namespace Component\Core {
             return (string) $output;
         }        
 
-        public function execute(string $path, array $parameters = []) {      
+        public function execute(string $path) {      
             $controller = new $this;
-            $controller->import($this->export(\array_merge($controller->diff(), $parameters)));
+            $controller->import($this->export($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
 
             if (isset($controller->path)) {

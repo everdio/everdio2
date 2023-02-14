@@ -24,9 +24,6 @@ namespace Modules {
         
         final public function getCachedResponse(string $query) : string {
             $memcache = new \Memcached($this->database);
-            $memcache->setOption(\Memcached::OPT_NO_BLOCK, true);
-            $memcache->setOption(\Memcached::HASH_DEFAULT, true);
-            $memcache->setOption(\Memcached::OPT_COMPRESSION, true);
             $memcache->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
             
             if (!\sizeof($memcache->getServerList())) {
