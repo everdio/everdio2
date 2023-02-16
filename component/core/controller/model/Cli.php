@@ -2,7 +2,7 @@
 namespace Component\Core\Controller\Model {
     use \Component\Validation, \Component\Validator;
     class Cli extends \Component\Core\Controller\Model {
-        public function __construct(array $_parameters = [], array $pids = []) {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])]),
                 "execute" => new Validation(false, [new Validator\IsString\IsPath]),
@@ -50,8 +50,6 @@ namespace Component\Core\Controller\Model {
                 
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
             }    
-            
-            $this->renice($this->pid, $this->throttle());
         }
     }
 }

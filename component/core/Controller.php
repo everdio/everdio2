@@ -7,7 +7,14 @@ namespace Component\Core {
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "pm" => new Validation(false, [new Validator\IsString]),
                 "pid" => new Validation(posix_getpid(), [new Validator\IsInteger]),
-                "threshold" => new Validation([-20 => 1, -10 => 10, 0 => 60, 10 => 120, 19 => 180], [new Validator\IsArray]),
+                "threshold" => new Validation([
+                    -19 => 1, 
+                    -10 => 10, 
+                    -5 => 30, 
+                    0 => 60, 
+                    5 => 300, 
+                    10 => 1800, 
+                    19 => 3600], [new Validator\IsArray]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
@@ -18,9 +25,13 @@ namespace Component\Core {
 
         final public function throttle(int $time = 0) : int {
             foreach (\glob("/proc/*/status") as $entry) {
-                $fopen = new \Component\Caller\File\Fopen($entry, "r");
-                if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {                    
-                    $time += \time() - \filectime($fopen->getPath());
+                try {
+                    $fopen = new \Component\Caller\File\Fopen($entry);
+                    if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {                    
+                        $time += \time() - \fileatime($fopen->getPath());
+                    }
+                } catch (\ErrorException $ex) {
+                    //ignore since the process is already gone
                 }
             }
             
