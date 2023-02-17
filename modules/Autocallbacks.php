@@ -9,7 +9,7 @@ namespace Modules {
                         foreach ($callbacks as $label => $callback) {                              
                             try {
                                 if (isset($this->request->{$this->debug})) {
-                                    echo "<!--time: " . $this->getTime(3) . "s callback: " . $parameter . "/controller/" . $object . "/" . $label . "-->" . PHP_EOL;
+                                    echo "<!--time: " . $this->getTimer(3) . "s callback: " . $parameter . "/controller/" . $object . "/" . $label . "-->" . PHP_EOL;
                                 }
                                                             
                                 if (\is_string($label)) {

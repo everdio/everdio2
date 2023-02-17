@@ -3,18 +3,10 @@ namespace Component\Core {
     use \Component\Validation, \Component\Validator, \Component\Caller\File\Fopen;
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
-            parent::__construct([                
+            parent::__construct([          
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "pm" => new Validation(false, [new Validator\IsString]),
-                "pid" => new Validation(posix_getpid(), [new Validator\IsInteger]),
-                "threshold" => new Validation([
-                    -19 => 1, 
-                    -10 => 10, 
-                    -5 => 30, 
-                    0 => 60, 
-                    5 => 300, 
-                    10 => 1800, 
-                    19 => 3600], [new Validator\IsArray]),
+                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
@@ -22,30 +14,37 @@ namespace Component\Core {
                 "arguments" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);    
         }
-
-        final public function throttle(int $time = 0) : int {
-            foreach (\glob("/proc/*/status") as $entry) {
-                try {
-                    $fopen = new \Component\Caller\File\Fopen($entry);
-                    if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {                    
-                        $time += \time() - \fileatime($fopen->getPath());
-                    }
-                } catch (\ErrorException $ex) {
-                    //ignore since the process is already gone
-                }
-            }
-            
-            foreach ($this->threshold as $priority => $limit) {
-                if ($time <= $limit) {
-                    return (int) $priority;
-                }
-            }
-            
-            return (int) $priority;
+        
+        private function _load() : float {
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
+            return (float) $this->hydrate($fopen->gets(5));
         }
         
-        final public function renice(int $priority = 0) {
-            \exec(\sprintf("renice %s %s", $priority, $this->pid));
+        private function _cores() : int {
+            return (int) $this->hydrate(\exec("nproc"));
+        }
+        
+        private function _priority() : int {
+            return (int) round((($this->_load() / ($this->_cores() / 2)) * 100) * (39 / 100) - 19);
+        }
+        
+        private function _renice(int $pid) {
+            \exec(\sprintf("renice %s %s", $this->_priority(), $pid));
+        }             
+
+        final public function throttle() {
+            foreach (\glob("/proc/*/status") as $entry) {
+                if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
+                    try {
+                        $fopen = new \Component\Caller\File\Fopen($entry);
+                        if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {
+                            $this->_renice($pid);
+                        }
+                    } catch (\ErrorException $ex) {
+                        //ignore since the process is already gone
+                    }
+                }
+            }
         }        
         
         final public function isRoute(string $path) : bool {
@@ -60,7 +59,7 @@ namespace Component\Core {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }         
         
-        final public function getTime(int $round = 3) {
+        final public function getTimer(int $round = 3) {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
   
