@@ -5,9 +5,18 @@ namespace Component\Core\Controller\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])]),
-                "execute" => new Validation(false, [new Validator\IsString\IsPath]),
-                "styles" => new Validation([
-                    "bright" => 1, 
+                "execute" => new Validation(false, [new Validator\IsString\IsPath])
+            ] + $_parameters);            
+        }
+        
+        final public function breaks(int $breaks = 1) {
+            \fwrite(\STDERR, \str_repeat(\PHP_EOL, $breaks));
+        }
+        
+        final public function echo(string $text, array $styles = ["white", "blackbg"]) {
+            \fwrite(\STDERR, (\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+                    "bold" => 1, 
+                    "test" => 2,
                     "italic" => 3, 
                     "underline" => 4, 
                     "blinking" => 5, 
@@ -27,12 +36,7 @@ namespace Component\Core\Controller\Model {
                     "bluebg" => 44, 
                     "magentabg" => 45, 
                     "cyanbg" => 46, 
-                    "lightgreybg" => 47], [new Validator\IsArray])
-            ] + $_parameters);            
-        }
-        
-        final public function echo(string $text, array $formats = ["white", "blackbg"], int $breaks = 1) {
-            \fwrite(\STDERR, (\sprintf("\033[%sm%s\033[0m%s", \implode(";", \array_flip(\array_intersect(\array_flip($this->styles), $formats))), $text, \str_repeat(\PHP_EOL, $breaks))));
+                    "lightgreybg" => 47]), $styles))), $text)));
         }
         
         final public function setup(array $request = [], array $arguments = []) : void {

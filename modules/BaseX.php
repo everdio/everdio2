@@ -22,7 +22,7 @@ namespace Modules {
             return (string) $this->execute();            
         }                
         
-        final public function getCachedResponse(string $query) : string {
+        final public function getMemcachedResponse(string $query, int $ttl = 3600) : string {
             $memcache = new \Memcached($this->database);
             $memcache->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
             
@@ -32,7 +32,7 @@ namespace Modules {
             
             $md5 = \md5($query);
             if (!$memcache->get($md5)) {
-                $memcache->add($md5, $this->getResponse($query), 3600);
+                $memcache->add($md5, $this->getResponse($query), $ttl);
             }
             
             return (string) $memcache->get($md5);
@@ -44,7 +44,7 @@ namespace Modules {
             $dom->formatOutput = false; 
             $dom->recover = true;
             $dom->substituteEntities = false;  
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getCachedResponse($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getMemcachedResponse($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
             return (object) $dom;
         }        
     }

@@ -2,7 +2,7 @@
 namespace Component {
     trait Helpers {
         public function getName($string, $replace =  " "){            
-            return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim($string), \ENT_QUOTES | \ENT_HTML5))));
+            return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
         } 
         
         public function getSlug($string, $replace = "-"){            
@@ -10,7 +10,7 @@ namespace Component {
         }                       
         
         public function getLabelized(string $string) : string {
-            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace("/", "_", \str_replace("-", "_", \str_replace(" " , "_", \strtolower($this->getName($string)))))))));
+            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace(["/", "_", " "], "_", \strtolower($this->getName($string)))))));
         }         
         
         public function getSizeformat($size, int $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {

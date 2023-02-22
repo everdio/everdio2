@@ -71,10 +71,7 @@ namespace Component {
                 unset ($this->_parameters[$parameter]);
             }
         }
-        
-        /*
-         * 
-         */
+
         final public function parameters(array $parameters = []) : array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }
@@ -147,12 +144,16 @@ namespace Component {
             return (string) $content;
         }             
         
+        final public function destroy() {
+            unset ($this->_parameters);
+        }
+        
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
 
         public function __destruct() {
-            unset ($this->_parameters);
+            $this->destroy();
         }        
     }
 }

@@ -14,26 +14,32 @@ $cli->debug = "_debug";
 $cli->setup();
 $cli->throttle();
 
-$cli->echo("Everdio Commandline", ["bright", "green", "underline"], 2);
+$cli->echo("Everdio2 Commandline", ["bright", "green", "bold", "underline"]);
+$cli->breaks(2);
 if (!isset($cli->execute)) {
-    $cli->echo("Nothing to execute", ["red"], 2);
+    $cli->echo("Provide a valid execute path ..", ["white", "bold"]);
+    $cli->breaks(2);
     exit;
 }
 
-$cli->echo(\sprintf("Processing "), ["white", "bright"], 0);
-$cli->echo(\sprintf("`%s`", $cli->execute), ["green"], 0);
-$cli->echo(\sprintf(" with pid ", $cli->execute), ["white", "blackbg", "bright"], 0);
-$cli->echo(\sprintf("`%s`", $cli->pid), ["green"], 2);
+$cli->echo(\sprintf("Processing "), ["white", "bright"]);
+$cli->echo(\sprintf("`%s`", $cli->execute), ["green"]);
+$cli->echo(\sprintf(" with pid ", $cli->execute), ["white", "bold"]);
+$cli->echo(\sprintf("`%s`", $cli->pid), ["green"]);
+$cli->breaks(2);
 
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
+    $cli->breaks(2);
 } catch (\Exception $ex) {
     if (isset($cli->request->{$cli->debug})) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
-
-    $cli->echo($ex->getMessage(), ["red", "blackbg"], 2);
+    $cli->breaks(1);
+    $cli->echo($ex->getMessage(), ["red", "bold"]);
+    $cli->breaks(3);
 }
 
-$cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bright", "white"], 2);
+$cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bold", "white"]);
+$cli->breaks(2);
 exit;

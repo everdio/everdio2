@@ -1,6 +1,6 @@
 <?php
 if ($this instanceof \Component\Core\Controller\Model\Cli) {
-    $this->echo(\sprintf("Generating %s .. ", $this->model->document), ["cyan"], 0);
+    $this->echo(\sprintf("Generating %s .. ", $this->model->document), ["cyan"]);
 
     $dom = new \DOMDocument("1.0", "UTF-8");
     $dom->preserveWhiteSpace = false;
@@ -18,5 +18,6 @@ if ($this instanceof \Component\Core\Controller\Model\Cli) {
         $model->setup();    
     }
 
-    $this->echo("done", ["green"], 2);
+    $this->echo("done", ["green"]);
+    $this->breaks(2);
 }

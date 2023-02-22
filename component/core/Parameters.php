@@ -35,6 +35,6 @@ namespace Component\Core {
 
         final public function implode(string $seperator = ", ") : string {
             return (string) \implode($seperator, (array) $this->restore());
-        }        
+        }     
     }
 }
