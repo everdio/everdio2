@@ -71,11 +71,11 @@ namespace Component\Core {
         }        
 
         /*
-         * dispatching the controller!
+         * dispatching the Cojtroller if exists!
          */
         public function dispatch(string $path) {
             return (string) $this->getController($path);
-        }    
+        }            
         
         /*
          * moved from Helpers but not sure if it belongs here yet..
@@ -90,14 +90,21 @@ namespace Component\Core {
         final public function getTimer(int $round = 3) {
             return (float) \round(\microtime(true) - $this->time, $round);
         }
+        
+        /*
+         * checks if controller php file exists
+         */
+        final public function hasController(string $path) : bool {
+            return (bool) \file_exists(\sprintf("%s/%s.php", $this->path, $path));
+        }        
   
         /*
          * including php file and catching it's output for returning
          */
         final public function getController(string $path) {            
-            if (\file_exists(($file = \sprintf("%s/%s.php", $this->path, $path)))) {
+            if ($this->hasController($path)) {
                 \ob_start();
-                require $file;
+                require \sprintf("%s/%s.php", $this->path, $path);
                 return (string) $this->getCallbacks(\ob_get_clean());
             }            
         }            
