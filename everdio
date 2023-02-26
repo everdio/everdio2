@@ -30,7 +30,6 @@ $cli->breaks(2);
 
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
-    $cli->breaks(2);
 } catch (\Exception $ex) {
     if (isset($cli->request->{$cli->debug})) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
