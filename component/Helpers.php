@@ -60,15 +60,16 @@ namespace Component {
             return (array) $keywords;
         }   
         
-        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = " ", array $lines = [], int $count = 0) : string {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\nl2br($content))) as $sentence) {
-                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {
-                    $lines[] = \trim($sentence);
-                    $count += \strlen($sentence);
-                }                
+        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", array $lines = [], int $count = 0) : string {
+            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(str_replace(["\r", "\n", "!", "?"], $implode, $content))) as $line) {
+                if (\strlen($line) >= $min && (\strlen($line) + $count) <= $total && \sizeof($this->getWords($line))) {
+                    $lines[] = \trim($line, $implode);
+                    $count += \strlen($line);
+                }                   
             }
             
-            return (string) \implode($implode, $lines);
+            
+            return (string) \sprintf("%s.", \implode($implode, \array_unique($lines)));
         }       
     }
 }
