@@ -20,5 +20,5 @@ if ($this instanceof Component\Core\Controller\Model\Cli) {
     }   
     
     $this->echo("done", ["green"]);
-    $this->breaks(2);
+    $this->break(2);
 }

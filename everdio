@@ -14,19 +14,19 @@ $cli->debug = "_debug";
 $cli->setup();
 $cli->throttle();
 
-$cli->echo("Everdio2 Commandline", ["bright", "green", "bold", "underline"]);
-$cli->breaks(2);
+$cli->echo("Everdio2 Commandline", ["yellow", "bold", "underline"]);
+$cli->break(2);
 if (!isset($cli->execute)) {
-    $cli->echo("Provide a valid execute path ..", ["white", "bold"]);
-    $cli->breaks(2);
+    $cli->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
+    $cli->break(2);
     exit;
 }
 
-$cli->echo(\sprintf("Processing "), ["white", "bright"]);
+$cli->echo(\sprintf("Processing "), ["lightgray"]);
 $cli->echo(\sprintf("`%s`", $cli->execute), ["green"]);
-$cli->echo(\sprintf(" with pid ", $cli->execute), ["white", "bold"]);
+$cli->echo(\sprintf(" with pid ", $cli->execute), ["lightgray"]);
 $cli->echo(\sprintf("`%s`", $cli->pid), ["green"]);
-$cli->breaks(2);
+$cli->break(2);
 
 try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
@@ -34,11 +34,12 @@ try {
     if (isset($cli->request->{$cli->debug})) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
-    $cli->breaks(1);
+    $cli->break(1);
     $cli->echo($ex->getMessage(), ["red", "bold"]);
-    $cli->breaks(3);
+    $cli->break(1);
 }
 
-$cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["bold", "white"]);
-$cli->breaks(2);
+$cli->break();
+$cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["lightgray"]);
+$cli->break(2);
 exit;
