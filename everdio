@@ -14,7 +14,7 @@ $cli->debug = "_debug";
 $cli->setup();
 $cli->throttle();
 
-$cli->echo("Everdio2 Commandline", ["yellow", "bold", "underline"]);
+$cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $cli->break(2);
 if (!isset($cli->execute)) {
     $cli->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
@@ -22,9 +22,12 @@ if (!isset($cli->execute)) {
     exit;
 }
 
-$cli->echo(\sprintf("Processing "), ["lightgray"]);
+
+$cli->echo("Processing ", ["lightgray"]);
 $cli->echo(\sprintf("`%s`", $cli->execute), ["green"]);
-$cli->echo(\sprintf(" with pid ", $cli->execute), ["lightgray"]);
+$cli->echo(" at ", ["lightgrey"]);
+$cli->echo(\sprintf("`%s`", \date("Y-m-d H:i:s")), ["green"]);
+$cli->echo(" with pid ", ["lightgrey"]);
 $cli->echo(\sprintf("`%s`", $cli->pid), ["green"]);
 $cli->break(2);
 

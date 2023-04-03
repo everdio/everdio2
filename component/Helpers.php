@@ -10,7 +10,7 @@ namespace Component {
         }                       
         
         public function getLabelized(string $string) : string {
-            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("_", \str_replace(["/", "_", " "], "_", \strtolower($this->getName($string)))))));
+            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("-", \strtolower($this->getSlug($string))))));
         }         
         
         public function getSizeformat($size, int $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {

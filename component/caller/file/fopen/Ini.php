@@ -5,15 +5,15 @@ namespace Component\Caller\File\Fopen {
             parent::__construct(\sprintf("%s.ini", $path), "c");
         }
         
+        private function _value($value) : string {
+            return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
+        }        
+        
         final public function writeSection(string $section) {
             if (!empty($section)) {
                 $this->write(\sprintf("[%s]\n", $section));
             }
-        }
-        
-        private function _value($value) : string {
-            return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
-        }
+        }        
         
         final public function writePair(string $parameter, $value) {
             if (!empty($parameter)) {
@@ -37,11 +37,6 @@ namespace Component\Caller\File\Fopen {
                     $this->writePair($key1, $value1);
                 }
             }
-        }
-        
-        final public function store(string $section, array $array) {
-            $this->writeSection($section);
-            $this->writeArray($array);
         }
     }
 }

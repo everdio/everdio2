@@ -7,7 +7,6 @@ namespace Component\Caller {
             $this->setopt_array([
                 \CURLOPT_HTTPHEADER => ["Connection: keep-alive"],
                 \CURLOPT_TCP_FASTOPEN => true,
-                \CURLOPT_SSL_VERIFYPEER => false,
                 \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]);
         }
         

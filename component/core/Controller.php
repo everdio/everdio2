@@ -149,7 +149,7 @@ namespace Component\Core {
                     throw new \LogicException(\sprintf("invalid value for parameter %s: %s in %s (%s)", $ex->getMessage(), $ex->getPrevious()->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
                     throw new \LogicException(\sprintf("parameter %s required in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } catch (\ErrorException | \TypeError | \Error $ex) {
+                } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\LogicException $ex) {
                     throw $ex;

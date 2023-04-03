@@ -13,6 +13,10 @@ namespace Component\Core\Controller\Model {
             \fwrite(\STDERR, \str_repeat(\PHP_EOL, $breaks));
         } 
         
+        final public function input() {
+            return (string) \trim(\fgets(\STDIN));
+        }
+        
         final public function echo(string $text, array $styles = ["white", "blackbg"]) {
             \fwrite(\STDERR, (\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                     "bold" => 1, 
@@ -50,7 +54,7 @@ namespace Component\Core\Controller\Model {
             if ($this->server["argc"] >= 2) {
                 $this->execute = $this->server["argv"][1];                
                 foreach (\array_slice($this->server["argv"], 2) as $parameters) {
-                    if (!\strpos($parameters, "--")) {
+                    if (\strpos($parameters, "--") !== false) {
                         $arguments[] = \str_replace("--", "", $parameters);
                     } else {
                         \parse_str($parameters, $request);
