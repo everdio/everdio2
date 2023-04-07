@@ -20,7 +20,7 @@ namespace Modules {
         
         public function evaluate(string $query) : int {
             $xpath = new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
-            return (int) $xpath->evaluate(\sprintf("count%s", $query));
+            return (int) $xpath->evaluate("count" . $query);
         }        
         
         public function count(array $validations = [], string $query = null) : int {

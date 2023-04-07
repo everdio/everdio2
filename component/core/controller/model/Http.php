@@ -15,15 +15,15 @@ namespace Component\Core\Controller\Model {
         public function dispatch(string $path) {
             $output = (string) parent::dispatch($path);
             
-            if (\file_exists(($file = \sprintf("%s/%s.html", $this->path, $path)))) {
-                $output .= $this->getCallbacks(\file_get_contents($file));
+            if (\file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {
+                $output .= $this->getCallbacks(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html"));
             }
 
             return (string) (isset($this->request->{$this->debug}) ? $output : \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
         }
         
         public function setup() : void {
-            $this->scheme = \sprintf("%s://", $this->server["REQUEST_SCHEME"]);
+            $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);

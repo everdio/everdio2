@@ -32,11 +32,11 @@ namespace Modules\BaseX {
                     $fragment = new \Modules\Node\Fragment($_query, $query);
                     if ($fragment->isValid()) {
                         $xpath = new \DOMXpath($dom);
-                        return (int) $xpath->evaluate(\sprintf("count%s", $fragment->execute()));
+                        return (int) $xpath->evaluate("count" . $fragment->execute());
                     }
                 }
                 
-                return (int) $api->getMemcachedResponse(\sprintf("count%s", $query));
+                return (int) $api->getMemcachedResponse("count" . $query);
             }
             
             throw new \LogicException("API not set");

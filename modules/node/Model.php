@@ -25,6 +25,8 @@ namespace Modules\Node {
                 $this->parents = ["parent" => $this->namespace];
             }    
             
+            
+            
             if ($this->node->hasAttributes()) {
                 foreach ($this->node->attributes as $attribute) {
                     $parameter = new \Component\Validation\Parameter((!empty(\trim($attribute->value)) ? \trim($attribute->value) : false), false, true);

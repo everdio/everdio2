@@ -2,11 +2,15 @@
 namespace Component {
     trait Helpers {
         public function getName($string, $replace =  " "){            
-            return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin;:: NFD;:: [:Nonspacing Mark:] Remove;:: NFC;:: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
+            return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
         } 
         
+        public function getSlug2($string) {
+            return (string) \Transliterator::createFromRules(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [^-[:^Punctuation:]] Remove; :: Lower(); [:^L:] { [-] > ; [-] } [:^L:] > ; [-[:Separator:]]+ > '-';")->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
+        }
+        
         public function getSlug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower($this->getName($string, $replace)), $replace)), $replace);
+            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\str_replace("_", $replace, $this->getName($string, $replace))), $replace)), $replace);
         }                       
         
         public function getLabelized(string $string) : string {
@@ -17,6 +21,7 @@ namespace Component {
             $base = \log(\floatval($size)) / \log(1024);
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }                
+        
         
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
@@ -50,7 +55,7 @@ namespace Component {
             $words = \array_count_values(\str_word_count(\strtolower(\strip_tags(\nl2br($content))), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
-                $word = $this->getName($word);
+                $word = $this->getName(\strtolower($word));
                 if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
                     $keywords[] = \trim($word);
                     $count += \strlen($word);

@@ -7,7 +7,9 @@ namespace Modules {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true, 
-                \CURLOPT_RETURNTRANSFER => true,           
+                \CURLOPT_RETURNTRANSFER => true,      
+                \CURLOPT_TCP_FASTOPEN => true,
+                \CURLOPT_SSL_VERIFYPEER => false,                
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
                 \CURLOPT_USERPWD => \sprintf("%s:%s", $this->username, $this->password), 
                 \CURLOPT_ENCODING => ""]); 
@@ -15,7 +17,6 @@ namespace Modules {
         }   
         
         final public function getResponse(string $query) : string {
-            //echo "<!-- query: " . $query . " -->" . \PHP_EOL;
             $this->setopt_array([
                 \CURLOPT_URL => \sprintf("%s/%s/?query=%s", $this->host, $this->database, \urlencode($query)),
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
@@ -23,19 +24,23 @@ namespace Modules {
         }                
         
         final public function getMemcachedResponse(string $query, int $ttl = 3600) : string {
-            $memcache = new \Memcached($this->database);
-            $memcache->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
+            $memcached = new \Memcached("basex");
+            $memcached->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
+            $memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
+            $memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, 1000);
+            $memcached->setOption(\Memcached::OPT_SEND_TIMEOUT, 1000);       
             
-            if (!\sizeof($memcache->getServerList())) {
-                $memcache->addServer("127.0.0.1", 11211);
+            if (empty($memcached->getServerList())) {
+                $memcached->addServer("127.0.0.1", 11211);
             }            
             
             $md5 = \md5($query);
-            if (!$memcache->get($md5)) {
-                $memcache->add($md5, $this->getResponse($query), $ttl);
+            if (!$memcached->get($md5) && $memcached->getResultCode() !== 0) {
+                //echo "<!-- md5: " . $md5 . " query: " . $query . " -->" . \PHP_EOL;
+                $memcached->add($md5, (string) $this->getResponse($query), $ttl);
             }
             
-            return (string) $memcache->get($md5);
+            return (string) $memcached->get($md5);
         }         
         
         final public function getDOMDocument(string $query) : \DOMDocument {     
@@ -44,7 +49,7 @@ namespace Modules {
             $dom->formatOutput = false; 
             $dom->recover = true;
             $dom->substituteEntities = false;  
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getMemcachedResponse($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
+            $dom->loadXML("<" . $this->root . ">" . $this->getMemcachedResponse($query) . "</" . $this->root . ">", \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
             return (object) $dom;
         }        
     }

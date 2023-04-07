@@ -33,31 +33,33 @@ namespace Component\Core {
         /*
          * calculating nicesess based on load (1 core is max 0.50)
          */
-        private function _priority() : int {
-            return (int) round((($this->_load() / ($this->_cores() / 3)) * 100) * (39 / 100) - 19);
+        private function _priority(int $factor) : int {
+            return (int) round((($this->_load() / ($this->_cores() / $factor)) * 100) * (39 / 100) - 19);
         }
         
         /*
          * setting process nicess based on priority and process id
          */
-        private function _renice(int $pid) {
-            \exec(\sprintf("renice %s %s", $this->_priority(), $pid));
+        private function _renice(int $pid, int $priority) {
+            \exec(\sprintf("renice %s %s", $priority, $pid));
         }             
 
         /*
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
          */
-        final public function throttle() {
-            foreach (\glob("/proc/*/status") as $entry) {
-                if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
-                    try {
-                        $fopen = new \Component\Caller\File\Fopen($entry);
-                        if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {
-                            $this->_renice($pid);
+        final public function throttle(int $factor = 3) {
+            if (\strtolower(\PHP_OS) === "linux") {
+                foreach (\glob("/proc/*/status") as $entry) {
+                    if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
+                        try {
+                            $fopen = new \Component\Caller\File\Fopen($entry);
+                            if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {
+                                $this->_renice($pid, $this->_priority($factor));
+                            }
+                        } catch (\ErrorException $ex) {
+                            //ignore since the process is already gone
                         }
-                    } catch (\ErrorException $ex) {
-                        //ignore since the process is already gone
                     }
                 }
             }
@@ -76,14 +78,7 @@ namespace Component\Core {
         public function dispatch(string $path) {
             return (string) $this->getController($path);
         }            
-        
-        /*
-         * moved from Helpers but not sure if it belongs here yet..
-         */
-        final public function getSubstring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
-            return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
-        }         
-        
+
         /*
          * returning time the start of this controller
          */
@@ -95,7 +90,7 @@ namespace Component\Core {
          * checks if controller php file exists
          */
         final public function hasController(string $path) : bool {
-            return (bool) \file_exists(\sprintf("%s/%s.php", $this->path, $path));
+            return (bool) \file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
         }        
   
         /*
@@ -104,7 +99,9 @@ namespace Component\Core {
         final public function getController(string $path) {            
             if ($this->hasController($path)) {
                 \ob_start();
-                require \sprintf("%s/%s.php", $this->path, $path);
+                
+                require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
+                
                 return (string) $this->getCallbacks(\ob_get_clean());
             }            
         }            
