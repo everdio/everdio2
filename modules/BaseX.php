@@ -23,24 +23,28 @@ namespace Modules {
             return (string) $this->execute();            
         }                
         
-        final public function getMemcachedResponse(string $query, int $ttl = 3600) : string {
-            $memcached = new \Memcached("basex");
-            $memcached->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
-            $memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
-            $memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, 1000);
-            $memcached->setOption(\Memcached::OPT_SEND_TIMEOUT, 1000);       
-            
-            if (empty($memcached->getServerList())) {
-                $memcached->addServer("127.0.0.1", 11211);
-            }            
-            
-            $md5 = \md5($query);
-            if (!$memcached->get($md5) && $memcached->getResultCode() !== 0) {
-                //echo "<!-- md5: " . $md5 . " query: " . $query . " -->" . \PHP_EOL;
-                $memcached->add($md5, (string) $this->getResponse($query), $ttl);
+        final public function getMemcachedResponse(string $query, int $ttl = 3600, bool $debug = false) : string {
+            if ($debug) {
+                echo "<!-- query: " . $query . " -->" . \PHP_EOL;                
+                return (string) $this->getResponse($query);
+            } else {
+                $memcached = new \Memcached($this->database);
+                $memcached->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
+                $memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
+                $memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, 1000);
+                $memcached->setOption(\Memcached::OPT_SEND_TIMEOUT, 1000);       
+
+                if (empty($memcached->getServerList())) {
+                    $memcached->addServer("127.0.0.1", 11211);
+                }            
+
+                $md5 = \md5($query);
+                if (!$memcached->get($md5) && $memcached->getResultCode() !== 0) {
+                    $memcached->add($md5, (string) $this->getResponse($query), $ttl);
+                }
+
+                return (string) $memcached->get($md5);
             }
-            
-            return (string) $memcached->get($md5);
         }         
         
         final public function getDOMDocument(string $query) : \DOMDocument {     
