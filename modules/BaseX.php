@@ -30,9 +30,7 @@ namespace Modules {
             } else {
                 $memcached = new \Memcached($this->database);
                 $memcached->setOption(\Memcached::OPT_PREFIX_KEY, "basex_query_");
-                $memcached->setOption(\Memcached::OPT_TCP_NODELAY, true);
-                $memcached->setOption(\Memcached::OPT_RECV_TIMEOUT, 1000);
-                $memcached->setOption(\Memcached::OPT_SEND_TIMEOUT, 1000);       
+                $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
 
                 if (empty($memcached->getServerList())) {
                     $memcached->addServer("127.0.0.1", 11211);

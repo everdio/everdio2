@@ -24,11 +24,9 @@ if (!isset($cli->execute)) {
 
 
 $cli->echo("Processing ", ["lightgray"]);
-$cli->echo(\sprintf("`%s`", $cli->execute), ["green"]);
+$cli->echo(\sprintf("(%s) %s %s %s", $cli->pid, $cli->execute, (isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), $cli->dehydrate($cli->request->restore())), ["bold"]);
 $cli->echo(" at ", ["lightgrey"]);
-$cli->echo(\sprintf("`%s`", \date("Y-m-d H:i:s")), ["green"]);
-$cli->echo(" with pid ", ["lightgrey"]);
-$cli->echo(\sprintf("`%s`", $cli->pid), ["green"]);
+$cli->echo(\date("Y-m-d H:i:s"), ["green"]);
 $cli->break(2);
 
 try {

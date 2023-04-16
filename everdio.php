@@ -1,6 +1,4 @@
 <?php
-\ini_set("display_errors", 1);
-
 \set_error_handler(function($errno, $errstr, $errfile, $errline ){
     throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });

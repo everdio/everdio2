@@ -4,11 +4,7 @@ namespace Component {
         public function getName($string, $replace =  " "){            
             return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
         } 
-        
-        public function getSlug2($string) {
-            return (string) \Transliterator::createFromRules(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [^-[:^Punctuation:]] Remove; :: Lower(); [:^L:] { [-] > ; [-] } [:^L:] > ; [-[:Separator:]]+ > '-';")->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
-        }
-        
+
         public function getSlug($string, $replace = "-"){            
             return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\str_replace("_", $replace, $this->getName($string, $replace))), $replace)), $replace);
         }                       
@@ -52,7 +48,7 @@ namespace Component {
         }
         
         public function getWords(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0) : array {
-            $words = \array_count_values(\str_word_count(\strtolower(\strip_tags(\nl2br($content))), 1));            
+            $words = \array_count_values(\str_word_count(\strip_tags(\nl2br($content)), 1));            
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
                 $word = $this->getName(\strtolower($word));

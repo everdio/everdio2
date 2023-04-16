@@ -10,6 +10,7 @@ namespace Component\Core {
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
+                "log" => new Validation(false, [new Validator\IsString\IsFile]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);    
