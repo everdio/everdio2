@@ -9,7 +9,7 @@ namespace Modules {
                         foreach ($callbacks as $label => $callback) {                              
                             try {
                                 if (isset($this->request->{$this->debug})) {
-                                    echo "<!--time: " . $this->getTimer(3) . "s callback: " . $parameter . "/controller/" . $object . "/" . $label . "-->" . PHP_EOL;
+                                    echo "<!--time: " . $this->getTimer(3) . "s callback: " . $parameter . "/controller/" . $object . "/" . $label . "/" . \str_replace(["{", "}"], false, $callback) . "-->" . PHP_EOL;
                                 }
                                                             
                                 if (\is_string($label)) {
@@ -51,7 +51,7 @@ namespace Modules {
                             } catch (\ErrorException | \TypeError | \Error $ex) {
                                 throw new \LogicException($ex->getMessage(), 0, $ex);
                             } catch (\LogicException $ex) {
-                                throw new \RuntimeException(\sprintf("%s/controller/%s/%s: %s", $parameter, $object, $label, $ex->getMessage()));
+                                throw new \RuntimeException(\sprintf("%s/controller/%s/%s/%s: %s", $parameter, $object, $label, $callback, $ex->getMessage()));
                             }
                         }                            
                     }
