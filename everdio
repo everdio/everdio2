@@ -7,12 +7,11 @@
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $cli = new \Component\Core\Controller\Model\Cli;
-$cli->pm = "php";
 $cli->server = $_SERVER;
 $cli->path = __DIR__;
 $cli->debug = "_debug";
 $cli->setup();
-$cli->throttle();
+$cli->throttle(["php"]);
 
 $cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $cli->break(2);

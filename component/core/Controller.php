@@ -5,7 +5,6 @@ namespace Component\Core {
         public function __construct(array $_parameters = []) {
             parent::__construct([          
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "pm" => new Validation(false, [new Validator\IsString]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
@@ -49,13 +48,13 @@ namespace Component\Core {
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
          */
-        final public function throttle(int $factor = 3) {
+        final public function throttle(array $processmanagers, int $factor = 3) {
             if (\strtolower(\PHP_OS) === "linux") {
                 foreach (\glob("/proc/*/status") as $entry) {
                     if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
                         try {
                             $fopen = new \Component\Caller\File\Fopen($entry);
-                            if (\str_replace("Name:\t", "", \trim($fopen->gets())) === $this->pm) {
+                            if (\in_array(\str_replace("Name:\t", "", \trim($fopen->gets())), $processmanagers)) {
                                 $this->_renice($pid, $this->_priority($factor));
                             }
                         } catch (\ErrorException $ex) {

@@ -6,18 +6,22 @@ namespace Component {
         } 
 
         public function getSlug($string, $replace = "-"){            
-            return (string) \trim(\preg_replace('/\W+/', $replace, \trim(\strtolower(\str_replace("_", $replace, $this->getName($string, $replace))), $replace)), $replace);
+            return (string) \trim(\preg_replace("/\W+/", $replace, \trim(\strtolower(\str_replace("_", $replace, $this->getName($string, $replace))), $replace)), $replace);
         }                       
         
         public function getLabelized(string $string) : string {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("-", \strtolower($this->getSlug($string))))));
         }         
         
-        public function getSizeformat($size, int $precision = 2, $suffixes = ['B', 'kB', 'MB', 'GB']) {
+        public function getSizeformat($size, int $precision = 2, $suffixes = ["B", "kB", "MB", "GB"]) {
             $base = \log(\floatval($size)) / \log(1024);
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
-        }                
+        }       
         
+        public function getTimeFormat($time, int $precision = 2, $suffixes = [" s", " min", " hr"]) {
+            $base = \log(\floatval($time)) / \log(60);
+            return \round(\pow(60, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
+        }         
         
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));

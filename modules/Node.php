@@ -48,7 +48,9 @@ namespace Modules {
             }
             
             if (\sizeof($orderby)) {
-                \array_multisort($orderby, \SORT_ASC, $records);
+                foreach ($orderby as $parameter => $order) { 
+                    \array_multisort(\array_column($records, $parameter), $order, $records);    
+                }
             }            
             
             return (array) $records;
