@@ -1,4 +1,6 @@
 <?php
+\libxml_use_internal_errors(false);
+
 \set_error_handler(function($errno, $errstr, $errfile, $errline ){
     throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 });

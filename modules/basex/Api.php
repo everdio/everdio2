@@ -36,7 +36,7 @@ namespace Modules\BaseX {
                     }
                 }
                 
-                return (int) $api->fromMemcached("count" . $query);
+                return (int) $api->getMemcachedResponse("count" . $query);
             }
             
             throw new \LogicException("API not set");

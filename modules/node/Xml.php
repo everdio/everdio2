@@ -2,7 +2,6 @@
 namespace Modules\Node {
     trait Xml {
         use \Modules\Node;
-
         protected function __init() : object {
             $xml = new \DOMDocument("1.0", "UTF-8");
             $xml->preserveWhiteSpace = false;

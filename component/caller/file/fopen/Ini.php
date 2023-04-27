@@ -21,13 +21,11 @@ namespace Component\Caller\File\Fopen {
             }
         }
 
-        final public function writeKeyPair(string $key, string $parameter, $value) {
-            if (!empty($key) && !empty($parameter)) {
-                $this->write(\sprintf("%s[%s] = \"%s\";\n", $key, $parameter, $this->_value($value)));
-            }
+        final public function writeKeyPair(string | int $key, string | int $parameter, $value) {
+            $this->write(\sprintf("%s[%s] = \"%s\";\n", $key, $parameter, $this->_value($value)));
         }
 
-        final public function writeArray(array $array1) {
+        final public function writeArray(array $array1) {   
             foreach ($array1 as $key1 => $value1) {
                 if (\is_array($value1)) {
                     foreach ($value1 as $key2 => $value2) {

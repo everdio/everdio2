@@ -99,15 +99,13 @@ namespace Component\Core {
         final public function getController(string $path) {            
             if ($this->hasController($path)) {
                 \ob_start();
-                
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
-                
                 return (string) $this->getCallbacks(\ob_get_clean());
             }            
         }            
         
         /*
-         * processing any existing callbacks from output
+         * processing any existing callbacks from output string
          */
         final public function getCallbacks(string $output, array $matches = []) : string {            
             if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
@@ -122,6 +120,8 @@ namespace Component\Core {
                         throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getPrevious()->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) { 
                         throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                    } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
+                        throw new \LogicException(\sprintf("%s %s in %s", \get_class($ex), $ex->getMessage(), $match));                 
                     }
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
@@ -138,7 +138,6 @@ namespace Component\Core {
             $controller = new $this;
             $controller->import($this->export($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-
             if (isset($controller->path)) {
                 try {
                     return $controller->dispatch(\basename($path));        

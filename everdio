@@ -21,7 +21,6 @@ if (!isset($cli->execute)) {
     exit;
 }
 
-
 $cli->echo("Processing ", ["lightgray"]);
 $cli->echo(\sprintf("%s %s %s (%s)", $cli->execute, (isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), $cli->dehydrate($cli->request->restore()), $cli->pid), ["bold"]);
 $cli->echo(" at ", ["lightgrey"]);
@@ -34,6 +33,7 @@ try {
     if (isset($cli->request->{$cli->debug})) {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
+    
     $cli->break(1);
     $cli->echo($ex->getMessage(), ["red", "bold"]);
     $cli->break(1);
