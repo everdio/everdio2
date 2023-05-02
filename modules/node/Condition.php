@@ -10,7 +10,7 @@ namespace Modules\Node {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value)) {
                             
-                            if (isset($mapper->get($parameter)->IS_NUMERIC)) {
+                            if (isset($mapper->getParameter($parameter)->IS_NUMERIC)) {
                                 $conditions[$parameter] = \sprintf("@%s%s%s", $mapper->getField($parameter), $expression, $value);
                             } else {
                                 $conditions[$parameter] = \sprintf("@%s%s\"%s\"", $mapper->getField($parameter), $expression, \html_entity_decode($value, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));

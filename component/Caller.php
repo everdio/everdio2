@@ -1,12 +1,9 @@
 <?php
 namespace Component {
     abstract class Caller {
-        use Helpers, Dryer, Finder;
-        
+        use Helpers, Dryer, Callback;
         private $_call;
-        
         protected $handle;
-
         public function __construct($_call) {
             $this->_call = $_call;
         }

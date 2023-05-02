@@ -1,6 +1,6 @@
 <?php
 namespace Modules {
-    trait Node {              
+    trait Node {             
         private function prepare(array $validations = []) : string {
             if (isset($this->index) && isset($this->parent)) {
                 return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);

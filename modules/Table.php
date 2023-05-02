@@ -16,7 +16,7 @@ namespace Modules {
         }    
         
         final public function __set(string $parameter, $value) {
-            if (!empty($value) && (!\is_array($value) && $this->get($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
+            if (!empty($value) && (!\is_array($value) && $this->getParameter($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
                 $value = \explode(",", $value);
             }
             

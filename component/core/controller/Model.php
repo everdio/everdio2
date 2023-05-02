@@ -29,10 +29,10 @@ namespace Component\Core\Controller {
             if ($this->hasModel($path)) {
                 foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
                     if (\is_array($value)) {
-                        $this->add($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
+                        $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
                         $this->{$parameter}->store($value);
                     } else {
-                        $this->add($parameter, new Validation\Parameter($value), $reset);                                                             
+                        $this->addParameter($parameter, new Validation\Parameter($value), $reset);                                                             
                     }
                 }                         
             }           

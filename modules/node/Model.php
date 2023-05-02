@@ -30,14 +30,14 @@ namespace Modules\Node {
             if ($this->node->hasAttributes()) {
                 foreach ($this->node->attributes as $attribute) {
                     $parameter = new \Component\Validation\Parameter((!empty(\trim($attribute->value)) ? \trim($attribute->value) : false), false, true);
-                    $this->add($this->getLabelized($attribute->nodeName), $parameter->getValidation($parameter->getValidators()));
+                    $this->addParameter($this->getLabelized($attribute->nodeName), $parameter->getValidation($parameter->getValidators()));
                     $this->mapping = [$attribute->nodeName => $this->getLabelized($attribute->nodeName)];
                 }            
             }
             
             if ($this->node->hasChildNodes() && $this->node->childNodes->length === 1 && $this->node->firstChild->nodeType === \XML_TEXT_NODE) {
                 $parameter = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);
-                $this->add($this->label, $parameter->getValidation($parameter->getValidators()));
+                $this->addParameter($this->label, $parameter->getValidation($parameter->getValidators()));
             }
             
             $this->remove("node");

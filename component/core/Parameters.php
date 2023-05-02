@@ -3,7 +3,7 @@ namespace Component\Core {
     class Parameters extends \Component\Core {
         final public function __set(string $parameter, $value) {
             $validation = new \Component\Validation\Parameter($value, true);
-            $this->add($parameter, $validation->getValidation($validation->getValidators()), true);           
+            $this->addParameter($parameter, $validation->getValidation($validation->getValidators()), true);           
         }
         
         final public function store(array $values) : self {

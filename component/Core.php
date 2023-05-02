@@ -1,10 +1,10 @@
 <?php
 namespace Component {
     abstract class Core {
-        use Helpers, Dryer, Finder;
+        use Helpers, Dryer, Callback;
         public function __construct(private array $_parameters = []) {
             foreach ($_parameters as $parameter => $validation) {
-                $this->add($parameter, $validation);
+                $this->addParameter($parameter, $validation);
             }            
         }
         
@@ -33,7 +33,7 @@ namespace Component {
         }
 
         public function __invoke(string $parameter) : Validation {
-            return (object) $this->get($parameter);
+            return (object) $this->getParameter($parameter);
         }
 
         public function __isset(string $parameter) : bool {
@@ -52,21 +52,22 @@ namespace Component {
             return (bool) \array_key_exists($parameter, $this->_parameters);
         }
         
-        final public function add(string $parameter, Validation $validation, bool $reset = false) {
+        final public function addParameter(string $parameter, Validation $validation, bool $reset = false) {
             if (!$this->exists($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
-        }
+        }        
+
         
-        final public function get(string $parameter) : Validation {
+        final public function getParameter(string $parameter) : Validation {
             if ($this->exists($parameter)) {
                 return (object) $this->_parameters[$parameter];
             }
             
             throw new \InvalidArgumentException($parameter);
-        }
+        }        
         
-        public function remove(string $parameter) : void {
+        final public function remove(string $parameter) : void {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
             }
@@ -143,6 +144,12 @@ namespace Component {
             
             return (string) $content;
         }             
+        
+        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
+            foreach (\explode($seperator, $path) as $part) {
+                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, $arguments));
+            }
+        }        
         
         final public function destroy() {
             unset ($this->_parameters);

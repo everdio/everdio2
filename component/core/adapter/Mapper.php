@@ -12,18 +12,6 @@ namespace Component\Core\Adapter {
             
             throw new \LogicException(\sprintf("unknown parameter %s", $parameter));
         }
-        
-        final public function hasParameter($parameter) : bool {
-            return (bool) isset($this->mapping) && \in_array($parameter, $this->mapping);
-        }
-        
-        final public function getParameter(string $field) : string {
-            if ($this->hasField($field)) {
-                return (string) $this->mapping[$field];
-            }
-            
-            throw new \LogicException(\sprintf("unknown field %s", $field));
-        }
 
         final public function __dry() : string {
             return (string) \sprintf("new \%s(%s)", (string) $this, (isset($this->mapping) ? $this->dehydrate($this->restore($this->mapping)) : false));

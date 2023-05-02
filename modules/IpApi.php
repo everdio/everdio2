@@ -17,7 +17,7 @@ namespace Modules {
             $dom->formatOutput = false; 
             $dom->recover = true;
             $dom->substituteEntities = false;  
-            $dom->loadXML($curl->execute(), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+            $dom->loadXML($curl->execute(), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
 
             return (object) $dom;
         }

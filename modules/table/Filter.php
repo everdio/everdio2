@@ -7,7 +7,7 @@ namespace Modules\Table {
                 //if (isset($table->mapping) && $table->isNormal($table->mapping)) {
                 if (isset($table->mapping)) {
                     foreach ($table->restore($table->mapping) as $parameter => $value) {                        
-                        if (!empty($value) || !isset($table->get($parameter)->IS_EMPTY)) {
+                        if (!empty($value) || !isset($table->getParameter($parameter)->IS_EMPTY)) {
                             if (\substr($table->getField($parameter), 0, 1) == '@') {
                                 $additional = ":";
                                 $column = $table->getField($parameter);
@@ -16,11 +16,11 @@ namespace Modules\Table {
                                 $column = \sprintf("`%s`.`%s`.`%s`", $table->database, $table->table, $table->getField($parameter));    
                             }
                             
-                            if (isset($table->get($parameter)->IS_NUMERIC)) {
+                            if (isset($table->getParameter($parameter)->IS_NUMERIC)) {
                                 $operators[] = \sprintf("%s %s %s ", $column, $additional . $expression, $value);
-                            } elseif (isset($table->get($parameter)->IS_STRING) || isset($table->get($parameter)->IS_DEFAULT) || isset($table->get($parameter)->IS_DATE)) { 
+                            } elseif (isset($table->getParameter($parameter)->IS_STRING) || isset($table->getParameter($parameter)->IS_DEFAULT) || isset($table->getParameter($parameter)->IS_DATE)) { 
                                 $operators[] = \sprintf("%s %s '%s'", $column, $additional . $expression, $this->sanitize($value));                            
-                            } elseif (isset($table->get($parameter)->IS_ARRAY)) {
+                            } elseif (isset($table->getParameter($parameter)->IS_ARRAY)) {
                                 $sets = [];
                                 foreach ($value as $set) {
                                     $sets[] = \sprintf(" FIND_IN_SET('%s',%s) ", $set, $column);

@@ -58,7 +58,7 @@ namespace Modules\Table {
                         throw new \LogicException(\sprintf("unknown column type: %s (`%s`.`%s`)", $row["DATA_TYPE"], $this->table, $row["COLUMN_NAME"]));
                 }
 
-                $this->add($this->getLabelized($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));
+                $this->addParameter($this->getLabelized($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));
                 $this->mapping = [$row["COLUMN_NAME"] => $this->getLabelized($row["COLUMN_NAME"])];
             }          
                            

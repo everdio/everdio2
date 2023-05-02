@@ -4,31 +4,25 @@ namespace Modules {
     class Autocallbacks extends \Component\Core\Controller\Model\Http {
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
+                "controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
                 ] + $_parameters);
-        }
-        
-        public function displayCallbacks(string $output = NULL) : string { 
-            foreach ($this->controller->restore() as $mapper => $callbacks) {
-                foreach ($callbacks as $label => $result) {
-                    $output .= "callback: /controller/" . $mapper . "/" . $label . ": " . $this->dehydrate($result) . \PHP_EOL;
-                }
-            }
-            
-            return (string) $output;
         }
 
         public function autoCallbacks(string $parameter) : void {
-            if (isset($this->{$parameter})) {                
+            if (isset($this->{$parameter})) {          
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->library->{$mapper}) ) {
                         try {
                             $core = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper});
                             foreach ($callbacks as $label => $callback) {      
                                 try {
-                                    $this->controller->store([$mapper => [$label => $core->callback($this->getCallbacks($callback))]]);
+                                    if (isset($this->request->{$this->debug})) {
+                                        echo "<!-- controller/" . $parameter . "/" . $mapper . "/" . $label . ": " . $this->dehydrate($this->getCallbacks($callback)) . "-->" . \PHP_EOL;
+                                    }                                    
                                     
                                     if (\is_string($label)) {
+                                        $this->controller->store([$mapper => [$label => $core->callback($this->getCallbacks($callback))]]);
+                                        
                                         //break if static value is not controller value
                                         if (isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->controller->{$mapper}->{$label}) {
                                             unset ($this->controller->{$mapper}->{$label});
@@ -55,7 +49,9 @@ namespace Modules {
                                                 unset ($this->controller->{$mapper}->{$label});
                                             }                   
                                         }
-                                    }      
+                                    } else {
+                                        $core->callback($this->getCallbacks($callback));   
+                                    }
                                 } catch (\UnexpectedValueException $ex) {
                                     throw new \LogicException(\sprintf("%s invalid value for parameter %s: %s", $label, $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
                                 } catch (\InvalidArgumentException $ex) {
