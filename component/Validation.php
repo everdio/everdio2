@@ -5,18 +5,16 @@ namespace Component {
         const NORMAL = "NORMAL";
         const STRICT = "STRICT";             
         
-        protected $value = false;
+        private $_messages = [], $_validated = [], $_validators = [];   
         
-        private $messages = [], $validated = [], $validators = [];   
+        public $types = [];
         
-        public $types = [], $validate = self::NORMAL;                
-        
-        public function __construct($value = false, array $validators = [], string $validate = self::NORMAL) {
+        public function __construct(protected $value = false, array $_validators = [], public string $validate = self::NORMAL) {
             $this->value = $value;
-            foreach ($validators as $validator) {
-                $this->validators[(string) $validator] = $validator;
-                $this->types[(string) $validator] = $validator::TYPE;
-                $this->messages[(string) $validator] = $validator::MESSAGE;
+            foreach ($_validators as $validator) {
+                $this->_validators[(string) $validator] = $validator;
+                $this->_messages[(string) $validator] = $validator::MESSAGE;
+                $this->types[(string) $validator] = $validator::TYPE;                
             }
             
             $this->validate = \strtoupper($validate);
@@ -31,8 +29,8 @@ namespace Component {
         }
         
         public function __get(string $validator) : \Component\Validator {
-            if (\array_key_exists($validator, $this->validators)) {
-                return (object) $this->validators[$validator];
+            if (\array_key_exists($validator, $this->_validators)) {
+                return (object) $this->_validators[$validator];
             }
             
             throw new \LogicException(\sprintf("unknown validator %s", $validator));
@@ -55,15 +53,15 @@ namespace Component {
         }
         
         public function validated(bool $validation = true) : array {
-            return (array) \array_intersect_key($this->validators, \array_flip(\array_keys($this->validated, $validation)));
+            return (array) \array_intersect_key($this->_validators, \array_flip(\array_keys($this->_validated, $validation)));
         }
 
         public function isValid() : bool {
-            foreach ($this->validators as $validator) {
-                $this->validated[(string) $validator] = $validator->execute($this->value);
+            foreach ($this->_validators as $validator) {
+                $this->_validated[(string) $validator] = $validator->execute($this->value);
             }
             
-            return (bool) (\sizeof($this->validated) && (($this->validate === self::NORMAL && \in_array(true, $this->validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->validated))));
+            return (bool) (\sizeof($this->_validated) && (($this->validate === self::NORMAL && \in_array(true, $this->_validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->_validated))));
         }        
 
         public function execute() {
@@ -71,23 +69,23 @@ namespace Component {
                 return $this->value;
             }
             
-            throw new \ValueError(sprintf("%s with %s (%s)", $this->substring($this->dehydrate($this->value), 0, 150), \implode(", ", \array_intersect_key($this->messages, \array_flip(\array_keys($this->validated, false)))), $this->validate));
+            throw new \ValueError(sprintf("%s with %s (%s)", $this->substring($this->dehydrate($this->value), 0, 150), \implode(", ", \array_intersect_key($this->_messages, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
         }        
         
         public function __call(string $method, array $arguments) {
-            foreach ($this->validators as $validator) {
+            foreach ($this->_validators as $validator) {
                 if (\method_exists($validator, $method)) {
                     return \call_user_func_array(array($validator, $method), $arguments);
                 }
             }
         }         
 
-        public function __dry(array $validators = []) : string {
-            foreach ($this->validators as $validator) {
-                $validators[] = $validator->__dry();
+        public function __dry(array $_validators = []) : string {
+            foreach ($this->_validators as $validator) {
+                $_validators[] = $validator->__dry();
             }
                         
-            return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
+            return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $_validators), \strtoupper($this->validate));
         }               
     }
 }

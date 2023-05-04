@@ -5,16 +5,12 @@ namespace Modules {
         final protected function __init() : object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
-                \CURLOPT_FOLLOWLOCATION => true, 
                 \CURLOPT_RETURNTRANSFER => true,      
-                \CURLOPT_TCP_FASTOPEN => true,
-                \CURLOPT_SSL_VERIFYPEER => false,                
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC, 
-                \CURLOPT_USERPWD => $this->username . ":" . $this->password,
-                \CURLOPT_ENCODING => ""]); 
+                \CURLOPT_USERPWD => $this->username . ":" . $this->password]); 
             return (object) $curl;
-        }   
-        
+        }
+
         final public function getResponse(string $query) : string {
             $this->setopt_array([
                 \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query),
@@ -29,13 +25,13 @@ namespace Modules {
                 $memcached->addServer("127.0.0.1", 11211);
             }            
 
-            $key = \md5($query);
-            
-            if (!$memcached->get($key) && $memcached->getResultCode() !== 0) {
-                $memcached->add($key, (string) $this->getResponse($query), $ttl);
+            if ((!$response = $memcached->get(\md5($query))) && $memcached->getResultCode() !== 0) {
+                $response = $this->getResponse($query);
+                $memcached->add(\md5($query), $response, $ttl);
+                return (string) $response;
             }
-
-            return (string) $memcached->get($key);
+            
+            return (string) $response;
         }        
         
         final public function getDOMDocument(string $query) : \DOMDocument {     

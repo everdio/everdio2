@@ -7,8 +7,18 @@ namespace Modules {
                 "controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
                 ] + $_parameters);
         }
+        
+        public function unsetCallbacks(string $parameter) : void {
+            if (isset($this->{$parameter})) {          
+                foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
+                    if (isset($this->library->{$mapper}) ) {
+                        unset ($this->controller->{$mapper});
+                    }
+                }
+            }
+        }
 
-        public function autoCallbacks(string $parameter) : void {
+        public function autoCallbacks(string $parameter, bool $unset = false) : void {
             if (isset($this->{$parameter})) {          
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->library->{$mapper}) ) {
@@ -47,21 +57,25 @@ namespace Modules {
                                                 $this->controller->store([$mapper => [$label => $foreach]]); 
                                                 $this->callback($this->getCallbacks($this->foreach->{$mapper}->{$label}));
                                                 unset ($this->controller->{$mapper}->{$label});
-                                            }                   
+                                            }     
+                                            
+                                            unset ($this->controller->{$mapper}->{$label});
                                         }
                                     } else {
                                         $core->callback($this->getCallbacks($callback));   
                                     }
+
                                 } catch (\UnexpectedValueException $ex) {
-                                    throw new \LogicException(\sprintf("%s invalid value for parameter %s: %s", $label, $ex->getMessage(), $ex->getPrevious()->getMessage()), 0, $ex);
+                                    throw new \LogicException(\sprintf("invalid value for parameter %s: %s", $ex->getMessage(), $ex->getPrevious()->getMessage()));
                                 } catch (\InvalidArgumentException $ex) {
-                                    throw new \LogicException(\sprintf("%s parameter %s required", $label, $ex->getMessage()), 0, $ex);
+                                    throw new \LogicException(\sprintf("%s parameter %s required", $label, $ex->getMessage()));
                                 } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
-                                    throw new \LogicException(\sprintf("%s %s", $label, $ex->getMessage()), 0, $ex);
+                                    throw new \LogicException(\sprintf("%s %s", $label, $ex->getMessage()));
                                 }
                             }
+                            
                         } catch (\LogicException $ex) {
-                            throw new \RuntimeException(\sprintf("%s/%s/%s", $parameter, $mapper, $ex->getMessage()), 0, $ex);
+                            throw new \RuntimeException(\sprintf("%s/%s: %s", $parameter, $mapper, $ex->getMessage()));
                         }
                     }
                 }

@@ -1,10 +1,10 @@
 <?php
 namespace Component {
     abstract class Core {
-        use Helpers, Dryer, Callback;
+        use Helpers, Dryer, Finder;
         public function __construct(private array $_parameters = []) {
             foreach ($_parameters as $parameter => $validation) {
-                $this->addParameter($parameter, $validation);
+                $this->addParameter($parameter, $validation, true);
             }            
         }
         
@@ -124,14 +124,10 @@ namespace Component {
             
             return (array) $validations;
         }
-
-        final public function import(string $serialized) : void {
-            $this->_parameters = \array_merge($this->_parameters, \unserialize($serialized));
-        }
-
-        final public function export(array $parameters = []) : string {
-            return (string) \serialize($this->parameters($parameters));
-        }
+        
+        final public function clone(array $_parameters) : void {
+            $this->_parameters = \array_merge($this->_parameters, \unserialize(\serialize($_parameters)));
+        }        
 
         final public function unique(array $parameters = [], string $salt = NULL) : string {
             return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
@@ -143,13 +139,7 @@ namespace Component {
             }
             
             return (string) $content;
-        }             
-        
-        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
-            foreach (\explode($seperator, $path) as $part) {
-                return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, $arguments));
-            }
-        }        
+        }                 
         
         final public function destroy() {
             unset ($this->_parameters);

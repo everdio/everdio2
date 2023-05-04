@@ -135,8 +135,9 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
         public function execute(string $path) {      
+            
             $controller = new $this;
-            $controller->import($this->export($this->diff()));
+            $controller->clone($this->parameters($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {

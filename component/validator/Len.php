@@ -3,11 +3,9 @@ namespace Component\Validator {
     abstract class Len extends \Component\Validator {
         const TYPE = "IS_LENGTH";
         const MESSAGE = "INVALID_LENGTH";
-        
-        protected $len = 0;
-        
-        public function __construct(int $len) {
-            $this->len = $len;
+
+        public function __construct(protected int $len = 0) {
+            
         }
         
         public function getLen() : int {
