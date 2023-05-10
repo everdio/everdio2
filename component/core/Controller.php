@@ -9,7 +9,6 @@ namespace Component\Core {
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
-                "log" => new Validation(false, [new Validator\IsString\IsFile]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);    
@@ -33,7 +32,7 @@ namespace Component\Core {
         /*
          * calculating nicesess based on load (1 core is max 0.50)
          */
-        private function _priority(int $factor) : int {
+        private function _priority(int $factor = 3) : int {
             return (int) round((($this->_load() / ($this->_cores() / $factor)) * 100) * (39 / 100) - 19);
         }
         
@@ -135,7 +134,6 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
         public function execute(string $path) {      
-            
             $controller = new $this;
             $controller->clone($this->parameters($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));

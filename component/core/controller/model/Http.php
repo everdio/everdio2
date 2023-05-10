@@ -6,6 +6,7 @@ namespace Component\Core\Controller\Model {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "SERVER_PROTOCOL", "DOCUMENT_ROOT", "REMOTE_ADDR"])], Validation::NORMAL),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
+                "referer" => new Validation(false, [new IsString\IsUrl]),  
                 "host" => new Validation(false, [new IsString]),  
                 "remote" => new Validation(false, [new IsString]),  
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),                
@@ -23,6 +24,10 @@ namespace Component\Core\Controller\Model {
         }
         
         public function setup() : void {
+            if (isset($this->server["HTTP_REFERER"])) {
+                $this->referer = $this->server["HTTP_REFERER"];
+            }
+            
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
