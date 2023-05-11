@@ -22,7 +22,7 @@ if (!isset($cli->execute)) {
 }
 
 $cli->echo("Processing ", ["lightgray"]);
-$cli->echo(\sprintf("%s %s %s (%s)", $cli->execute, (isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), $cli->dehydrate($cli->request->restore()), $cli->pid), ["bold"]);
+$cli->echo(\sprintf("%s %s %s %s", $cli->execute, (isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), $cli->dehydrate($cli->request->restore()), $cli->pid), ["bold"]);
 $cli->echo(" at ", ["lightgrey"]);
 $cli->echo(\date("Y-m-d H:i:s"), ["green"]);
 $cli->break(2);
