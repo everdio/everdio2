@@ -7,18 +7,8 @@ namespace Modules {
                 "controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
                 ] + $_parameters);
         }
-        
-        public function unsetCallbacks(string $parameter) : void {
-            if (isset($this->{$parameter})) {          
-                foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
-                    if (isset($this->library->{$mapper}) ) {
-                        unset ($this->controller->{$mapper});
-                    }
-                }
-            }
-        }
 
-        public function autoCallbacks(string $parameter, bool $unset = false) : void {
+        public function autoCallbacks(string $parameter) : void {
             if (isset($this->{$parameter})) {          
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->library->{$mapper}) ) {
@@ -27,7 +17,7 @@ namespace Modules {
                             foreach ($callbacks as $label => $callback) {      
                                 try {
                                     if (isset($this->request->{$this->debug})) {
-                                        echo "<!-- controller/" . $parameter . "/" . $mapper . "/" . $label . ": " . $this->dehydrate($this->getCallbacks($callback)) . "-->" . \PHP_EOL;
+                                        echo "<!-- " . $parameter . ":  controller/" . $mapper . "/" . $label . ": " . $this->dehydrate($this->getCallbacks($callback)) . "-->" . \PHP_EOL;
                                     }                                    
                                     
                                     if (\is_string($label)) {
@@ -46,7 +36,7 @@ namespace Modules {
                                         }
 
                                         //is or isnot on callback value
-                                        if ((isset($this->is->{$mapper}->{$label}) && $this->callback($this->is->{$mapper}->{$label}) != $this->controller->{$mapper}->{$label}) || (isset($this->isnot->{$mapper}->{$label}) && $this->callback($this->isnot->{$mapper}->{$label}) == $this->controller->{$mapper}->{$label})) {
+                                        if ((isset($this->is->{$mapper}->{$label}) && isset($this->controller->{$mapper}->{$label}) && $this->callback($this->is->{$mapper}->{$label}) != $this->controller->{$mapper}->{$label}) || (isset($this->isnot->{$mapper}->{$label}) && isset($this->controller->{$mapper}->{$label}) && $this->callback($this->isnot->{$mapper}->{$label}) == $this->controller->{$mapper}->{$label})) {
                                             unset ($this->controller->{$mapper}->{$label});                                            
                                             return;
                                         }

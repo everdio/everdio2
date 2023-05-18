@@ -39,7 +39,7 @@ try {
     $cli->break(1);
 }
 
-$cli->break();
+$cli->break(1);
 $cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["lightgray"]);
 $cli->break(2);
 exit;
