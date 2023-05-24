@@ -10,7 +10,7 @@ namespace Component\Core {
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
-                "arguments" => new Validation(false, [new Validator\IsString])
+                "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath])
             ] + $_parameters);    
         }
         

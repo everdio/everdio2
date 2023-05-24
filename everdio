@@ -21,10 +21,20 @@ if (!isset($cli->execute)) {
     exit;
 }
 
-$cli->echo("Processing ", ["lightgray"]);
-$cli->echo(\sprintf("%s %s %s %s", $cli->execute, (isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), $cli->dehydrate($cli->request->restore()), $cli->pid), ["bold"]);
-$cli->echo(" at ", ["lightgrey"]);
+$cli->echo("Pid:\t\t", ["lightgray"]);
+$cli->echo($cli->pid, ["green"]);
+$cli->break();
+$cli->echo("Timestamp:\t", ["lighgray"]);
 $cli->echo(\date("Y-m-d H:i:s"), ["green"]);
+$cli->break();
+$cli->echo("Execute:\t", ["lighgray"]);
+$cli->echo($cli->execute, ["bold"]);
+$cli->break();
+$cli->echo("Arguments:\t", ["lighgray"]);
+$cli->echo((isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), ["bold"]);
+$cli->break();
+$cli->echo("Request:\t", ["lighgray"]);
+$cli->echo($cli->dehydrate($cli->request->restore()), ["bold"]);
 $cli->break(2);
 
 try {
@@ -34,12 +44,16 @@ try {
         throw new \RuntimeException($ex->getMessage(), 0, $ex);
     }
     
-    $cli->break(1);
+    $cli->break();
     $cli->echo($ex->getMessage(), ["red", "bold"]);
-    $cli->break(1);
+    $cli->break();
 }
 
-$cli->break(1);
-$cli->echo(\sprintf("Done in %ss with %s memory consumption", $cli->getTimer(), $cli->getSizeformat(\memory_get_peak_usage(true))), ["lightgray"]);
+$cli->break();
+$cli->echo("Time:\t", ["lightgray"]);
+$cli->echo(\sprintf("%ss", $cli->getTimer()), ["green"]);
+$cli->break();
+$cli->echo("Memory:\t", ["lightgray"]);
+$cli->echo($cli->getSizeformat(\memory_get_peak_usage(true)), ["green"]);
 $cli->break(2);
 exit;
