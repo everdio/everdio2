@@ -64,7 +64,7 @@ namespace Modules {
             return (object) $this;
         }
         
-        public function save(string $cdata = null) : self {
+        public function save(string | int $cdata = null) : self {
             if (!$cdata && $this->exists($this->label) && isset($this->{$this->label})) {
                 $cdata = $this->{$this->label};
             }
@@ -72,6 +72,7 @@ namespace Modules {
             $create = new Node\Create($this, $cdata);
             $save = new Node\Save($this, $create->execute());
             $map = new Node\Map($this, $save->execute());
+            
             return (object) $map->execute();
         }
         

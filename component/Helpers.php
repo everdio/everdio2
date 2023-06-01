@@ -18,9 +18,8 @@ namespace Component {
             return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }       
         
-        public function getTimeFormat($time, int $precision = 2, $suffixes = [" s", " min", " hr"]) {
-            $base = \log(\floatval($time)) / \log(60);
-            return \round(\pow(60, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
+        public function getTimeformat(int $seconds, string $seperator = ":") {
+              return \sprintf("%02d%s%02d%s%02d", \floor($seconds / 3600), $seperator, ($seconds / 60 ) % 60, $seperator, $seconds % 60);
         }         
         
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {

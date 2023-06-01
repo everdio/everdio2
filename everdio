@@ -51,7 +51,7 @@ try {
 
 $cli->break();
 $cli->echo("Time:\t", ["lightgray"]);
-$cli->echo(\sprintf("%ss", $cli->getTimer()), ["green"]);
+$cli->echo(\sprintf("%ss", \gmdate("H:i:s", $cli->getTimer(0))), ["green"]);
 $cli->break();
 $cli->echo("Memory:\t", ["lightgray"]);
 $cli->echo($cli->getSizeformat(\memory_get_peak_usage(true)), ["green"]);

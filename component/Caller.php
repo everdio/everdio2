@@ -4,11 +4,15 @@ namespace Component {
         use Helpers, Dryer, Finder;
         protected $handle;
         public function __construct(private string $_call) {
-            
+            $this->_call = $_call;
         }
         
         final public function getHandle() {
             return $this->handle;
+        }
+        
+        final public function hasHandle() : bool {
+            return (bool) isset($this->handle);
         }
         
         final public function __toString() : string {

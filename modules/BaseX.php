@@ -12,7 +12,7 @@ namespace Modules {
         }
 
         final public function getResponse(string $query) : string {
-            echo "<!--raw " . $query . "-->" . \PHP_EOL;
+            echo "<!-- query . " . $query . "-->" . \PHP_EOL;
             $this->setopt_array([
                 \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query),
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
@@ -41,7 +41,7 @@ namespace Modules {
             $dom->formatOutput = false; 
             $dom->recover = true;
             $dom->substituteEntities = false;  
-            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getMemcachedResponse($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);                       
+            $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getMemcachedResponse($query), $this->root), \LIBXML_PARSEHUGE | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
             return (object) $dom;
         }        
     }
