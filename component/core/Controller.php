@@ -133,7 +133,7 @@ namespace Component\Core {
         /*
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
-        public function execute(string $path) {      
+        public function execute(string $path) {    
             $controller = new $this;
             $controller->clone($this->parameters($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));

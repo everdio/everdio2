@@ -1,8 +1,0 @@
-*.cache
-*.log
-*.xml
-*.json
-*.csv
-*.txt
-library/
-*.ini
