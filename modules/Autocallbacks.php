@@ -25,7 +25,7 @@ namespace Modules {
                                     if (\is_string($label)) {
                                         /*
                                         if (isset($this->memcached) && isset($this->cache->{$mapper}) && isset($this->cache->{$mapper}->{$label})) {
-                                            if ((!$response = $this->memcached->get(($key = $key = $core->unique($core->diff($this->memcached->exclude->restore()), $calledbacks)))) && $this->memcached->getResultCode() !== 0) {
+                                            if ((!$response = $this->memcached->get(($key = $core->unique($core->diff(["pid", "token", "remote", "time", "referer", "server"]), $calledbacks)))) && $this->memcached->getResultCode() !== 0) {
                                                 $response = \serialize($core->callback($calledbacks));
                                                 $this->memcached->add($key, $response, $this->cache->{$mapper}->{$label});
                                             }
@@ -34,9 +34,9 @@ namespace Modules {
                                         } else {                                        
                                             $this->controller->store([$mapper => [$label => $core->callback($calledbacks)]]);
                                         } 
+                                    
                                          * 
-                                         */      
-                                        
+                                         */
                                         
                                         
                                         $this->controller->store([$mapper => [$label => $core->callback($calledbacks)]]);

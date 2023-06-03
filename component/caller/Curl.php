@@ -1,8 +1,8 @@
 <?php
 namespace Component\Caller {
     class Curl extends \Component\Caller {
-        public function __construct(string $_call = "curl_%s") {
-            parent::__construct($_call);
+        public function __construct() {
+            parent::__construct("curl_%s");
             $this->handle = $this->init();
             $this->setopt_array([
                 \CURLOPT_HTTPHEADER => ["Connection: keep-alive"],

@@ -1,10 +1,8 @@
 <?php
 namespace Component\Caller {
     abstract class File extends \Component\Caller {
-        private $_file;
-        public function __construct(string $_call, string $_file) {
+        public function __construct(string $_call, private string $_file) {
             parent::__construct($_call);
-            $this->_file = $_file;
         }        
         
         public function getExtension() : string {
@@ -22,7 +20,6 @@ namespace Component\Caller {
         public function delete() {
             return \unlink($this->_file);
         }        
-        
         
         public function __destruct() {
             $this->close();

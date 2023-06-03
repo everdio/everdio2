@@ -5,7 +5,7 @@ namespace Component\Caller\File\Fopen {
             parent::__construct(\sprintf("%s.ini", $path), "c");
         }
         
-        private function _value($value) : string {
+        private function _prepare($value) : string {
             return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
         }        
         
@@ -17,12 +17,12 @@ namespace Component\Caller\File\Fopen {
         
         final public function writePair(string $parameter, $value) {
             if (!empty($parameter)) {
-                $this->write(\sprintf("%s = \"%s\";\n", $parameter, $this->_value($value)));
+                $this->write(\sprintf("%s = \"%s\";\n", $parameter, $this->_prepare($value)));
             }
         }
 
         final public function writeKeyPair(string | int $key, string | int $parameter, $value) {
-            $this->write(\sprintf("%s[%s] = \"%s\";\n", $key, $parameter, $this->_value($value)));
+            $this->write(\sprintf("%s[%s] = \"%s\";\n", $key, $parameter, $this->_prepare($value)));
         }
 
         final public function writeArray(array $array1) {   
