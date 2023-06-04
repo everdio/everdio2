@@ -19,7 +19,7 @@ namespace Component\Core\Controller\Model {
             if (\file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {
                 $output .= $this->getCallbacks(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html"));
             }
-
+            
             return (string) (isset($this->request->{$this->debug}) ? $output : \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
         }
         

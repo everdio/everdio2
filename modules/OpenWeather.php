@@ -6,7 +6,6 @@ namespace Modules {
             $curl->setopt_array([
                 \CURLOPT_RETURNTRANSFER => true, 
                 \CURLOPT_URL => \sprintf("%s?%s", $this->url, \urldecode($this->querystring(["appid", "lang", "units", "lat", "lon", "mode"])))]);
-            
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
             $dom->formatOutput = false; 
