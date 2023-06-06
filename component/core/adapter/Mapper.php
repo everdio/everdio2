@@ -12,7 +12,7 @@ namespace Component\Core\Adapter {
             
             throw new \LogicException(\sprintf("unknown parameter %s", $parameter));
         }
-
+        
         final public function __dry() : string {
             return (string) \sprintf("new \%s(%s)", (string) $this, (isset($this->mapping) ? $this->dehydrate($this->restore($this->mapping)) : false));
         }              

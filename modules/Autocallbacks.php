@@ -14,23 +14,18 @@ namespace Modules {
                     if (isset($this->library->{$mapper}) ) {
                         try {
                             $core = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper});
-                            
                             foreach ($callbacks as $label => $callback) {      
                                 try {
                                     $calledbacks = $this->getCallbacks($callback);
-                                    
-                                    if (isset($this->request->{$this->debug})) {
-                                        echo "<!-- " . $parameter . ":  controller/" . $mapper . "/" . $label . ": " . $this->dehydrate($calledbacks) . "-->" . \PHP_EOL;
-                                    }                                    
-                                    
+
                                     if (\is_string($label)) {
                                         if (isset($this->memcached) && isset($this->cache->{$mapper}) && isset($this->cache->{$mapper}->{$label})) {
-                                            if ((!$cache = $this->memcached->get(($key = $core->unique($core->diff(["method", "host", "scheme", "pid", "token", "request", "path", "remote", "time", "referer", "server", "mapping", "adapter", "model", "namespace", "mapper", "use", "label", "primary", "parents", "tag", "api"]), $calledbacks)))) && $this->memcached->getResultCode() !== 0) {                                                                                            
+                                            if ((!$cache = $this->memcached->get(($key = ($core instanceof $this ? \sha1($mapper . $label . $calledbacks, $this->arguments) : $core->unique($core->diff()))))) && $this->memcached->getResultCode() !== 0) {
                                                 $cache = \serialize($core->callback($calledbacks));
                                                 $this->memcached->add($key, $cache, $this->cache->{$mapper}->{$label});
                                             } else {
-                                                echo "<!-- cached: " . $parameter . ":  controller/" . $mapper . "/" . $label . ": " . $this->dehydrate($calledbacks) . "-->" . \PHP_EOL;        
-                                            }
+                                                //echo "<!-- " . $parameter . "/" . $mapper . "/" . $label . "/" . $this->dehydrate($calledbacks) . ": " . $key . "-->" . \PHP_EOL;
+                                            }                                                
                                             
                                             $cache = \unserialize($cache);
                                             
@@ -39,11 +34,11 @@ namespace Modules {
                                             }
                                             
                                             $this->controller->store([$mapper => [$label => $cache]]);
-                                        } else {                                        
+                                        } else {
                                             $this->controller->store([$mapper => [$label => $core->callback($calledbacks)]]);
-                                        } 
-                                    
+                                        }
                                         //$this->controller->store([$mapper => [$label => $core->callback($calledbacks)]]);
+                                        
                                         
                                         //break if static value is not controller value
                                         if (isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->controller->{$mapper}->{$label}) {

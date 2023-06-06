@@ -17,7 +17,7 @@ namespace Component\Core {
             
             return self::$_adapters[$key];
         }
-
+        
         /*
          * redirects methods via the adapter
          */
