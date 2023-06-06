@@ -9,7 +9,6 @@ namespace Modules\Node {
                 if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || (isset($mapper->mapping) && \sizeof(($values = $mapper->restore($mapper->mapping))))) {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value)) {
-                            
                             if (isset($mapper->getParameter($parameter)->IS_NUMERIC)) {
                                 $conditions[$parameter] = \sprintf("@%s%s%s", $mapper->getField($parameter), $expression, $value);
                             } else {

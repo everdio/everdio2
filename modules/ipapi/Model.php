@@ -13,7 +13,7 @@ namespace Modules\IpApi {
         }
 
         public function setup() : void {         
-            $xpath = new \DOMXPath($this->getAdapter($this->unique(["url"])));
+            $xpath = new \DOMXPath($this->getAdapter($this->unique(["url" => $this->url])));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\IpApi\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);

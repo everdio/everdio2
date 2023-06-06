@@ -110,7 +110,7 @@ namespace Component {
         }         
 
         public function querystring(array $parameters = []) : string {
-            return (string) \http_build_query($this->restore($this->inter($parameters)));
+            return (string) \http_build_query($this->restore($parameters));
         }        
         
         final public function reset(array $parameters = []) : void {
@@ -128,11 +128,11 @@ namespace Component {
         final public function clone(array $_parameters) : void {
             $this->_parameters = \array_merge($this->_parameters, \unserialize(\serialize($_parameters)));
         }        
-
-        final public function unique(array $parameters = [], string $salt = NULL) : string {
-            return (string) \sha1($this->querystring($this->inter($parameters)) . $salt);
-        }        
         
+        public function unique(array $parameters = [], string $salt = "", string $algo = "sha512") : string {
+            return (string) \hash($algo, $this->querystring($parameters) . $salt);
+        }                
+    
         final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}") : string {
             foreach ($this->restore($parameters) as $parameter => $value) {     
                 $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));

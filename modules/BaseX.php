@@ -19,15 +19,17 @@ namespace Modules {
         }
         
         final public function getMemcachedResponse(string $query, int $ttl = 3600) : string {
+            echo "<!--" . $query . "-->" . \PHP_EOL;
+
             $memcached = new \Memcached($this->database);
             $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
             if (empty($memcached->getServerList())) {
                 $memcached->addServer("127.0.0.1", 11211);
             }            
 
-            if ((!$response = $memcached->get(\md5($query))) && $memcached->getResultCode() !== 0) {
+            if ((!$response = $memcached->get(($key = \md5($query)))) && $memcached->getResultCode() !== 0) {
                 $response = $this->getResponse($query);
-                $memcached->add(\md5($query), $response, $ttl);
+                $memcached->add($key, $response, $ttl);
                 return (string) $response;
             }
             
