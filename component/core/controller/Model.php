@@ -10,7 +10,7 @@ namespace Component\Core\Controller {
         /*
          * dispatching the Model if exists
          */
-        public function dispatch(string $path) {   
+        public function dispatch(string $path) : string {   
             return (string) parent::dispatch($this->getModel($path));
         }    
         

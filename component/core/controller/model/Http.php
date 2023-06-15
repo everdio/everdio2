@@ -13,7 +13,7 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);
         }          
         
-        public function dispatch(string $path) {
+        public function dispatch(string $path) : string {
             $output = (string) parent::dispatch($path);
             
             if (\file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {

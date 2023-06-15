@@ -39,7 +39,7 @@ namespace Component\Core {
         /*
          * setting process nicess based on priority and process id
          */
-        private function _renice(int $pid, int $priority) {
+        private function _renice(int $pid, int $priority) : void {
             \exec(\sprintf("renice %s %s", $priority, $pid));
         }             
 
@@ -47,7 +47,7 @@ namespace Component\Core {
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
          */
-        final public function throttle(array $processmanagers, int $factor = 3) {
+        final public function throttle(array $processmanagers, int $factor = 3) : void {
             if (\strtolower(\PHP_OS) === "linux") {
                 foreach (\glob("/proc/*/status") as $entry) {
                     if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
@@ -74,7 +74,7 @@ namespace Component\Core {
         /*
          * dispatching the Cojtroller if exists!
          */
-        public function dispatch(string $path) {
+        public function dispatch(string $path) : string {
             return (string) $this->getController($path);
         }            
 

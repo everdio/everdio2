@@ -2,6 +2,7 @@
 namespace Modules {
     trait BaseX {
         static public $_queries = [];
+        
         final protected function __init() : object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
@@ -12,15 +13,15 @@ namespace Modules {
         }
 
         final public function getResponse(string $query) : string {
+            
             $this->setopt_array([
                 \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query),
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
             return (string) $this->execute();            
         }
         
-        final public function getMemcachedResponse(string $query, int $ttl = 3600) : string {
-            echo "<!--" . $query . "-->" . \PHP_EOL;
-
+        final public function getMemcachedResponse(string $query, int $ttl = 10800) : string {
+            echo "<!-- " . $query . " -->" . \PHP_EOL;
             $memcached = new \Memcached($this->database);
             $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
             if (empty($memcached->getServerList())) {

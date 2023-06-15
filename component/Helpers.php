@@ -1,11 +1,11 @@
 <?php
 namespace Component {
     trait Helpers {
-        public function getName($string, $replace =  " "){            
+        public function getName($string, $replace =  " ") : string {
             return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
         } 
 
-        public function getSlug($string, $replace = "-"){            
+        public function getSlug($string, $replace = "-") : string {            
             return (string) \trim(\preg_replace("/\W+/", $replace, \trim(\strtolower(\str_replace("_", $replace, $this->getName($string, $replace))), $replace)), $replace);
         }                       
         
@@ -13,20 +13,20 @@ namespace Component {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("-", \strtolower($this->getSlug($string))))));
         }         
         
-        public function getSizeformat($size, int $precision = 2, $suffixes = ["B", "kB", "MB", "GB"]) {
+        public function getSizeformat($size, int $precision = 2, $suffixes = ["B", "kB", "MB", "GB"]) : string {
             $base = \log(\floatval($size)) / \log(1024);
-            return \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
+            return (string) \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];
         }       
         
-        public function getTimeformat(int $seconds, string $seperator = ":") {
-              return \sprintf("%02d%s%02d%s%02d", \floor($seconds / 3600), $seperator, ($seconds / 60 ) % 60, $seperator, $seconds % 60);
+        public function getTimeformat(int $seconds, string $seperator = ":") : string {
+              return (string) \sprintf("%02d%s%02d%s%02d", \floor($seconds / 3600), $seperator, ($seconds / 60 ) % 60, $seperator, $seconds % 60);
         }         
         
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }    
 
-        public function sanitize($data) {
+        public function sanitize($data) : string|array {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->sanitize($value);
@@ -38,7 +38,7 @@ namespace Component {
             return $data;
         }         
         
-        public function desanitize($data) {
+        public function desanitize($data) : string|array {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->desanitize($value);

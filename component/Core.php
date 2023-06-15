@@ -8,7 +8,7 @@ namespace Component {
             }            
         }
         
-        public function __get(string $parameter) {
+        public function __get(string $parameter) : null|bool|int|float|string|array|object {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
@@ -67,6 +67,13 @@ namespace Component {
             throw new \InvalidArgumentException($parameter);
         }        
         
+        
+        final public function setParameter(string $parameter, $value) { 
+            if ($this->exists($parameter)) {
+                return $this->_parameters[$parameter]->setValue($value);
+            }
+        }        
+        
         final public function remove(string $parameter) : void {
             if ($this->exists($parameter)) {
                 unset ($this->_parameters[$parameter]);
@@ -111,13 +118,13 @@ namespace Component {
 
         public function querystring(array $parameters = []) : string {
             return (string) \http_build_query($this->restore($parameters));
-        }        
+        }
         
         final public function reset(array $parameters = []) : void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
                         
-        final public function validations(array $parameters = [], array $validations = []) { 
+        final public function validations(array $parameters = [], array $validations = []) : array { 
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});
             }        
@@ -126,8 +133,8 @@ namespace Component {
         }
         
         final public function clone(array $_parameters) : void {
-            $this->_parameters = \array_merge($this->_parameters, \unserialize(\serialize($_parameters)));
-        }        
+            $this->_parameters = \array_merge($this->_parameters, $_parameters);
+        }                
         
         public function unique(array $parameters = [], string $salt = "", string $algo = "sha512") : string {
             return (string) \hash($algo, $this->querystring($parameters) . $salt);
@@ -140,17 +147,21 @@ namespace Component {
             
             return (string) $content;
         }                 
-        
-        final public function destroy() {
-            unset ($this->_parameters);
-        }
-        
+
         public function __dry() : string {
             return (string) $this->dehydrate($this->_parameters);
         }
+        
+        public function __serialize() : array { 
+            return $this->_parameters;
+        }
+        
+        public function __unserialize(array $_parameters) : void {
+            $this->_parameters = $_parameters;
+        }        
 
         public function __destruct() {
-            $this->destroy();
+            unset ($this->_parameters);
         }        
     }
 }

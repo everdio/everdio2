@@ -24,6 +24,7 @@ namespace Component {
                 if (isset($this->handle)) {
                     \array_unshift($arguments, $this->handle); 
                 }               
+                
                 return \call_user_func_array(\sprintf($this->_call, $name), $arguments);            
             }
             

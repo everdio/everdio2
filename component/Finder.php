@@ -1,7 +1,7 @@
 <?php
 namespace Component {
     trait Finder {
-        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) {
+        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR) : null|bool|int|float|string|array|object {
             foreach (\explode($seperator, $path) as $part) {
                 return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, $arguments));
             }

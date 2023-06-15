@@ -6,7 +6,7 @@ namespace Component\Caller\File\Fopen {
         }
         
         public function write($content) : int {
-            return (int) parent::write(serialize($content));    
+            return (int) parent::write(\serialize($content));    
         }
         
         public function read() {

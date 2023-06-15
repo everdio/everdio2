@@ -2,7 +2,7 @@
 namespace Component\Core {
     use \Component\Caller\File\Fopen;
     trait Model {        
-        public function __toString() {
+        public function __toString() : string {
             return (string) $this->namespace . "\\" . $this->class;
         }
 

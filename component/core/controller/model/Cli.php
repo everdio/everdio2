@@ -9,15 +9,15 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);            
         }
         
-        final public function break(int $breaks = 1) {
+        final public function break(int $breaks = 1) : void {
             \fwrite(\STDERR, \str_repeat(\PHP_EOL, $breaks));
         } 
         
-        final public function input() {
+        final public function input() : string {
             return (string) \trim(\fgets(\STDIN));
         }
         
-        final public function echo(string $text, array $styles = ["white", "blackbg"]) {
+        final public function echo(string $text, array $styles = ["white", "blackbg"]) : void {
             \fwrite(\STDERR, (\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                     "bold" => 1, 
                     "italic" => 3, 

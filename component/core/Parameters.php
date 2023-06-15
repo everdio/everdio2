@@ -10,7 +10,7 @@ namespace Component\Core {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {
                     if (!isset($this->{$field})) {
-                        $this->{$field} = new Parameters;
+                        $this->{$field} = new self;
                     }
                     $this->{$field}->store($value);
                 } else {
@@ -23,7 +23,7 @@ namespace Component\Core {
         
         final public function restore(array $parameters = [], array $values = []) : array {
             foreach (parent::restore($this->diff($parameters), $values) as $field => $value) {
-                $values[$field] = ($value instanceof Parameters ? $value->restore() : $value);
+                $values[$field] = ($value instanceof self ? $value->restore() : $value);
             }
 
             return (array) $values;

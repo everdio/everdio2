@@ -10,7 +10,7 @@ namespace Component\Core {
         /*
          * in order to save resources we store the adapter in a static array
          */
-        protected function getAdapter(string $key) {
+        protected function getAdapter(string $key) : object {
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
             }
