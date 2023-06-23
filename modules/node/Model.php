@@ -23,9 +23,7 @@ namespace Modules\Node {
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
                 $this->namespace = $this->namespace . \implode("\\", \array_map("ucFirst", \explode(\DIRECTORY_SEPARATOR, \dirname($this->path))));
                 $this->parents = ["parent" => $this->namespace];
-            }    
-            
-            
+            }                
             
             if ($this->node->hasAttributes()) {
                 foreach ($this->node->attributes as $attribute) {
@@ -34,6 +32,8 @@ namespace Modules\Node {
                     $this->mapping = [$attribute->nodeName => $this->getLabelized($attribute->nodeName)];
                 }            
             }
+            
+            $this->mapping = [\strtolower($this->label) => $this->label];            
             
             if ($this->node->hasChildNodes() && $this->node->childNodes->length === 1 && $this->node->firstChild->nodeType === \XML_TEXT_NODE) {
                 $parameter = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);

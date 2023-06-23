@@ -12,6 +12,7 @@ namespace Component\Core {
                     if (!isset($this->{$field})) {
                         $this->{$field} = new self;
                     }
+                    
                     $this->{$field}->store($value);
                 } else {
                     $this->{$field} = $value;

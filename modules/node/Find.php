@@ -10,11 +10,7 @@ namespace Modules\Node {
                         if (!\sizeof(\array_diff($fparts, $parts))) {    
                             $xparts[$last] .= $filter;                        
                         } elseif (\sizeof(\array_diff($fparts, $parts))) {            
-                            if ($validation instanceof Filter) {
-                                $xparts[$last] .= \sprintf("[./%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
-                            } elseif ($validation instanceof Count) {
-                                $xparts[$last] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, ($filter ? \array_diff(\explode(\DIRECTORY_SEPARATOR, $filter), $parts) : \array_diff($fparts, $parts))));    
-                            }
+                            $xparts[$last] .= \sprintf("[./%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
                         }
                     }
                 }

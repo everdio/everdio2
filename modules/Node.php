@@ -46,7 +46,6 @@ namespace Modules {
                 $map = new Node\Map($mapper, $node);
                 $records[$index + 1] = $map->execute()->restore(["index", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
             }
-            
             if (\sizeof($orderby)) {
                 foreach ($orderby as $parameter => $order) { 
                     \array_multisort(\array_column($records, $parameter), $order, $records);    

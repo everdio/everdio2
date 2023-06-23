@@ -12,22 +12,22 @@ namespace Component {
             
             if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
-            }   
-            
+            }
+     
             //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        
-            if (($method = \strstr($url, ":", true))) {           
-                try {                    
+            if (($method = \strstr($url, ":", true))) {
+                try {              
                     return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments))) : \call_user_func_array([$this, $method], \array_values($arguments)));
-                } catch (\TypeError $ex) {
-                    throw new \BadMethodCallException($ex->getMessage(), 0, $ex);
+                } catch (\TypeError $ex) {            
+                    throw new \BadMethodCallException($ex->getMessage());
                 } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException($ex->getMessage(), 0, $ex);
+                    throw new \InvalidArgumentException($ex->getMessage());
                 }                              
             } elseif ($function) {
                 try {
                     return \call_user_func_array($function, \array_values($arguments));
                 } catch (\TypeError $ex) {                            
-                    throw new \BadFunctionCallException($ex->getMessage(), 0, $ex);
+                    throw new \BadFunctionCallException($ex->getMessage());
                 }
             }         
         }                         

@@ -5,11 +5,11 @@ namespace Component\Caller\File\Fopen {
             parent::__construct(sprintf("%s.cache", $path), "c+");
         }
         
-        public function write($content) : int {
+        final public function write($content) : int {
             return (int) parent::write(\serialize($content));    
         }
         
-        public function read() {
+        final public function read() {
             return \unserialize(parent::read());   
         }
     }

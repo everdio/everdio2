@@ -8,5 +8,9 @@ namespace Component\Core\Adapter {
                 "adapter" => new Validation(["id"], [new Validator\IsArray])
             ] + $_parameters);
         }
+        
+        final public function __dry(): string {
+            return (string) \sprintf("new \%s", (string) $this);
+        }
     }
 }

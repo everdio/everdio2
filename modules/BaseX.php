@@ -13,7 +13,6 @@ namespace Modules {
         }
 
         final public function getResponse(string $query) : string {
-            
             $this->setopt_array([
                 \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query),
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
@@ -21,7 +20,7 @@ namespace Modules {
         }
         
         final public function getMemcachedResponse(string $query, int $ttl = 10800) : string {
-            echo "<!-- " . $query . " -->" . \PHP_EOL;
+            //echo "<!-- " . $query . " -->" . \PHP_EOL;
             $memcached = new \Memcached($this->database);
             $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
             if (empty($memcached->getServerList())) {

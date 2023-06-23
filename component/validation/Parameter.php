@@ -34,9 +34,9 @@ namespace Component\Validation {
             if ($this->_length) {
                 $validators[] = new Validator\Len\Smaller($this->_length);
             }            
-            
+                
             return (array) $validators;
-        }        
+        }
 
         final public function getValidation(array $validators = [], string $validate = self::NORMAL) : Validation {
             if ($this->_length && $this->_mandatory) {

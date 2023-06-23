@@ -3,7 +3,6 @@ namespace Component\Caller\File {
     class Fopen extends \Component\Caller\File {
         public function __construct(string $_file, string $mode = "r") {
             parent::__construct("f%s", $_file);
-            
             $this->handle = $this->open($_file, $mode);
         }
         

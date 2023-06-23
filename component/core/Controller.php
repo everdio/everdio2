@@ -110,7 +110,7 @@ namespace Component\Core {
             if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     try {
-                        if (!\is_string($data = $this->callback($match))) {
+                        if (!\is_string(($data = $this->callback($match)))) {
                             $data = \str_replace("false", false, $this->dehydrate($data));
                         }                 
                     } catch (\InvalidArgumentException $ex) {
