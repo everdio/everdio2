@@ -8,10 +8,6 @@ namespace Component\Caller\File\Fopen {
         private function _prepare($value) : string {
             return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
         }
-        
-        final public function read() {
-            return \parse_ini_file($this->getRealPath(), true, \INI_SCANNER_TYPED);
-        }
 
         final public function writeSection(string $section) {
             if (!empty($section)) {

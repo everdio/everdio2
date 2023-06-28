@@ -10,7 +10,7 @@ namespace Component\Core\Controller\Model {
         }
         
         final public function break(int $breaks = 1) : void {
-            \fwrite(\STDERR, \str_repeat(\PHP_EOL, $breaks));
+            $this->echo(\str_repeat(\PHP_EOL, $breaks));
         } 
         
         final public function input() : string {
@@ -18,7 +18,8 @@ namespace Component\Core\Controller\Model {
         }
         
         final public function echo(string $text, array $styles = ["white", "blackbg"]) : void {
-            \fwrite(\STDERR, (\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+            $caller = new \Component\Caller\File\Fopen("php://stdout", "w");
+            $caller->write(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                     "bold" => 1, 
                     "italic" => 3, 
                     "underline" => 4, 
@@ -47,7 +48,7 @@ namespace Component\Core\Controller\Model {
                     "bluebg" => 44, 
                     "magentabg" => 45, 
                     "cyanbg" => 46, 
-                    "lightgreybg" => 47]), $styles))), $text)));
+                    "lightgreybg" => 47]), $styles))), $text));
         }
         
         final public function setup(array $request = [], array $arguments = []) : void {

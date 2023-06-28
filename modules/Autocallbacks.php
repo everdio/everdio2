@@ -21,18 +21,11 @@ namespace Modules {
                                     if (\is_string($label)) {
                                         $this->controller->store([$mapper => [$label => $object->callback($calledbacks)]]);
                 
-                                        //break if static value is not controller value
-                                        //[continue]
-                                        if (isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->controller->{$mapper}->{$label}) {
+                                        //continue if static value is controller value or break if static value is not controller value
+                                        //[continue] or [break]
+                                        if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->controller->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->controller->{$mapper}->{$label})) {
                                             unset ($this->controller->{$mapper}->{$label});
                                             return;
-                                        }
-
-                                        //continue if static value is controller value
-                                        //[break]
-                                        if (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->controller->{$mapper}->{$label}) {
-                                            unset ($this->controller->{$mapper}->{$label});
-                                            return;                                            
                                         }
 
                                         //is or isnot on callback value
@@ -48,10 +41,9 @@ namespace Modules {
                                             foreach ($this->controller->{$mapper}->{$label}->restore() as $foreach) {
                                                 $this->controller->store([$mapper => [$label => $foreach]]); 
                                                 $this->callback($this->getCallbacks($this->foreach->{$mapper}->{$label}));
-                                                unset ($this->controller->{$mapper}->{$label});
                                             }     
-
-                                            unset ($this->controller->{$mapper}->{$label});
+                                            
+                                            unset ($this->controller->{$mapper}->{$label});                                             
                                         }
                                     } else {
                                         $object->callback($calledbacks);   

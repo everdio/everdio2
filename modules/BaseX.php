@@ -20,7 +20,7 @@ namespace Modules {
         }
         
         final public function getMemcachedResponse(string $query, int $ttl = 10800) : string {
-            //echo "<!-- " . $query . " -->" . \PHP_EOL;
+            echo "<!-- " . $query . " -->" . \PHP_EOL;
             $memcached = new \Memcached($this->database);
             $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
             if (empty($memcached->getServerList())) {

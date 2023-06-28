@@ -1,7 +1,7 @@
 <?php
 namespace Modules {
     trait OpenWeather {
-        final protected function __init() : object {       
+        final protected function __init() : object {      
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_RETURNTRANSFER => true, 

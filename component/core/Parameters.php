@@ -5,7 +5,7 @@ namespace Component\Core {
             $validation = new \Component\Validation\Parameter($value, true);
             $this->addParameter($parameter, $validation->getValidation($validation->getValidators()), true);           
         }
-        
+
         final public function store(array $values) : self {
             foreach ($values as $field => $value) {
                 if (\is_array($value)) {

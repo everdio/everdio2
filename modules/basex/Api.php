@@ -14,9 +14,8 @@ namespace Modules\BaseX {
                     return (object) $xpath->query($fragment->execute());
                 }
             }         
-
+            
             $api::$_queries[$query] = $api->getDOMDocument($query);
-
             $xpath = new \DOMXPath($api::$_queries[$query]);
             return (object) $xpath->query(\sprintf("//%s/*", $api->root)); 
         }    
