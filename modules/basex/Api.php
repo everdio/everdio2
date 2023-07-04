@@ -30,7 +30,7 @@ namespace Modules\BaseX {
                 }
             }
 
-            return (int) $api->getMemcachedResponse("count" . $query);
+            return (int) $api->getResponse("count" . $query);
         }         
     }
 }
