@@ -5,7 +5,6 @@ namespace Modules {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
-                "calledbacks" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")])
                 ] + $_parameters);
         }
         
@@ -15,11 +14,9 @@ namespace Modules {
                     if (isset($this->library->{$mapper}) ) {
                         if (($object = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
-                                try {                                    
-                                    $this->calledbacks->store([$parameter => [$mapper => [$label => ($calledbacks = $this->getCallbacks($callback))]]]);
-                                    
+                                try {            
                                     if (\is_string($label)) {
-                                        $this->controller->store([$mapper => [$label => $object->callback($calledbacks)]]);
+                                        $this->controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
                 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
@@ -45,12 +42,12 @@ namespace Modules {
                                             }                                                 
                                         }
                                     } else {
-                                        $object->callback($calledbacks);   
+                                        $object->callback($this->getCallbacks($callback));   
                                     }
                                 } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
                                     if (isset($this->request->{$this->debug})) {
                                         echo "<pre>";
-                                        \print_r($this->calledbacks->restore());
+                                        \print_r($this->controller->restore());
                                         echo "</pre>";
                                     }
 

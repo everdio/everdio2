@@ -58,7 +58,6 @@ namespace Component {
             }
         }        
 
-        
         final public function getParameter(string $parameter) : Validation {
             if ($this->exists($parameter)) {
                 return (object) $this->_parameters[$parameter];
@@ -66,7 +65,6 @@ namespace Component {
             
             throw new \InvalidArgumentException($parameter);
         }        
-        
         
         final public function setParameter(string $parameter, $value) { 
             if ($this->exists($parameter)) {

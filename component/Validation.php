@@ -9,12 +9,13 @@ namespace Component {
         
         public $types = [];
         
-        public function __construct(protected $value = false, array $_validators = [], public string $validate = self::NORMAL) {
+        public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
             $this->value = $value;
-            foreach ($_validators as $validator) {
-                $this->_validators[(string) $validator] = $validator;
-                $this->_messages[(string) $validator] = $validator::MESSAGE;
-                $this->types[(string) $validator] = $validator::TYPE;                
+            foreach ($validators as $validator) {
+                $key = (string) $validator;
+                $this->_validators[$key] = $validator;
+                $this->_messages[$key] = $validator::MESSAGE;
+                $this->types[$key] = $validator::TYPE;                
             }
             
             $this->validate = \strtoupper($validate);
@@ -57,8 +58,8 @@ namespace Component {
         }
 
         public function isValid() : bool {
-            foreach ($this->_validators as $validator) {
-                $this->_validated[(string) $validator] = $validator->execute($this->value);
+            foreach ($this->_validators as $key => $validator) {
+                $this->_validated[$key] = $validator->execute($this->value);
             }
             
             return (bool) (\sizeof($this->_validated) && (($this->validate === self::NORMAL && \in_array(true, $this->_validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->_validated))));
@@ -80,12 +81,12 @@ namespace Component {
             }
         }         
 
-        public function __dry(array $_validators = []) : string {
+        public function __dry(array $validators = []) : string {
             foreach ($this->_validators as $validator) {
-                $_validators[] = $validator->__dry();
+                $validators[] = $validator->__dry();
             }
                         
-            return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $_validators), \strtoupper($this->validate));
+            return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
         }               
     }
 }

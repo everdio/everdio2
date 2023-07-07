@@ -19,26 +19,7 @@ namespace Modules {
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
             return (string) $this->execute();            
         }
-        
-        /*
-        final public function getMemcachedResponse(string $query, int $ttl = 10800) : string {
-            $memcached = new \Memcached($this->database);
-            $memcached->setOption(\Memcached::OPT_COMPRESSION, true);
-            if (empty($memcached->getServerList())) {
-                $memcached->addServer("127.0.0.1", 11211);
-            }            
 
-            if ((!$response = $memcached->get(($key = \md5($query)))) && $memcached->getResultCode() !== 0) {
-                $response = $this->getResponse($query);
-                $memcached->add($key, $response, $ttl);
-                return (string) $response;
-            }
-            
-            return (string) $response;
-        } 
-         * 
-         */       
-        
         final public function getDOMDocument(string $query) : \DOMDocument {     
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->preserveWhiteSpace = false;
