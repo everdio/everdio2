@@ -6,6 +6,7 @@ namespace Component\Core {
             parent::__construct([          
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
+                "oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
@@ -13,27 +14,13 @@ namespace Component\Core {
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath])
             ] + $_parameters);    
         }
-        
-        /*
-         * fetching load from linux systems
-         */
-        private function _load() : float {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
-            return (float) $this->hydrate($fopen->gets(5));
-        }
-        
-        /*
-         * fetching amount of cpu cores on linux systems
-         */
-        private function _cores() : int {
-            return (int) $this->hydrate(\exec("nproc"));
-        }
-        
+      
         /*
          * calculating nicesess based on load (1 core is max 0.50)
          */
         private function _priority(int $factor = 3) : int {
-            return (int) round((($this->_load() / ($this->_cores() / $factor)) * 100) * (39 / 100) - 19);
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");            
+            return (int) \round((($this->hydrate($fopen->gets(5)) / ($this->hydrate(\exec("nproc")) / $factor)) * 100) * (39 / 100) - 19);
         }
         
         /*
@@ -48,7 +35,7 @@ namespace Component\Core {
          * all running proceses matching the pm will be resetted based on current load
          */
         final public function throttle(array $processmanagers, int $factor = 3) : void {
-            if (\strtolower(\PHP_OS) === "linux") {
+            if (isset($this->oid) && $this->oid === "linux") {
                 foreach (\glob("/proc/*/status") as $entry) {
                     if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
                         try {
@@ -56,11 +43,11 @@ namespace Component\Core {
                             if (\in_array(\str_replace("Name:\t", "", \trim($fopen->gets())), $processmanagers)) {
                                 $this->_renice($pid, $this->_priority($factor));
                             }
-                        } catch (\ErrorException $ex) {
+                        } catch (\Exception $ex) {
                             //ignore since the process is already gone
                         }
                     }
-                }
+                }                
             }
         }        
         

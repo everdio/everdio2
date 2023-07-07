@@ -4,7 +4,8 @@ namespace Component\Core\Controller\Model {
     class Cli extends \Component\Core\Controller\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])]),
+                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "PWD"])]),
+                "self" => new Validation(false, [new Validator\IsString\IsFile]),
                 "execute" => new Validation(false, [new Validator\IsString\IsPath])
             ] + $_parameters);            
         }
@@ -53,6 +54,7 @@ namespace Component\Core\Controller\Model {
         
         final public function setup(array $request = [], array $arguments = []) : void {
             if ($this->server["argc"] >= 2) {
+                $this->self = $this->server["PWD"] . \trim($this->server["argv"]["0"], ".");
                 $this->execute = $this->server["argv"][1];                
                 foreach (\array_slice($this->server["argv"], 2) as $parameters) {
                     if (\strpos($parameters, "--") !== false) {

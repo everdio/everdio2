@@ -41,9 +41,8 @@ namespace Modules {
                                             foreach ($this->controller->{$mapper}->{$label}->restore() as $foreach) {
                                                 $this->controller->store([$mapper => [$label => $foreach]]); 
                                                 $this->callback($this->getCallbacks($this->foreach->{$mapper}->{$label}));
-                                            }     
-                                            
-                                            unset ($this->controller->{$mapper}->{$label});                                             
+                                                unset ($this->controller->{$mapper}->{$label});                                                                                             
+                                            }                                                 
                                         }
                                     } else {
                                         $object->callback($calledbacks);   
