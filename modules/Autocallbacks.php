@@ -8,13 +8,15 @@ namespace Modules {
                 ] + $_parameters);
         }
         
-        public function autoCallbacks(string $parameter) : void {
+        public function autoCallbacks(string $parameter, float $time = 0.001) : void {
             if (isset($this->{$parameter})) {          
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->library->{$mapper}) ) {
                         if (($object = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
+                                    $previous = $this->getTimer(2);
+                                    
                                     if (\is_string($label)) {
                                         $this->controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
                 
@@ -38,20 +40,22 @@ namespace Modules {
                                             foreach ($this->controller->{$mapper}->{$label}->restore() as $foreach) {
                                                 $this->controller->store([$mapper => [$label => $foreach]]); 
                                                 $this->callback($this->getCallbacks($this->foreach->{$mapper}->{$label}));
-                                                unset ($this->controller->{$mapper}->{$label});                                                                                             
-                                            }                                                 
+                                                unset ($this->controller->{$mapper}->{$label});
+                                            }   
                                         }
                                     } else {
                                         $object->callback($this->getCallbacks($callback));   
                                     }
-                                } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
-                                    if (isset($this->request->{$this->debug})) {
-                                        echo "<pre>";
-                                        \print_r($this->controller->restore());
-                                        echo "</pre>";
+                                    
+                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTimer(\strlen($time) - 2) - $previous) >= $time) {
+                                        echo "<!-- " . $diff . " - " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
                                     }
-
-                                    throw new \LogicException(\sprintf("%s/%s/%s: %s", $parameter, $mapper, $label, $ex->getMessage()), 0, $ex);
+                                    
+                                } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
+                                    echo "<!-- " . \PHP_EOL;
+                                    print_r($this->controller->restore());
+                                    echo "-->" . \PHP_EOL;
+                                    throw new \LogicException(\sprintf("%s/%s/%s/%s: %s", $parameter, $mapper, $label, \trim($callback,"{{}}"), $ex->getMessage()), 0, $ex);
                                 }                                    
                             }
                         }

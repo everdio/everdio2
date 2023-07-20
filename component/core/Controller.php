@@ -101,11 +101,11 @@ namespace Component\Core {
                             $data = \str_replace("false", false, $this->dehydrate($data));
                         }                 
                     } catch (\InvalidArgumentException $ex) {
-                        throw new \LogicException(\sprintf("invalid arguments %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("invalid arguments %s in %s", $ex->getMessage(), $match));
                     } catch (\BadMethodCallException $ex) {
-                        throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) { 
-                        throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getPrevious()->getMessage(), $match));
+                        throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
                     } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                         throw new \LogicException(\sprintf("%s %s in %s", \get_class($ex), $ex->getMessage(), $match));                 
                     }

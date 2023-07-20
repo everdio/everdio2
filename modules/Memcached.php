@@ -11,7 +11,7 @@ namespace Modules {
             ]);
         }
         
-        final public function find() : self {
+        final public function find() : self {            
             return $this->store(["data" => $this->get($this->key), "code" => (int) $this->getResultCode()]);
         }
         
