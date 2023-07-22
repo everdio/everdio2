@@ -39,12 +39,11 @@ namespace Modules {
         public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = null, array $records = []) : array {
             if ($limit) {
                 $validations[] = new Node\Position($this->path, $position, $limit);
-            }
+            }            
             
-            $mapper = new $this;
             foreach ($this->query($this->prepare($validations) . $query) as $index => $node) {
-                $map = new Node\Map($mapper, $node);
-                $records[$index + 1] = $map->execute()->restore(["index", "parent", $this->label] + (isset($this->mapping) ? $this->mapping : []));                
+                $map = new Node\Map(new $this, $node);
+                $records[$index + 1] = $map->execute()->restore(["index", "parent"] + $this->mapping);
             }
             
             if (\sizeof($orderby)) {
@@ -82,7 +81,7 @@ namespace Modules {
                     $this->query($this->parent)->item(0)->removeChild($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0));    
                 }
                 unset ($this->index);
-            } elseif (isset($this->mapping) || isset($this->{$this->label})) {
+            } elseif (isset($this->mapping)) {
                 foreach ($this->findAll() as $row) {
                     $mapper = new $this($row);
                     $mapper->delete();

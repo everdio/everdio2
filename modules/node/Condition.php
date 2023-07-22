@@ -6,7 +6,7 @@ namespace Modules\Node {
             if (isset($mapper->index) && preg_match_all("/\[(\d+)\]/", $mapper->index, $key)) {
                 parent::__construct($key[1][0], [new Validator\IsNumeric]);
             } else {
-                if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || (isset($mapper->mapping) && \sizeof(($values = $mapper->restore($mapper->mapping))))) {
+                if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || \sizeof(($values = $mapper->restore($mapper->mapping)))) {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value) && $parameter !== $mapper->label) {
                             if (isset($mapper->getParameter($parameter)->IS_NUMERIC)) {

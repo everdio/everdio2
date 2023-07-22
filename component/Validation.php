@@ -72,14 +72,7 @@ namespace Component {
             
             throw new \ValueError(sprintf("%s with %s (%s)", $this->substring($this->dehydrate($this->value), 0, 150), \implode(", ", \array_intersect_key($this->_messages, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
         }        
-        
-        public function __call(string $method, array $arguments) {
-            foreach ($this->_validators as $validator) {
-                if (\method_exists($validator, $method)) {
-                    return \call_user_func_array(array($validator, $method), $arguments);
-                }
-            }
-        }         
+     
 
         public function __dry(array $validators = []) : string {
             foreach ($this->_validators as $validator) {

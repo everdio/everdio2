@@ -31,6 +31,6 @@ namespace Modules\BaseX {
             }
 
             return (int) $api->getResponse("count" . $query);
-        }         
+        }        
     }
 }

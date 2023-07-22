@@ -9,11 +9,9 @@ namespace Modules\Node {
             if (isset($node->parentNode)) {
                 $mapper->parent = $node->parentNode->getNodePath();  
 
-                if (isset($mapper->mapping)) {                
-                    foreach ($mapper->mapping as $attribute => $parameter) {
-                        if ($mapper->exists($parameter)) {
-                            $mapper->{$parameter} = \html_entity_decode($node->getAttribute($attribute), \ENT_QUOTES | \ENT_HTML5);
-                        }
+                foreach ($mapper->mapping as $attribute => $parameter) {
+                    if ($mapper->exists($parameter)) {
+                        $mapper->{$parameter} = \html_entity_decode($node->getAttribute($attribute), \ENT_QUOTES | \ENT_HTML5);
                     }
                 }
 

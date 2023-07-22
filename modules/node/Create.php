@@ -13,11 +13,9 @@ namespace Modules\Node {
                 $element->appendChild($mapper->createCDATASection(\preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $cdata)));
             }            
             
-            if (isset($mapper->mapping)) {
-                foreach ($mapper->mapping as $attribute => $parameter) {  
-                    if (isset($mapper->{$parameter}) && $parameter !== $mapper->label) {
-                        $element->setAttribute($attribute, $mapper->{$parameter});
-                    }
+            foreach ($mapper->mapping as $attribute => $parameter) {  
+                if (isset($mapper->{$parameter}) && $parameter !== $mapper->label) {
+                    $element->setAttribute($attribute, $mapper->{$parameter});
                 }
             }
             
