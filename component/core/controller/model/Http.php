@@ -17,7 +17,6 @@ namespace Component\Core\Controller\Model {
             $output = (string) parent::dispatch($path);
             
             if (\file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {
-                //$output .= $this->getCallbacks(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html"));
                 $output .= \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
             }
             

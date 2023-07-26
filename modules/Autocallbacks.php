@@ -4,6 +4,7 @@ namespace Modules {
     class Autocallbacks extends \Component\Core\Controller\Model\Http {
         public function __construct(array $_parameters = []) {
             parent::__construct([
+                "_library" => new Validation("library", [new Validator\IsString]),
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 ] + $_parameters);
         }
@@ -11,8 +12,8 @@ namespace Modules {
         public function autoCallbacks(string $parameter, float $time = 0.0001) : void {
             if (isset($this->{$parameter})) {          
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
-                    if (isset($this->library->{$mapper}) ) {
-                        if (($object = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper}))) {
+                    if (isset($this->{$this->_library}->{$mapper}) ) {
+                        if (($object = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
                                     $previous = $this->getTimer(2);

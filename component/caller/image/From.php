@@ -1,6 +1,6 @@
 <?php
 namespace Component\Caller\Image {
-    class File extends \Component\Caller\Image {
+    class From extends \Component\Caller\Image {
         public function __construct(string $file) {
             parent::__construct();
             

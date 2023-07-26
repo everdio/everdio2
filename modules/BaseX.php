@@ -24,6 +24,7 @@ namespace Modules {
         final public function getDOMDocument(string $query) : \DOMDocument {     
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($query), $this->root), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_NOBLANKS | \LIBXML_NOENT);
+            
             return (object) $dom;
         }        
     }

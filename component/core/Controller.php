@@ -11,8 +11,11 @@ namespace Component\Core {
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
-                "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath])
+                "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
+                "reserved" => new Validation(false, [new Validator\IsArray])
             ] + $_parameters);    
+            
+            $this->reserved = $this->diff();
         }
       
         /*

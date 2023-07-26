@@ -19,8 +19,17 @@ namespace Component\Core\Controller {
          */
         final public function hasModel(string $path) : bool {
             return (bool) \file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
-            
         }        
+        
+        /*
+         * creating and (re)storing an ini file, directory should exist
+         */
+        final public function putModel(string $path, array $parameters) {
+            $ini = new \Component\Caller\File\Fopen\Ini($this->path . \DIRECTORY_SEPARATOR .  $path, "w");
+            foreach ($this->restore($parameters) as $section => $data) {
+                $ini->store($section, $data->restore());
+            }            
+        }
         
         /*
          * parsing ini contents and set as Parameters container(s)
@@ -28,12 +37,14 @@ namespace Component\Core\Controller {
         final public function getModel(string $path, bool $reset = false) : string {
             if ($this->hasModel($path)) {
                 foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {  
-                    if (\is_array($value)) {
-                        $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
-                        $this->{$parameter}->store($value);
-                    } else {
-                        $this->addParameter($parameter, new Validation\Parameter($value), $reset);                                                             
-                    }
+                    if (!\in_array($parameter, $this->reserved)) {
+                        if (\is_array($value)) {
+                            $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
+                            $this->{$parameter}->store($value);
+                        } else {
+                            $this->addParameter($parameter, new Validation\Parameter($value), $reset);                                                             
+                        }
+                    } 
                 }                         
             }           
             
