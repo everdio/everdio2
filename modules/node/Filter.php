@@ -1,6 +1,5 @@
 <?php
 namespace Modules\Node {
-    use \Component\Validator;
     final class Filter extends \Component\Validation {
         public function __construct(string $xpath, array $validations = [], string $operator = "and", array $xparts = []) {
             foreach ($validations as $validation) {
@@ -13,7 +12,7 @@ namespace Modules\Node {
                 $xpath = \sprintf("%s[%s]", $xpath, \implode(\sprintf(" %s ", $operator), $xparts));
             }
             
-            parent::__construct($xpath, [new Validator\NotEmpty]);
+            parent::__construct($xpath, [new \Component\Validator\IsString]);
         }
     }
 }

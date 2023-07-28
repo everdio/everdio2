@@ -33,9 +33,13 @@ $cli->break();
 $cli->echo("Execute:\t", ["lighgray"]);
 $cli->echo($cli->execute, ["bold"]);
 $cli->break();
-$cli->echo("Arguments:\t", ["lighgray"]);
-$cli->echo((isset($cli->arguments) ? $cli->arguments : \DIRECTORY_SEPARATOR), ["bold"]);
-$cli->break();
+
+if (isset($cli->arguments)) {
+    $cli->echo("Arguments:\t", ["lighgray"]);
+    $cli->echo($cli->arguments, ["bold"]);
+    $cli->break();
+}
+
 $cli->echo("Request:\t", ["lighgray"]);
 $cli->echo($cli->dehydrate($cli->request->restore()), ["bold"]);
 $cli->break(2);

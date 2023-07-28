@@ -11,7 +11,7 @@ namespace Modules\OpenWeather {
         }
         
         public function evaluate(string $query) : int {
-            $xpath = new \DOMXPath($this->api::construct()->store($this->restore(["lat", "lon", "lang"]))->getAdapter($this->unique($htis->restore($this->adapter))));
+            $xpath = new \DOMXPath($this->api::construct()->store($this->restore(["lat", "lon", "lang"]))->getAdapter($this->unique($this->adapter)));
             return (int) $xpath->evaluate(\sprintf("count%s", $query));
         }        
     }

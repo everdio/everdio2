@@ -19,8 +19,8 @@ namespace Component\Core\Controller\Model {
         }
         
         final public function echo(string $text, array $styles = ["white", "blackbg"]) : void {
-            $caller = new \Component\Caller\File\Fopen("php://stdout", "w");
-            $caller->write(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+            $stdout = new \Component\Caller\File\Fopen("php://stdout", "w");
+            $stdout->write(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                     "bold" => 1, 
                     "italic" => 3, 
                     "underline" => 4, 

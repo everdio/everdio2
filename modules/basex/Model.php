@@ -9,7 +9,7 @@ namespace Modules\BaseX {
                 "password" => new Validation(false, [new Validator\IsString]),
                 "database" => new Validation(false, [new Validator\IsString]),
                 "host" => new Validation(false, [new Validator\IsString\IsUrl]),
-                "query" => new Validation(false, [new Validator\IsString\IsXPath]),
+                "query" => new Validation(false, [new Validator\IsString]),
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
             ]);

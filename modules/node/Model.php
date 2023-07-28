@@ -9,7 +9,7 @@ namespace Modules\Node {
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
                 "tag" => new Validation(false, array(new Validator\IsString)),
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),                
-                "parent" => new Validation(false, array(new Validator\IsString\IsXPath)),
+                "parent" => new Validation(false, array(new Validator\IsString)),
                 "index" => new Validation(false, array(new Validator\IsString))
             ] + $parameters);
         }

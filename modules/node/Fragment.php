@@ -9,7 +9,8 @@ namespace Modules\Node {
                 $xparts = \array_filter(\explode(\DIRECTORY_SEPARATOR, \preg_replace("/\[(.*?)\]/", false, $xpath)));
                 $first = \reset($xparts);
                 $last = \end($xparts);
-                parent::__construct(\sprintf($wrap, \sprintf("/%s/%s%s", $first, $last, \str_replace($xpath, false, $xfragment))), [new \Component\Validator\IsString\IsXPath]);
+                
+                parent::__construct(\sprintf($wrap, \sprintf("/%s/%s%s", $first, $last, \str_replace($xpath, false, $xfragment))), [new \Component\Validator\IsString]);
             }
         }
         

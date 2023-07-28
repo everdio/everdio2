@@ -9,11 +9,11 @@ namespace Modules\Node {
                 if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || \sizeof(($values = $mapper->restore($mapper->mapping)))) {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value) && $parameter !== $mapper->label) {
-                            if (isset($mapper->getParameter($parameter)->IS_NUMERIC)) {
+                            if (\is_numeric($value)) {
                                 $conditions[$parameter] = \sprintf("@%s%s%s", $mapper->getField($parameter), $expression, $value);
                             } else {
                                 $conditions[$parameter] = \sprintf("@%s%s\"%s\"", $mapper->getField($parameter), $expression, \html_entity_decode($value, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
-                            }                             
+                            }
                         }                       
                     }                
                 }

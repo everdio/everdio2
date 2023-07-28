@@ -16,7 +16,7 @@ namespace Modules\Node {
                 }
             }
             
-            parent::__construct(\sprintf($wrap, \implode(\DIRECTORY_SEPARATOR, $xparts)), [new \Component\Validator\IsString\IsXPath]);
+            parent::__construct(\sprintf($wrap, \implode(\DIRECTORY_SEPARATOR, $xparts)), [new \Component\Validator\IsString]);
         }
     }
 }
