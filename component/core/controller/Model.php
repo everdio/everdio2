@@ -24,10 +24,12 @@ namespace Component\Core\Controller {
         /*
          * creating and (re)storing an ini file, directory should exist
          */
-        final public function putModel(string $path, array $parameters) {
-            $ini = new \Component\Caller\File\Fopen\Ini($this->path . \DIRECTORY_SEPARATOR .  $path, "w");
-            foreach ($this->restore($parameters) as $section => $data) {
-                $ini->store($section, $data->restore());
+        final public function saveModel(string $path) {
+            $ini = new \Component\Caller\File\Fopen\Ini(\Component\Path::construct(\dirname($this->path . \DIRECTORY_SEPARATOR .  $path))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+            foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
+                if ($parameters instanceof Parameters) {
+                    $ini->store($key, $parameters->restore());
+                }
             }            
         }
         
@@ -50,6 +52,12 @@ namespace Component\Core\Controller {
             
             return (string) $path;
         }        
+        
+        final public function resetModel(array $parameters = []) {
+            foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {
+                $this->remove($parameter);
+            }
+        }
     }
 }
 
