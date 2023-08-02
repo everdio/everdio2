@@ -89,7 +89,7 @@ namespace Component\Core {
             if ($this->hasController($path)) {
                 \ob_start();
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
-                return (string) $this->getCallbacks(\ob_get_clean());
+                return (string) \ob_get_clean();
             }            
         }            
         
@@ -129,7 +129,7 @@ namespace Component\Core {
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {
-                    return $controller->dispatch(\basename($path));        
+                    return $this->getCallbacks($controller->dispatch(\basename($path)));
                 } catch (\UnexpectedValueException $ex) {
                     throw new \LogicException(\sprintf("invalid value for parameter %s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {

@@ -33,7 +33,11 @@ namespace Component {
         }
 
         public function __invoke(string $parameter) : Validation {
-            return (object) $this->getParameter($parameter);
+            if ($this->exists($parameter)) {
+                return (object) $this->getParameter($parameter);
+            }
+            
+            throw new \InvalidArgumentException($parameter);            
         }
 
         public function __isset(string $parameter) : bool {

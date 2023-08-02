@@ -17,10 +17,8 @@ namespace Modules {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
                                     $previous = $this->getTimer(2);
-                                    
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
-                
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
                                         if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->_controller->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->_controller->{$mapper}->{$label})) {
@@ -40,7 +38,7 @@ namespace Modules {
                                         if (isset($this->foreach->{$mapper}->{$label}) && (isset($this->_controller->{$mapper}->{$label}) && $this->_controller->{$mapper}->{$label} instanceof \Component\Core\Parameters)) {
                                             foreach ($this->_controller->{$mapper}->{$label}->restore() as $foreach) {
                                                 $this->_controller->store([$mapper => [$label => $foreach]]); 
-                                                $this->callback($this->getCallbacks($this->foreach->{$mapper}->{$label}));
+                                                $this->callback($this->foreach->{$mapper}->{$label});
                                                 unset ($this->_controller->{$mapper}->{$label});
                                             }   
                                         }

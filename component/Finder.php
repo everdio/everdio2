@@ -8,9 +8,9 @@ namespace Component {
         }    
         
         final public function callback(string $url, array $arguments = []) {
-            $function = \parse_url(\html_entity_decode($url), \PHP_URL_HOST);
+            $function = \parse_url($url, \PHP_URL_HOST);
             
-            if (($query = \parse_url(\html_entity_decode($url), \PHP_URL_QUERY))) {
+            if (($query = \parse_url($url, \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }
      
