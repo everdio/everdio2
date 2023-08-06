@@ -1,7 +1,7 @@
 <?php
 namespace Modules {
     trait Node {             
-        private function prepare(array $validations = []) : string {
+        private function _prepare(array $validations = []) : string {
             if (isset($this->index) && isset($this->parent)) {
                 return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);
             } elseif (isset($this->parent)) {
@@ -12,23 +12,25 @@ namespace Modules {
                 return (string) $find->execute();
             }
         }
+        
+        private function _xpath() : \DOMXPath {
+            return (object) new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
+        }
 
         public function query(string $query) : \DOMNodeList {
-            $xpath = new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
-            return (object) $xpath->query($query);
+            return (object) $this->_xpath()->query($query);
         }        
         
         public function evaluate(string $query) : int {
-            $xpath = new \DOMXPath($this->getAdapter($this->unique($this->adapter)));
-            return (int) $xpath->evaluate("count" . $query);
+            return (int) $this->_xpath()->evaluate("count" . $query);
         }        
         
         public function count(array $validations = [], string $query = null) : int {
-            return (int) $this->evaluate($this->prepare($validations) . $query);
+            return (int) $this->evaluate($this->_prepare($validations) . $query);
         }        
         
         public function find(array $validations = [], string $query = null) : self {
-            if (($node = $this->query($this->prepare($validations) . $query)->item(0))) {
+            if (($node = $this->query($this->_prepare($validations) . $query)->item(0))) {
                 $map = new Node\Map($this, $node);
                 return (object) $map->execute();                
             }
@@ -41,7 +43,7 @@ namespace Modules {
                 $validations[] = new Node\Position($this->path, $position, $limit);
             }            
             
-            foreach ($this->query($this->prepare($validations) . $query) as $index => $node) {
+            foreach ($this->query($this->_prepare($validations) . $query) as $index => $node) {
                 $map = new Node\Map(new $this, $node);
                 $records[$index + 1] = $map->execute()->restore(["index", "parent"] + $this->mapping);
             }
