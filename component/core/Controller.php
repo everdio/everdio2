@@ -1,6 +1,6 @@
 <?php
 namespace Component\Core {
-    use \Component\Validation, \Component\Validator, \Component\Caller\File\Fopen;
+    use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
         public function __construct(array $_parameters = []) {
             parent::__construct([          
@@ -27,7 +27,10 @@ namespace Component\Core {
         }
         
         /*
-         * setting process nicess based on priority and process id
+         * Setting process nicess based on priority and process id
+         * To allow renice, add the following in to limits.conf:
+            <domain> <type> <item> <value>
+            *        -      nice   -20
          */
         private function _renice(int $pid, int $priority) : void {
             \exec(\sprintf("renice %s %s", $priority, $pid));

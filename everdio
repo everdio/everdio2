@@ -14,7 +14,7 @@ $cli->server = $_SERVER;
 $cli->path = __DIR__;
 $cli->debug = "_debug";
 $cli->setup();
-$cli->throttle(["php"]);
+$cli->throttle(["php"], 8);
 
 $cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $cli->break(2);
