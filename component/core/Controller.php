@@ -28,9 +28,9 @@ namespace Component\Core {
         }        
       
         /*
-         * calculating nicesess based on load (1 core is max 0.50)
+         * calculating nicesess based on load and factor (divided by cpu amount) and scaled to niceness values (-19 till 20)
          */
-        private function _priority(int $factor = 3) : int {
+        private function _priority(int $factor) : int {
             return (int) \round((($this->_load() / ($this->hydrate(\exec("nproc")) / $factor)) * 100) * (39 / 100) - 19);
         }        
         
@@ -48,8 +48,8 @@ namespace Component\Core {
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
          */
-        final public function throttle(array $processmanagers, int $factor = 3, int $usleep = 1000) : void {
-            if (isset($this->oid) && $this->oid === "linux" && \sizeof($processmanagers)) {
+        final public function throttle(array $processmanagers, int $factor = 2, int $usleep = 1000) : void {
+            if ($this->oid === "linux" && \sizeof($processmanagers)) {
                 foreach (\glob("/proc/*/status") as $entry) {
                     if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
                         try {
