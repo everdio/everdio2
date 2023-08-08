@@ -14,7 +14,7 @@ $cli->server = $_SERVER;
 $cli->path = __DIR__;
 $cli->debug = "_debug";
 $cli->setup();
-$cli->throttle(["php"], 8);
+$cli->throttle(["php"]);
 
 $cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $cli->break(2);
@@ -29,6 +29,10 @@ $cli->echo($cli->pid, ["green"]);
 $cli->break();
 $cli->echo("Timestamp:\t", ["lighgray"]);
 $cli->echo(\date("Y-m-d H:i:s"), ["green"]);
+$cli->break();
+$cli->echo("Throttle:\t", ["lightgray"]);
+$cli->echo($cli->throttle, ["green"]);
+$cli->echo("μs");
 $cli->break();
 $cli->echo("Execute:\t", ["lighgray"]);
 $cli->echo($cli->execute, ["bold"]);
@@ -48,11 +52,11 @@ try {
     $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
 } catch (\Exception $ex) {
     if (isset($cli->request->{$cli->debug})) {
-        throw new \RuntimeException($ex->getMessage(), 0, $ex);
+        throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
     }
     
     $cli->break();
-    $cli->echo($ex->getMessage(), ["red", "bold"]);
+    $cli->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
     $cli->break();
 }
 

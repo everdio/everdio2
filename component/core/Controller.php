@@ -12,25 +12,33 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
+                "throttle" => new Validation(0, [new Validator\IsString, new Validator\IsInteger]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
             ] + $_parameters);    
             
             $this->reserved = $this->diff();
         }
+        
+        /*
+         * retrieve load
+         */
+        private function _load() : float {
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg", "r");
+            return (float) $this->hydrate($fopen->read(5));
+        }        
       
         /*
          * calculating nicesess based on load (1 core is max 0.50)
          */
         private function _priority(int $factor = 3) : int {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");            
-            return (int) \round((($this->hydrate($fopen->gets(5)) / ($this->hydrate(\exec("nproc")) / $factor)) * 100) * (39 / 100) - 19);
-        }
+            return (int) \round((($this->_load() / ($this->hydrate(\exec("nproc")) / $factor)) * 100) * (39 / 100) - 19);
+        }        
         
         /*
          * Setting process nicess based on priority and process id
-         * To allow renice, add the following in to limits.conf:
-            <domain> <type> <item> <value>
-            *        -      nice   -20
+         * To allow renice, add the following in to limits.conf:         
+         |   <domain> <type> <item> <value>
+         |   *        -      nice   -20
          */
         private function _renice(int $pid, int $priority) : void {
             \exec(\sprintf("renice %s %s", $priority, $pid));
@@ -40,12 +48,12 @@ namespace Component\Core {
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
          */
-        final public function throttle(array $processmanagers, int $factor = 3) : void {
-            if (isset($this->oid) && $this->oid === "linux") {
+        final public function throttle(array $processmanagers, int $factor = 3, int $usleep = 1000) : void {
+            if (isset($this->oid) && $this->oid === "linux" && \sizeof($processmanagers)) {
                 foreach (\glob("/proc/*/status") as $entry) {
                     if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
                         try {
-                            $fopen = new \Component\Caller\File\Fopen($entry);
+                            $fopen = new \Component\Caller\File\Fopen($entry, "r");
                             if (\in_array(\str_replace("Name:\t", "", \trim($fopen->gets())), $processmanagers)) {
                                 $this->_renice($pid, $this->_priority($factor));
                             }
@@ -55,6 +63,8 @@ namespace Component\Core {
                     }
                 }                
             }
+            
+            $this->throttle = \round($usleep * $this->_load());
         }        
         
         /*
@@ -68,6 +78,10 @@ namespace Component\Core {
          * dispatching the Cojtroller if exists!
          */
         public function dispatch(string $path) : string {
+            if (isset($this->throttle)) {
+                \usleep($this->throttle);
+            }
+            
             return (string) $this->getController($path);
         }            
 
