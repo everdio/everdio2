@@ -161,9 +161,5 @@ namespace Component {
         public function __unserialize(array $parameters) : void {
             $this->_parameters = $parameters;
         }        
-
-        public function __destruct() {
-            unset ($this->_parameters);
-        }        
     }
 }

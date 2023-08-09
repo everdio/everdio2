@@ -7,7 +7,7 @@ namespace Component\Validation {
                                          new Validator\IsFloat, 
                                          new Validator\IsResource,
                                          new Validator\IsObject, 
-                                         new Validator\IsNumeric,
+                                         new Validator\IsInteger,
                                          new Validator\IsString, 
                                          new Validator\IsBool, 
                                          new Validator\IsArray\Intersect($options),

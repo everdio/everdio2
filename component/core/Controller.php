@@ -5,14 +5,13 @@ namespace Component\Core {
         public function __construct(array $_parameters = []) {
             parent::__construct([          
                 "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "_oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString\InArray(["linux"])]),
+                "_osid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString\InArray(["linux"])]),
                 "_token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
-                "_throttle" => new Validation(0, [new Validator\IsString, new Validator\IsInteger]),
                 "_reserved" => new Validation(false, [new Validator\IsArray]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),                
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
-                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
+                "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "sockets" => new Validation(false, [new Validator\IsString\IsPath])
             ] + $_parameters);    
@@ -21,7 +20,7 @@ namespace Component\Core {
         }          
 
         private function _load() : float {
-            return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 4);  
+            return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
         }
         
         final public function renice(int $factor = 8) : void {
@@ -54,7 +53,8 @@ namespace Component\Core {
         }        
 
         /*
-         * dispatching the Cojtroller if exists!
+         * #1 throttles based on socket pid file content (microseconds)
+         * #2 dispatching the Cojtroller if exists!
          */
         public function dispatch(string $path) : string {
             if (isset($this->sockets) && \is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
@@ -138,8 +138,6 @@ namespace Component\Core {
             if (isset($this->sockets) && is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
                 \unlink($this->sockets . \DIRECTORY_SEPARATOR . $this->pid);
             }            
-            
-            parent::__destruct();
         }
     }    
 }
