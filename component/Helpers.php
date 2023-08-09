@@ -22,7 +22,7 @@ namespace Component {
               return (string) \sprintf("%02d%s%02d%s%02d", \floor($seconds / 3600), $seperator, ($seconds / 60 ) % 60, $seperator, $seconds % 60);
         }         
         
-        public function substring(string $string, int $start = 0, $length = 25, string $prefix = NULL, string $suffix = NULL, bool $fill = false, $encoding = "UTF-8") : string {
+        public function substring(string $string, int $start = 0, $length = 25, string $prefix = "", string $suffix = "", bool $fill = false, string $encoding = "UTF-8") : string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }
 

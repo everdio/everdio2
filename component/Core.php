@@ -56,7 +56,7 @@ namespace Component {
             return (bool) \array_key_exists($parameter, $this->_parameters);
         }
         
-        final public function addParameter(string $parameter, Validation $validation, bool $reset = false) {
+        final public function addParameter(string $parameter, Validation $validation, ?bool $reset) {
             if (!$this->exists($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
@@ -134,8 +134,8 @@ namespace Component {
             return (array) $validations;
         }
         
-        final public function clone(array $_parameters) : void {
-            $this->_parameters = \array_merge($this->_parameters, $_parameters);
+        final public function clone(array $parameters) : void {
+            $this->_parameters = \array_merge($this->_parameters, $parameters);
         }                
         
         public function unique(array $parameters = [], string $salt = "", string $algo = "sha512") : string {
@@ -158,8 +158,8 @@ namespace Component {
             return $this->_parameters;
         }
         
-        public function __unserialize(array $_parameters) : void {
-            $this->_parameters = $_parameters;
+        public function __unserialize(array $parameters) : void {
+            $this->_parameters = $parameters;
         }        
 
         public function __destruct() {

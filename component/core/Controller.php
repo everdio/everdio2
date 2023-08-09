@@ -2,11 +2,12 @@
 namespace Component\Core {
     use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
+        use Server;
         public function __construct(array $_parameters = []) {
             parent::__construct([          
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
-                "oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString]),
+                "oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString\InArray(["linux"])]),
                 "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
@@ -17,56 +18,7 @@ namespace Component\Core {
             ] + $_parameters);    
             
             $this->reserved = $this->diff();
-        }
-        
-        /*
-         * retrieve load
-         */
-        private function _load() : float {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg", "r");
-            return (float) $this->hydrate($fopen->read(5));
-        }        
-      
-        /*
-         * calculating nicesess based on load and factor (divided by cpu amount) and scaled to niceness values (-19 till 20)
-         */
-        private function _priority(int $factor) : int {
-            return (int) \round((($this->_load() / ($this->hydrate(\exec("nproc")) / $factor)) * 100) * (39 / 100) - 19);
-        }        
-        
-        /*
-         * Setting process nicess based on priority and process id
-         * To allow renice, add the following in to limits.conf:         
-         |   <domain> <type> <item> <value>
-         |   *        -      nice   -20
-         */
-        private function _renice(int $pid, int $priority) : void {
-            \exec(\sprintf("renice %s %s", $priority, $pid));
-        }             
-
-        /*
-         * fetching processes based on pm (process manager) and resetting nicesess
-         * all running proceses matching the pm will be resetted based on current load
-         * throtteling applies to dispatching only
-         */
-        final public function throttle(array $processmanagers, int $factor = 2, int $usleep = 1000) : void {
-            if ($this->oid === "linux" && \sizeof($processmanagers)) {
-                foreach (\glob("/proc/*/status") as $entry) {
-                    if (\is_integer(($pid = $this->hydrate(\basename(\dirname($entry)))))) {
-                        try {
-                            $fopen = new \Component\Caller\File\Fopen($entry, "r");
-                            if (\in_array(\str_replace("Name:\t", "", \trim($fopen->gets())), $processmanagers)) {
-                                $this->_renice($pid, $this->_priority($factor));
-                            }
-                        } catch (\Exception $ex) {
-                            //ignore since the process is already gone
-                        }
-                    }
-                }                
-            }
-            
-            $this->throttle = \round($usleep * $this->_load());
-        }        
+        }            
         
         /*
          * checking if a path matches the current arguments
@@ -121,14 +73,10 @@ namespace Component\Core {
                         if (!\is_string(($data = $this->callback($match)))) {
                             $data = \str_replace("false", false, $this->dehydrate($data));
                         }                 
-                    } catch (\InvalidArgumentException $ex) {
-                        throw new \LogicException(\sprintf("invalid arguments %s in %s", $ex->getMessage(), $match));
                     } catch (\BadMethodCallException $ex) {
                         throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) { 
                         throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
-                    } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
-                        throw new \LogicException(\sprintf("%s %s in %s", \get_class($ex), $ex->getMessage(), $match));                 
                     }
                     
                     $output = \str_replace($matches[0][$key], $data, $output);
@@ -154,8 +102,6 @@ namespace Component\Core {
                     throw new \LogicException(\sprintf("parameter %s required in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } catch (\LogicException $ex) {
-                    throw $ex;
                 }
             }
         }
