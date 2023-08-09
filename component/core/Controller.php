@@ -34,15 +34,14 @@ namespace Component\Core {
             }
         }        
         
-        final public function throttle(int $usleep = 10000) : void {
+        final public function throttle(int $usleep = 1000) : void {
             if (isset($this->sockets)) {
                 $usleep = \round($usleep * $this->_load());
                 
-                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
+                foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], \glob($this->sockets . \DIRECTORY_SEPARATOR . "*")) as $file) {
                     \file_put_contents($file, $usleep);
                 }
                 
-                \file_put_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, $usleep);
                 \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
             }
         }
