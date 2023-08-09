@@ -7,6 +7,7 @@
 *.ini
 *.out
 www/
+.sockets/
 cache/
 uploads/
 library/

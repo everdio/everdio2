@@ -2,23 +2,50 @@
 namespace Component\Core {
     use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
-        use Server;
         public function __construct(array $_parameters = []) {
             parent::__construct([          
-                "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
-                "oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString\InArray(["linux"])]),
-                "token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
+                "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
+                "_oid" => new Validation(\strtolower(\PHP_OS), [new Validator\IsString\InArray(["linux"])]),
+                "_token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
+                "_throttle" => new Validation(0, [new Validator\IsString, new Validator\IsInteger]),
+                "_reserved" => new Validation(false, [new Validator\IsArray]),
+                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),                
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "throttle" => new Validation(0, [new Validator\IsString, new Validator\IsInteger]),
-                "reserved" => new Validation(false, [new Validator\IsArray])
+                "sockets" => new Validation(false, [new Validator\IsString\IsPath])
             ] + $_parameters);    
             
-            $this->reserved = $this->diff();
-        }            
+            $this->_reserved = $this->diff();
+        }          
+
+        private function _load() : float {
+            return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 4);  
+        }
+        
+        final public function renice(int $factor = 8) : void {
+            if (isset($this->sockets)) {
+                $priority = (int) \round((($this->_load() / $factor) * 100) * (39 / 100) - 19);
+                
+                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
+                    \exec(\sprintf("renice %s %s", $priority, \basename($file)));
+                }
+            }
+        }        
+        
+        final public function throttle(int $usleep = 10000) : void {
+            if (isset($this->sockets)) {
+                $usleep = \round($usleep * $this->_load());
+                
+                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
+                    \file_put_contents($file, $usleep);
+                }
+                
+                \file_put_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, $usleep);
+                \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
+            }
+        }
         
         /*
          * checking if a path matches the current arguments
@@ -31,10 +58,10 @@ namespace Component\Core {
          * dispatching the Cojtroller if exists!
          */
         public function dispatch(string $path) : string {
-            if (isset($this->throttle)) {
-                \usleep($this->throttle);
+            if (isset($this->sockets) && \is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
+                \usleep(\file_get_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid));
             }
-            
+
             return (string) $this->getController($path);
         }            
 
@@ -42,7 +69,7 @@ namespace Component\Core {
          * returning time the start of this controller
          */
         final public function getTimer(int $round = 3) {
-            return (float) \round(\microtime(true) - $this->time, $round);
+            return (float) \round(\microtime(true) - $this->_time, $round);
         }
         
         /*
@@ -58,7 +85,9 @@ namespace Component\Core {
         final public function getController(string $path) {            
             if ($this->hasController($path)) {
                 \ob_start();
+                
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
+                
                 return (string) \ob_get_clean();
             }            
         }            
@@ -104,6 +133,14 @@ namespace Component\Core {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }
+        }
+        
+        public function __destruct() {
+            if (isset($this->sockets) && is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
+                \unlink($this->sockets . \DIRECTORY_SEPARATOR . $this->pid);
+            }            
+            
+            parent::__destruct();
         }
     }    
 }
