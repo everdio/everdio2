@@ -18,7 +18,7 @@ namespace Component\Core\Controller {
          * checks if model ini file exists
          */
         final public function hasModel(string $path) : bool {
-            return (bool) \file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
+            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
         }        
         
         /*

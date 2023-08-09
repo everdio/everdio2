@@ -47,6 +47,7 @@ namespace Component\Core {
         /*
          * fetching processes based on pm (process manager) and resetting nicesess
          * all running proceses matching the pm will be resetted based on current load
+         * throtteling applies to dispatching only
          */
         final public function throttle(array $processmanagers, int $factor = 2, int $usleep = 1000) : void {
             if ($this->oid === "linux" && \sizeof($processmanagers)) {
@@ -96,7 +97,7 @@ namespace Component\Core {
          * checks if controller php file exists
          */
         final public function hasController(string $path) : bool {
-            return (bool) \file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
+            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
         }        
   
         /*

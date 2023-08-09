@@ -31,7 +31,7 @@ namespace Component\Core\Controller\Model {
          * checks if html file exists based on path
          */
         final public function hasHtml(string $path) : bool {
-            return (bool) \file_exists($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
+            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
         }
         
         /*
