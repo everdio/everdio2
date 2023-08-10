@@ -23,18 +23,21 @@ namespace Component\Core {
             return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
         }
         
-        final public function renice(int $factor = 8) : void {
+        final public function renice(int $factor = 4) : void {
             if (isset($this->sockets)) {
                 $priority = (int) \round((($this->_load() / $factor) * 100) * (39 / 100) - 19);
-                
                 foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
-                    \exec(\sprintf("renice %s %s", $priority, \basename($file)));
+                    if (!\exec(\sprintf("renice %s %s", $priority, \basename($file)))) {
+                        \unlink($file);
+                    }
                 }
             }
         }        
         
-        final public function throttle(int $usleep = 1000) : void {
+        final public function throttle(int $usleep = 3000) : void {
             if (isset($this->sockets)) {
+                \register_shutdown_function([$this, "__destruct"]);
+                
                 $usleep = \round($usleep * $this->_load());
                 
                 foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], \glob($this->sockets . \DIRECTORY_SEPARATOR . "*")) as $file) {
@@ -135,7 +138,7 @@ namespace Component\Core {
         }
         
         public function __destruct() {
-            if (isset($this->sockets) && is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
+            if (isset($this->sockets) && \is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
                 \unlink($this->sockets . \DIRECTORY_SEPARATOR . $this->pid);
             }            
         }

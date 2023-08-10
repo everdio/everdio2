@@ -54,7 +54,7 @@ namespace Component\Core\Controller {
         }        
         
         final public function resetModel(array $parameters = []) {
-            foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {
+            foreach (\array_diff($this->diff($parameters), $this->_reserved) as $parameter) {
                 $this->remove($parameter);
             }
         }

@@ -13,7 +13,6 @@ namespace Component\Core {
         protected function getAdapter(string $key) : object {
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
-                //echo "<!-- adapter: " . get_class(self::$_adapters[$key]) . "-->" . \PHP_EOL;                
             }
             
             return self::$_adapters[$key];
