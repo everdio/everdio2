@@ -28,16 +28,14 @@ namespace Component\Core {
                 $priority = (int) \round((($this->_load() / $factor) * 100) * (39 / 100) - 19);
                 foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
                     if (!\exec(\sprintf("renice %s %s", $priority, \basename($file)))) {
-                        \unlink($file);
+                        //\unlink($file);
                     }
                 }
             }
         }        
         
         final public function throttle(int $usleep = 3000) : void {
-            if (isset($this->sockets)) {
-                \register_shutdown_function([$this, "__destruct"]);
-                
+            if (isset($this->sockets)) {                
                 $usleep = \round($usleep * $this->_load());
                 
                 foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], \glob($this->sockets . \DIRECTORY_SEPARATOR . "*")) as $file) {
@@ -45,6 +43,10 @@ namespace Component\Core {
                 }
                 
                 \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
+                \pcntl_async_signals(true);
+                \pcntl_signal(SIGUSR1, function($signal) {
+                    $this->__destruct();
+                });                
             }
         }
         
