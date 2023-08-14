@@ -2,7 +2,6 @@
 namespace Component\Core {
     use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
-        use Linux;
         public function __construct(array $_parameters = []) {
             parent::__construct([          
                 "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
@@ -20,6 +19,23 @@ namespace Component\Core {
             $this->_reserved = $this->diff();
         }          
         
+        final protected function load() : float {
+            return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
+        }
+        
+        final public function renice(int $factor = 4) : void {
+            if (isset($this->sockets)) {
+                $priority = (int) \round((($this->load() / $factor) * 100) * (39 / 100) - 19);
+                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
+                    if (\file_exists("/proc/" . \basename($file))) {
+                        \exec(\sprintf("renice %s %s", $priority, \basename($file)));
+                    } else {
+                        \unlink($file);
+                    }
+                }
+            }
+        }             
+        
         final public function throttle(int $usleep = 3000) : void {
             if (isset($this->sockets)) {                
                 $usleep = \round($usleep * $this->load());
@@ -29,14 +45,6 @@ namespace Component\Core {
                 }
                 
                 \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
-                
-                /*
-                \pcntl_async_signals(true);
-                \pcntl_signal(SIGUSR1, function($signal) {
-                    $this->__destruct();
-                });                
-                 * 
-                 */
             }
         }         
 
