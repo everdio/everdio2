@@ -8,6 +8,7 @@
 *.out
 www/
 .sockets/
+.bus/
 cache/
 uploads/
 library/

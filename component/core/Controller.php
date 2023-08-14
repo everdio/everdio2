@@ -13,7 +13,8 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "sockets" => new Validation(false, [new Validator\IsString\IsPath])
+                "sockets" => new Validation(false, [new Validator\IsString\IsPath]),
+                "bus" => new Validation(false, [new Validator\IsString\IsPath])
             ] + $_parameters);    
             
             $this->_reserved = $this->diff();
