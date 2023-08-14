@@ -2,6 +2,7 @@
 namespace Component\Core {
     use \Component\Validation, \Component\Validator;
     abstract class Controller extends \Component\Core {            
+        use Linux;
         public function __construct(array $_parameters = []) {
             parent::__construct([          
                 "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
@@ -18,38 +19,27 @@ namespace Component\Core {
             
             $this->_reserved = $this->diff();
         }          
-
-        private function _load() : float {
-            return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
-        }
-        
-        final public function renice(int $factor = 4) : void {
-            if (isset($this->sockets)) {
-                $priority = (int) \round((($this->_load() / $factor) * 100) * (39 / 100) - 19);
-                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
-                    if (!\exec(\sprintf("renice %s %s", $priority, \basename($file)))) {
-                        //\unlink($file);
-                    }
-                }
-            }
-        }        
         
         final public function throttle(int $usleep = 3000) : void {
             if (isset($this->sockets)) {                
-                $usleep = \round($usleep * $this->_load());
+                $usleep = \round($usleep * $this->load());
                 
                 foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], \glob($this->sockets . \DIRECTORY_SEPARATOR . "*")) as $file) {
                     \file_put_contents($file, $usleep);
                 }
                 
                 \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
+                
+                /*
                 \pcntl_async_signals(true);
                 \pcntl_signal(SIGUSR1, function($signal) {
                     $this->__destruct();
                 });                
+                 * 
+                 */
             }
-        }
-        
+        }         
+
         /*
          * checking if a path matches the current arguments
          */
