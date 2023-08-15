@@ -7,7 +7,7 @@ namespace Modules {
                 "url" => new Validation("https://api.openai.com/v1/completions", [new Validator\IsString\IsUrl]),
                 "key" => new Validation(false, [new Validator\IsString]),
                 "adapter" => new Validation(["openai"], [new Validator\IsArray]),
-                "model" => new Validation("text-davinci-003", [new Validator\IsString\InArray(["text-davinci-003", "text-curie-001", "text-babbage-001", "text-ada-001"])]),
+                "model" => new Validation("gpt-4", [new Validator\IsString]),
                 "prompt" => new Validation(false, [new Validator\IsString]),
                 "max_tokens" => new Validation(2048, [new Validator\IsInteger]),
                 "temperature" => new Validation(0.7, [new Validator\IsFloat]),

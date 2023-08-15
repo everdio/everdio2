@@ -15,8 +15,6 @@ $cli->path = __DIR__;
 $cli->sockets = "/home/evertdf/everdio2/.sockets";
 $cli->debug = "_debug";
 $cli->setup();
-$cli->throttle();
-$cli->renice();
 
 $cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $cli->break(2);

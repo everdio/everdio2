@@ -20,33 +20,45 @@ namespace Component\Core {
             $this->_reserved = $this->diff();
         }          
         
-        final protected function load() : float {
+        /*
+         * fetching avg load (linux)
+         */
+        final protected function getLoad() : float {
             return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
+        }        
+        
+        final protected function getSockets() : array {
+            return (array) \glob($this->sockets . \DIRECTORY_SEPARATOR . "*");
         }
         
-        final public function renice(int $factor = 4) : void {
-            if (isset($this->sockets)) {
-                $priority = (int) \round((($this->load() / $factor) * 100) * (39 / 100) - 19);
-                foreach (\glob($this->sockets . \DIRECTORY_SEPARATOR . "*") as $file) {
-                    if (\file_exists("/proc/" . \basename($file))) {
-                        \exec(\sprintf("renice %s %s", $priority, \basename($file)));
-                    } else {
-                        \unlink($file);
-                    }
+        final protected function getPriority(float | int $load) : int {
+            return (int) \round(($load * 100) * (39 / 100) - 19);
+        }
+        
+        final protected function throttle() : void {
+            if (\is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
+                \usleep(\file_get_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid));
+            }            
+        }
+
+        final public function renice() : void {
+            $priority = $this->getPriority($this->getLoad());
+            
+            foreach ($this->getSockets() as $file) {
+                if (\file_exists("/proc/" . \basename($file))) {
+                    \exec(\sprintf("renice %s %s", $priority, \basename($file)));
                 }
             }
         }             
         
-        final public function throttle(int $usleep = 3000) : void {
-            if (isset($this->sockets)) {                
-                $usleep = \round($usleep * $this->load());
-                
-                foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], \glob($this->sockets . \DIRECTORY_SEPARATOR . "*")) as $file) {
-                    \file_put_contents($file, $usleep);
-                }
-                
-                \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
+        final public function timers(int $usleep = 3000) : void {
+            $usleep = \round($usleep * $this->getLoad());
+
+            foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], $this->getSockets()) as $file) {
+                \file_put_contents($file, $usleep);
             }
+
+            \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
         }         
 
         /*
@@ -61,10 +73,8 @@ namespace Component\Core {
          * #2 dispatching the Cojtroller if exists!
          */
         public function dispatch(string $path) : string {
-            if (isset($this->sockets) && \is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
-                \usleep(\file_get_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid));
-            }
-
+            $this->throttle();
+            
             return (string) $this->getController($path);
         }            
 
@@ -124,6 +134,8 @@ namespace Component\Core {
         public function execute(string $path) {    
             $controller = new $this;
             $controller->clone($this->parameters($this->diff()));
+            $controller->timers();
+            $controller->renice();            
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {
@@ -139,9 +151,11 @@ namespace Component\Core {
         }
         
         public function __destruct() {
-            if (isset($this->sockets) && \is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
-                \unlink($this->sockets . \DIRECTORY_SEPARATOR . $this->pid);
-            }            
+            foreach ($this->getSockets() as $file) {
+                if ($this->pid === (int) \basename($file) || !\file_exists("/proc/" . \basename($file))) {
+                    \unlink($file);
+                }
+            }                            
         }
     }    
 }
