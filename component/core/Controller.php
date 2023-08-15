@@ -13,12 +13,12 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "sockets" => new Validation(false, [new Validator\IsString\IsPath]),
-                "bus" => new Validation(false, [new Validator\IsString\IsPath])
+                "usleep" => new Validation(3000, [new Validator\IsInteger]),
+                "sockets" => new Validation(false, [new Validator\IsString\IsPath])
             ] + $_parameters);    
             
             $this->_reserved = $this->diff();
-        }          
+        }
         
         /*
          * fetching avg load (linux)
@@ -66,8 +66,8 @@ namespace Component\Core {
         /*
          * setting usleep value for all pids
          */
-        final protected function timers(int $usleep = 3000) : void {
-            $usleep = \round($usleep * $this->getLoad());
+        final protected function timers() : void {
+            $usleep = \round($this->usleep * $this->getLoad());
             
             foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], $this->getSockets()) as $file) {
                 \file_put_contents($file, $usleep);
@@ -77,13 +77,6 @@ namespace Component\Core {
         }               
 
         /*
-         * checking if a path matches the current arguments
-         */
-        final public function isRoute(string $path) : bool {
-            return (bool) (isset($this->arguments) && \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, (string) $path), \explode(\DIRECTORY_SEPARATOR, $this->arguments))) === (string) $path);
-        }        
-
-        /*
          * #1 throttles based on socket pid file content (microseconds)
          * #2 dispatching the Cojtroller if exists!
          */
@@ -91,7 +84,7 @@ namespace Component\Core {
             $this->throttle();
             
             return (string) $this->getController($path);
-        }            
+        }
 
         /*
          * returning time the start of this controller
@@ -141,7 +134,7 @@ namespace Component\Core {
             }
             
             return (string) $output;
-        }        
+        }
         
         /*
          * echo $content to php://output stream
@@ -155,14 +148,13 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
         public function execute(string $path) {    
-            $controller = new $this;
-            $controller->clone($this->parameters($this->diff()));        
-            $controller->timers();
-            $controller->renice();
-            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-            
+            $controller = new $this;            
+            $controller->clone($this->parameters($this->diff()));                    
+            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));          
             if (isset($controller->path)) {
-                try {
+                try {              
+                    $controller->timers();
+                    $controller->renice();                            
                     return $this->getCallbacks($controller->dispatch(\basename($path)));
                 } catch (\UnexpectedValueException $ex) {
                     throw new \LogicException(\sprintf("invalid value for parameter %s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
