@@ -9,58 +9,57 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$cli = new \Component\Core\Controller\Model\Cli;
-$cli->server = $_SERVER;
-$cli->path = __DIR__;
-$cli->sockets = "/home/evertdf/everdio2/.sockets";
-$cli->debug = "_debug";
-$cli->setup();
-
-$cli->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
-$cli->break(2);
-if (!isset($cli->execute)) {
-    $cli->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
-    $cli->break(2);
+$controller = new \Component\Core\Controller\Model\Cli;
+$controller->server = $_SERVER;
+$controller->path = __DIR__;
+$controller->sockets = "/home/evertdf/everdio2/.sockets";
+$controller->debug = "_debug";
+$controller->setup();
+$controller->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
+$controller->break(2);
+if (!isset($controller->execute)) {
+    $controller->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
+    $controller->break(2);
     exit;
 }
 
-$cli->echo("Pid:\t\t", ["lightgray"]);
-$cli->echo($cli->pid, ["green"]);
-$cli->break();
-$cli->echo("Timestamp:\t", ["lighgray"]);
-$cli->echo(\date("Y-m-d H:i:s"), ["green"]);
-$cli->break();
-$cli->echo("Execute:\t", ["lighgray"]);
-$cli->echo($cli->execute, ["bold"]);
-$cli->break();
+$controller->echo("Pid:\t\t", ["lightgray"]);
+$controller->echo($controller->pid, ["green"]);
+$controller->break();
+$controller->echo("Timestamp:\t", ["lighgray"]);
+$controller->echo(\date("Y-m-d H:i:s"), ["green"]);
+$controller->break();
+$controller->echo("Execute:\t", ["lighgray"]);
+$controller->echo($controller->execute, ["bold"]);
+$controller->break();
 
-if (isset($cli->arguments)) {
-    $cli->echo("Arguments:\t", ["lighgray"]);
-    $cli->echo($cli->arguments, ["bold"]);
-    $cli->break();
+if (isset($controller->arguments)) {
+    $controller->echo("Arguments:\t", ["lighgray"]);
+    $controller->echo($controller->arguments, ["bold"]);
+    $controller->break();
 }
 
-$cli->echo("Request:\t", ["lighgray"]);
-$cli->echo($cli->dehydrate($cli->request->restore()), ["bold"]);
-$cli->break(2);
+$controller->echo("Request:\t", ["lighgray"]);
+$controller->echo($controller->dehydrate($controller->request->restore()), ["bold"]);
+$controller->break(2);
 
 try {
-    $cli->execute(\DIRECTORY_SEPARATOR . $cli->execute);
+    $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);
 } catch (\Exception $ex) {
-    if (isset($cli->request->{$cli->debug})) {
+    if (isset($controller->request->{$controller->debug})) {
         throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
     }
     
-    $cli->break();
-    $cli->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
-    $cli->break();
+    $controller->break();
+    $controller->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
+    $controller->break();
 }
 
-$cli->break();
-$cli->echo("Time:\t", ["lightgray"]);
-$cli->echo(\sprintf("%ss", \gmdate("H:i:s", $cli->getTimer(0))), ["green"]);
-$cli->break();
-$cli->echo("Memory:\t", ["lightgray"]);
-$cli->echo($cli->getSizeformat(\memory_get_peak_usage(true)), ["green"]);
-$cli->break(2);
+$controller->break();
+$controller->echo("Time:\t", ["lightgray"]);
+$controller->echo(\sprintf("%ss", \gmdate("H:i:s", $controller->getTimer(0))), ["green"]);
+$controller->break();
+$controller->echo("Memory:\t", ["lightgray"]);
+$controller->echo($controller->getSizeformat(\memory_get_peak_usage(true)), ["green"]);
+$controller->break(2);
 exit;

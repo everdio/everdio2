@@ -10,17 +10,16 @@ namespace Component\Core\Controller\Model {
             ] + $_parameters);            
         }
         
-        final public function break(int $breaks = 1) : void {
-            $this->echo(\str_repeat(\PHP_EOL, $breaks));
-        } 
-        
         final public function input() : string {
             return (string) \trim(\fgets(\STDIN));
         }
         
-        final public function echo(string $text, array $styles = ["white", "blackbg"]) : void {
-            $stdout = new \Component\Caller\File\Fopen("php://stdout", "w");
-            $stdout->write(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+        final public function break(int $breaks = 1) : void {
+            $this->echo(\str_repeat(\PHP_EOL, $breaks));
+        }               
+        
+        final public function echo(string $content, array $styles = ["white", "blackbg"]) : void {
+            parent::echo(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                     "bold" => 1, 
                     "italic" => 3, 
                     "underline" => 4, 
@@ -49,7 +48,7 @@ namespace Component\Core\Controller\Model {
                     "bluebg" => 44, 
                     "magentabg" => 45, 
                     "cyanbg" => 46, 
-                    "lightgreybg" => 47]), $styles))), $text));
+                    "lightgreybg" => 47]), $styles))), $content));
         }
         
         final public function setup(array $request = [], array $arguments = []) : void {

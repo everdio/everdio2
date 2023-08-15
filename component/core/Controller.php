@@ -27,21 +27,33 @@ namespace Component\Core {
             return (float) \substr(\file_get_contents("/proc/loadavg"), 0, 5);  
         }        
         
+        /*
+         * return socket dir contents (pids)
+         */
         final protected function getSockets() : array {
             return (array) \glob($this->sockets . \DIRECTORY_SEPARATOR . "*");
         }
         
+        /*
+         * calculate priority between -19 till 19 based on load
+         */
         final protected function getPriority(float | int $load) : int {
             return (int) \round(($load * 100) * (39 / 100) - 19);
         }
         
+        /*
+         * throttle php execution to offload cpu with usleep from pid file
+         */
         final protected function throttle() : void {
             if (\is_file($this->sockets . \DIRECTORY_SEPARATOR . $this->pid)) {
                 \usleep(\file_get_contents($this->sockets . \DIRECTORY_SEPARATOR . $this->pid));
             }            
         }
 
-        final public function renice() : void {
+        /*
+         * renice current process (linux)
+         */
+        final protected function renice() : void {
             $priority = $this->getPriority($this->getLoad());
             
             foreach ($this->getSockets() as $file) {
@@ -51,15 +63,18 @@ namespace Component\Core {
             }
         }             
         
-        final public function timers(int $usleep = 3000) : void {
+        /*
+         * setting usleep value for all pids
+         */
+        final protected function timers(int $usleep = 3000) : void {
             $usleep = \round($usleep * $this->getLoad());
-
+            
             foreach (\array_merge([$this->sockets . \DIRECTORY_SEPARATOR . $this->pid], $this->getSockets()) as $file) {
                 \file_put_contents($file, $usleep);
             }
 
             \chmod($this->sockets . \DIRECTORY_SEPARATOR . $this->pid, 0770);
-        }         
+        }               
 
         /*
          * checking if a path matches the current arguments
@@ -127,16 +142,25 @@ namespace Component\Core {
             
             return (string) $output;
         }        
+        
+        /*
+         * echo $content to php://output stream
+         */
+        public function echo(string $content) : void {
+            $stdout = new \Component\Caller\File\Fopen("php://output");
+            $stdout->write($content);
+        }          
 
         /*
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
         public function execute(string $path) {    
             $controller = new $this;
-            $controller->clone($this->parameters($this->diff()));
+            $controller->clone($this->parameters($this->diff()));        
             $controller->timers();
-            $controller->renice();            
+            $controller->renice();
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
+            
             if (isset($controller->path)) {
                 try {
                     return $this->getCallbacks($controller->dispatch(\basename($path)));
