@@ -1,7 +1,7 @@
 <?php
 namespace Component\Caller {
     abstract class File extends \Component\Caller {
-        public function __construct(string $_call, private string $_file) {
+        public function __construct(string $_call, protected string $_file) {
             parent::__construct($_call);
         }        
         
@@ -16,6 +16,10 @@ namespace Component\Caller {
         public function getPath() : string {
             return (string) $this->_file;
         }        
+        
+        public function exists(): bool {
+            return (bool) \is_file($this->_file);
+        }
         
         public function delete() {
             return \unlink($this->_file);

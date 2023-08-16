@@ -2,8 +2,8 @@
 namespace Modules {
     use \Component\Validation, \Component\Validator;
     class Autocallbacks extends \Component\Core\Controller\Model\Http {
-        public function __construct(array $_parameters = []) {
-            parent::__construct([
+        public function __construct(string $socket, array $_parameters = []) {
+            parent::__construct($socket, [
                 "_library" => new Validation(false, [new Validator\IsString]),
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 ] + $_parameters);
@@ -16,7 +16,8 @@ namespace Modules {
                         if (($object = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
-                                    $previous = $this->getTimer(2);
+                                    $previous = $this->getTimer();
+                                    
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
                                         //continue if static value is controller value or break if static value is not controller value
@@ -46,7 +47,7 @@ namespace Modules {
                                         $object->callback($this->getCallbacks($callback));   
                                     }
                                     
-                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTimer(\strlen($time) - 2) - $previous) >= $time) {
+                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTimer() - $previous) >= $time) {
                                         echo "<!-- " . $diff . " - " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
                                     }
                                     

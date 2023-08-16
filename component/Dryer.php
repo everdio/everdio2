@@ -1,18 +1,21 @@
 <?php
+
 namespace Component {
-    trait Dryer {        
-        public function dehydrate($data, array $array = []) : string {
+
+    trait Dryer {
+
+        public function dehydrate($data, array $array = []): string {
             if (\is_numeric($data) || \is_integer($data)) {
-                return (string) $data;            
+                return (string) $data;
             } elseif (\is_bool($data)) {
-                return (string) ($data === true ? "true" : "false");            
+                return (string) ($data === true ? "true" : "false");
             } elseif (\is_string($data)) {
                 return (string) \sprintf("'%s'", $data);
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
                 }
-                return (string) \sprintf("[%s]", \implode(", ", $array));                
+                return (string) \sprintf("[%s]", \implode(", ", $array));
             } elseif (\is_object($data)) {
                 return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : \sprintf("new %s", \get_class($data)));
             } elseif ($data === NULL) {
@@ -20,7 +23,7 @@ namespace Component {
             } elseif (\is_resource($data)) {
                 return (string) \get_resource_type($data);
             } else {
-                throw new \ValueError (\sprintf("unexpected data type %s", \gettype($data)));
+                throw new \ValueError(\sprintf("unexpected data type %s", \gettype($data)));
             }
         }
 
@@ -37,10 +40,11 @@ namespace Component {
                 if (\str_starts_with($data, "[") && \str_ends_with($data, "]")) {
                     if (\is_array(($array = \explode(",", \trim($data, "[]"))))) {
                         foreach ($array as $value) {
+                            
                         }
                     }
                 }
-                
+
                 return (string) $data;
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
@@ -51,8 +55,9 @@ namespace Component {
                 return $data;
             }
         }
-        
-        abstract public function __dry() : string;  
+
+        abstract public function __dry(): string;
     }
+
 }
 

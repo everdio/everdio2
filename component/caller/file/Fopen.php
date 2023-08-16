@@ -7,7 +7,7 @@ namespace Component\Caller\File {
         }
         
         public function exists($ttl = false) : bool {                
-            return (bool) (!$ttl && $this->getSize()) || ($ttl && $this->getSize() && (\filemtime($this->getPath()) + $ttl) > time());
+            return (bool) parent::exists() && ((!$ttl && $this->getSize()) || ($ttl && $this->getSize() && (\filemtime($this->_file) + $ttl) > time()));
         }        
         
         public function getSize() : int {

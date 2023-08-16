@@ -9,14 +9,14 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$controller = new \Component\Core\Controller\Model\Cli;
+$controller = new \Component\Core\Controller\Model\Cli(__DIR__ . "/.socket");
 $controller->server = $_SERVER;
-$controller->path = __DIR__;
-$controller->sockets = "/home/evertdf/everdio2/.sockets";
 $controller->debug = "_debug";
+$controller->path = __DIR__;
 $controller->setup();
 $controller->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $controller->break(2);
+
 if (!isset($controller->execute)) {
     $controller->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
     $controller->break(2);
@@ -57,7 +57,7 @@ try {
 
 $controller->break();
 $controller->echo("Time:\t", ["lightgray"]);
-$controller->echo(\sprintf("%ss", \gmdate("H:i:s", $controller->getTimer(0))), ["green"]);
+$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round($controller->getTimer())), 3), ["green"]);
 $controller->break();
 $controller->echo("Memory:\t", ["lightgray"]);
 $controller->echo($controller->getSizeformat(\memory_get_peak_usage(true)), ["green"]);

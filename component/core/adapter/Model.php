@@ -1,8 +1,14 @@
 <?php
+
 namespace Component\Core\Adapter {
-    use \Component\Validation, \Component\Validator;    
+
+    use \Component\Validation,
+        \Component\Validator;
+
     abstract class Model extends \Component\Core\Adapter {
+
         use \Component\Core\Model;
+
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "adapter" => new Validation(false, [new Validator\IsArray]),
@@ -11,9 +17,10 @@ namespace Component\Core\Adapter {
                 "class" => new Validation(false, [new Validator\IsString]),
                 "use" => new Validation(false, [new Validator\IsString]),
                 "mapper" => new Validation(false, [new Validator\IsString])
-            ] + $_parameters);
-        }                
-        
-        abstract public function setup() : void;
+                    ] + $_parameters);
+        }
+
+        abstract public function setup(): void;
     }
+
 }
