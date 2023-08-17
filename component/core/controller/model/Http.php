@@ -8,8 +8,8 @@ namespace Component\Core\Controller\Model {
 
     class Http extends \Component\Core\Controller\Model {
 
-        public function __construct(string $socket, array $_parameters = []) {
-            parent::__construct($socket, [
+        public function __construct(string $root, array $_parameters = []) {
+            parent::__construct($root, [
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR"])], Validation::NORMAL),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),

@@ -8,13 +8,14 @@ namespace Component\Core {
 
     abstract class Controller extends \Component\Core {
 
-        public function __construct(string $socket, array $_parameters = []) {
+        public function __construct(string $root, array $_parameters = []) {
             parent::__construct([
                 "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "_socket" => new Validation($socket, [new Validator\IsString\IsPath]),
+                "_root" => new Validation($root, [new Validator\IsString\IsPath, new Validator\IsString\IsFile]),
                 "_token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "_reserved" => new Validation(false, [new Validator\IsArray]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
+                "priority" => new Validation(0, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
                 "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
@@ -22,17 +23,12 @@ namespace Component\Core {
                     ] + $_parameters);
 
             $this->_reserved = $this->diff();
-            
-            if (!file_exists($this->_socket . \DIRECTORY_SEPARATOR . $this->pid)) {
-                \file_put_contents($this->_socket . \DIRECTORY_SEPARATOR . $this->pid, $this->_time);
-                $this->update(["created"]);
-            }
         }
 
-        final protected function update(array $message): void {
-            $file = new Fopen($this->_socket . \DIRECTORY_SEPARATOR . "messages", "a");
+        final protected function message(array $message): void {
+            $file = new Fopen(\dirname($this->_socket) . \DIRECTORY_SEPARATOR . "messages", "a");
             $file->putcsv(\array_merge([$this->pid, \microtime(true)], $message));
-        }        
+        }
 
         /*
          * #1 throttles based on socket pid file content (microseconds)
@@ -102,7 +98,7 @@ namespace Component\Core {
          */
 
         public function execute(string $path) {
-            $controller = new $this($this->_socket);
+            $controller = new $this($this->_root);
             $controller->clone($this->parameters($this->diff()));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
@@ -115,13 +111,6 @@ namespace Component\Core {
                 } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
-            }
-        }
-
-        public function __destruct() {            
-            if (\file_exists($this->_socket . \DIRECTORY_SEPARATOR . $this->pid)) {
-                \unlink($this->_socket . \DIRECTORY_SEPARATOR . $this->pid);
-                $this->update(["destroyed"]);
             }
         }
     }
