@@ -7,8 +7,8 @@ namespace Component\Core\Controller\Model {
 
     class Cli extends \Component\Core\Controller\Model {
 
-        public function __construct(string $root, array $_parameters = []) {
-            parent::__construct($root, [
+        public function __construct(array $_parameters = []) {
+            parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "PWD"])]),
                 "self" => new Validation(false, [new Validator\IsString\IsFile]),
                 "execute" => new Validation(false, [new Validator\IsString\IsPath])

@@ -8,10 +8,9 @@ namespace Component\Core {
 
     abstract class Controller extends \Component\Core {
 
-        public function __construct(string $root, array $_parameters = []) {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "_root" => new Validation($root, [new Validator\IsString\IsPath, new Validator\IsString\IsFile]),
                 "_token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
                 "_reserved" => new Validation(false, [new Validator\IsArray]),
                 "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
@@ -98,8 +97,8 @@ namespace Component\Core {
          */
 
         public function execute(string $path) {
-            $controller = new $this($this->_root);
-            $controller->clone($this->parameters($this->diff()));
+            $controller = new $this;
+            $controller->store($this->restore($this->diff(["path"])));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {

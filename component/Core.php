@@ -140,10 +140,6 @@ namespace Component {
             return (array) $validations;
         }
 
-        final public function clone(array $parameters): void {
-            $this->_parameters = \array_merge($this->_parameters, $parameters);
-        }
-
         public function unique(array $parameters = [], string $salt = "", string $algo = "sha512"): string {
             return (string) \hash($algo, $this->querystring($parameters) . $salt);
         }

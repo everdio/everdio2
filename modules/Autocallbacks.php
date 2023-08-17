@@ -2,8 +2,8 @@
 namespace Modules {
     use \Component\Validation, \Component\Validator;
     class Autocallbacks extends \Component\Core\Controller\Model\Http {
-        public function __construct(string $socket, array $_parameters = []) {
-            parent::__construct($socket, [
+        public function __construct(array $_parameters = []) {
+            parent::__construct([
                 "_library" => new Validation(false, [new Validator\IsString]),
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                 ] + $_parameters);
