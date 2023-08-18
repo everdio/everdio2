@@ -3,30 +3,21 @@
 namespace Component\Core {
 
     use \Component\Validation,
-        \Component\Validator,
-        \Component\Caller\File\Fopen;
+        \Component\Validator;
 
     abstract class Controller extends \Component\Core {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "_time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "_token" => new Validation(\bin2hex(\openssl_random_pseudo_bytes(32)), [new Validator\IsString, new Validator\Len\Bigger(45)]),
-                "_reserved" => new Validation(false, [new Validator\IsArray]),
-                "pid" => new Validation(\posix_getpid(), [new Validator\IsInteger]),
-                "priority" => new Validation(0, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
-                "path" => new Validation(false, [new Validator\IsString\IsPath\IsReal]),
+                "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
+                "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath])
+                "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
+                "reserved" => new Validation(false, [new Validator\IsArray])                
                     ] + $_parameters);
 
-            $this->_reserved = $this->diff();
-        }
-
-        final protected function message(array $message): void {
-            $file = new Fopen(\dirname($this->_socket) . \DIRECTORY_SEPARATOR . "messages", "a");
-            $file->putcsv(\array_merge([$this->pid, \microtime(true)], $message));
+            $this->reserved = $this->diff();
         }
 
         /*
@@ -41,10 +32,10 @@ namespace Component\Core {
         /*
          * returning time the start of this controller
          */
-
-        final public function getTimer() {
-            return (float) \microtime(true) - $this->_time;
-        }
+        
+        final public function getTime() {
+            return (float) \microtime(true) - $this->time;
+        }        
 
         /*
          * checks if controller php file exists
@@ -98,15 +89,16 @@ namespace Component\Core {
 
         public function execute(string $path) {
             $controller = new $this;
-            $controller->store($this->restore($this->diff(["path"])));
+            $controller->store($this->restore($this->reserved));
+            $controller->time = \microtime(true);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch(\basename($path)));
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \LogicException(\sprintf("invalid value for parameter %s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \LogicException(\sprintf("invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
-                    throw new \LogicException(\sprintf("parameter %s required in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \LogicException(\sprintf("parameter %s required in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }

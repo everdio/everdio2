@@ -46,11 +46,11 @@ namespace Component {
             throw new \InvalidArgumentException($parameter);
         }
 
-        public function __isset(string $parameter): bool {
+        final public function __isset(string $parameter): bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }
 
-        public function __unset(string $parameter) {
+        final public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
@@ -123,8 +123,8 @@ namespace Component {
 
             return (array) $values;
         }
-
-        public function querystring(array $parameters = []): string {
+        
+        final public function querystring(array $parameters = []): string {
             return (string) \http_build_query($this->restore($parameters));
         }
 
@@ -140,7 +140,7 @@ namespace Component {
             return (array) $validations;
         }
 
-        public function unique(array $parameters = [], string $salt = "", string $algo = "sha512"): string {
+        final public function unique(array $parameters = [], string $salt = "", string $algo = "sha512"): string {
             return (string) \hash($algo, $this->querystring($parameters) . $salt);
         }
 
@@ -154,14 +154,6 @@ namespace Component {
 
         public function __dry(): string {
             return (string) $this->dehydrate($this->_parameters);
-        }
-
-        public function __serialize(): array {
-            return $this->_parameters;
-        }
-
-        public function __unserialize(array $parameters): void {
-            $this->_parameters = $parameters;
         }
     }
 

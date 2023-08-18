@@ -41,7 +41,7 @@ namespace Component\Core\Controller {
 
         final public function saveModel(string $path) {
             $ini = new \Component\Caller\File\Fopen\Ini(\Component\Path::construct(\dirname($this->path . \DIRECTORY_SEPARATOR . $path))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
-            foreach ($this->restore($this->diff($this->_reserved)) as $key => $parameters) {
+            foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
                 if ($parameters instanceof Parameters) {
                     $ini->store($key, $parameters->restore());
                 }
@@ -55,7 +55,7 @@ namespace Component\Core\Controller {
         final public function getModel(string $path, bool $reset = false): string {
             if ($this->hasModel($path)) {
                 foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {
-                    if (!\in_array($parameter, $this->_reserved)) {
+                    if (!\in_array($parameter, $this->reserved)) {
                         if (\is_array($value)) {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
                             $this->{$parameter}->store($value);
@@ -70,7 +70,7 @@ namespace Component\Core\Controller {
         }
 
         final public function resetModel(array $parameters = []) {
-            foreach (\array_diff($this->diff($parameters), $this->_reserved) as $parameter) {
+            foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {
                 $this->remove($parameter);
             }
         }

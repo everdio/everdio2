@@ -1,7 +1,7 @@
 <?php   
 namespace Modules {
     use \Component\Validation, \Component\Validator;
-    class Autocallbacks extends \Component\Core\Controller\Model\Http {
+    abstract class Autocallbacks extends \Component\Core\Controller\Model\Http {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "_library" => new Validation(false, [new Validator\IsString]),
@@ -16,7 +16,7 @@ namespace Modules {
                         if (($object = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
-                                    $previous = $this->getTimer();
+                                    $previous = $this->getTime();
                                     
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
@@ -47,7 +47,7 @@ namespace Modules {
                                         $object->callback($this->getCallbacks($callback));   
                                     }
                                     
-                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTimer() - $previous) >= $time) {
+                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTime() - $previous) >= $time) {
                                         echo "<!-- " . $diff . " - " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
                                     }
                                     
