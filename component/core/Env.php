@@ -45,7 +45,7 @@ namespace Component\Core {
             return (string) $file;
         }
 
-        final public function pool(array $files = []): array {
+        private function pool(array $files = []): array {
             foreach (\Component\Path::construct($this->path) as $file) {
                 if ($file->isFile() && !\in_array($file->getRealPath(), $files) && ($file->getMTime() + $this->ttl) > \time()) {
                     $files[] = $file->getRealPath();
@@ -126,7 +126,7 @@ namespace Component\Core {
                 }
             }
         }
-
+        
         public function __destruct() {
             $this->touch($this->file, "died");
         }
