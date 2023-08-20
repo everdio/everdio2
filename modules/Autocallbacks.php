@@ -16,10 +16,9 @@ namespace Modules {
                         if (($object = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {   
                                 try {            
-                                    $previous = $this->getTime();
-                                    
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
+                                        
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
                                         if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->_controller->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->_controller->{$mapper}->{$label})) {
@@ -47,8 +46,8 @@ namespace Modules {
                                         $object->callback($this->getCallbacks($callback));   
                                     }
                                     
-                                    if (isset($this->debug) && isset($this->request->{$this->debug}) && ($diff = $this->getTime() - $previous) >= $time) {
-                                        echo "<!-- " . $diff . " - " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
+                                    if (isset($this->debug) && isset($this->request->{$this->debug})) {
+                                        echo "<!-- " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
                                     }
                                     
                                 } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {

@@ -7,8 +7,7 @@
 *.ini
 *.out
 www/
-.socket/
-.bus/
+.pids/
 cache/
 uploads/
 library/

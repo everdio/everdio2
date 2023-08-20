@@ -17,7 +17,7 @@ namespace Component\Core\Env {
             return (float) \implode(false, \array_slice(\sys_getloadavg(), 0, 1));
         }
 
-        protected function ping(int $pid): bool {
+        protected function ping(int|string $pid): bool {
             return (bool) \file_exists("/proc/" . $pid);
         }
     }

@@ -2,7 +2,6 @@
 namespace Modules {
     trait BaseX {
         static public $_queries = [];
-        static public $_queries2 = [];
         
         final protected function __init() : object {
             $curl = new \Component\Caller\Curl;

@@ -9,7 +9,6 @@ namespace Component\Core {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
@@ -28,14 +27,6 @@ namespace Component\Core {
         public function dispatch(string $path): string {
             return (string) $this->getController($path);
         }
-
-        /*
-         * returning time the start of this controller
-         */
-        
-        final public function getTime() {
-            return (float) \microtime(true) - $this->time;
-        }        
 
         /*
          * checks if controller php file exists
@@ -90,7 +81,6 @@ namespace Component\Core {
         public function execute(string $path) {
             $controller = new $this;
             $controller->store($this->restore($this->reserved));
-            $controller->time = \microtime(true);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             if (isset($controller->path)) {
                 try {
