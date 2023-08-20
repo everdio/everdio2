@@ -8,7 +8,7 @@ namespace Component\Core {
 
     abstract class Env extends \Component\Core {
 
-        public function __construct(string $path, int $ttl = 1) {
+        public function __construct(string $path, int $ttl = 0) {
             parent::__construct([
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "path" => new Validation(\Component\Path::construct($path)->getPath(), [new Validator\IsString\IsDir]),
@@ -22,7 +22,7 @@ namespace Component\Core {
             ]);
 
             $this->file = $this->touch($this->path . \DIRECTORY_SEPARATOR . $this->pid, "born");
-            $this->pool = $this->pool($this->path);
+            $this->pool = $this->pool([$this->file]);
         }
 
         abstract protected function getPid(): int;
@@ -45,13 +45,12 @@ namespace Component\Core {
             return (string) $file;
         }
 
-        private function pool(string $path, array $files = []): array {
-            foreach (\Component\Path::construct($path) as $file) {
+        final public function pool(array $files = []): array {
+            foreach (\Component\Path::construct($this->path) as $file) {
                 if ($file->isFile() && !\in_array($file->getRealPath(), $files) && ($file->getMTime() + $this->ttl) > \time()) {
                     $files[] = $file->getRealPath();
                 }
             }
-
             return (array) $files;
         }
 
@@ -70,8 +69,12 @@ namespace Component\Core {
             $stats = \array_column($this->stats($file), "message", "memory");
             return (int) \max(\array_keys($stats)) - \array_search("born", \array_reverse($stats));
         }
+        
+        final public function getMem() : int {
+            return (int) $this->mem($this->file);
+        }
 
-        final public function memAlive(int $mem = 0): int {
+        final public function getMemAlive(int $mem = 0): int {
             foreach ($this->pool as $file) {
                 if ($this->ping(\basename($file))) {
                     $mem += $this->mem($file);
@@ -81,7 +84,7 @@ namespace Component\Core {
             return (int) $mem;
         }
 
-        final public function memAverage(int $mem = 0): float {
+        final public function getMemAverage(int $mem = 0): float {
             foreach ($this->pool as $file) {
                 $mem += $this->mem($file);
             }
@@ -93,8 +96,12 @@ namespace Component\Core {
             $stats = \array_column($this->stats($file), "message", "time");
             return (float) \abs(\max(\array_keys($stats)) - \array_search("born", \array_reverse($stats)));
         }
+        
+        final public function getTime() : float {
+            return (float) $this->time($this->file);
+        }
 
-        final public function timeAlive(float $time = NULL): float {
+        final public function getTimeAlive(float $time = NULL): float {
             foreach ($this->pool as $file) {
                 if ($this->ping(\basename($file))) {
                     $time = \abs($time + $this->time($file));
@@ -104,7 +111,7 @@ namespace Component\Core {
             return (float) $time;
         }
 
-        final public function timeAverage(float $time = NULL): float {
+        final public function getTimeAverage(float $time = NULL): float {
             foreach ($this->pool as $file) {
                 $time = \abs($time + $this->time($file));
             }

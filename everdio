@@ -9,9 +9,8 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$env = new \Component\Core\Env\Linux("/home/evertdf/everdio2/.pids");
+$env = new \Component\Core\Env\Linux("/home/evertdf/everdio2/.pool", 3600);
 $env->priority = 100;
-$env->ttl = 86400;
 
 $controller = new \Component\Core\Controller\Model\Cli;
 $controller->server = $_SERVER;
@@ -61,6 +60,6 @@ try {
 
 $controller->break();
 $controller->echo("Time:\t", ["lightgray"]);
-$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round($env->time - \microtime(true)))), ["green"]);
+$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round($env->getTime()))), ["green"]);
 $controller->break(2);
 exit;

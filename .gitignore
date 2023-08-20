@@ -7,7 +7,7 @@
 *.ini
 *.out
 www/
-.pids/
+.pool/
 cache/
 uploads/
 library/
