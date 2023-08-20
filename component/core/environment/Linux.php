@@ -1,8 +1,8 @@
 <?php
 
-namespace Component\Core\Env {
+namespace Component\Core\Environment {
 
-    final class Linux extends \Component\Core\Env {
+    final class Linux extends \Component\Core\Environment {
 
         protected function getPid(): int {
             return (int) \getmypid();

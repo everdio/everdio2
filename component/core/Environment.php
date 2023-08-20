@@ -6,22 +6,22 @@ namespace Component\Core {
         \Component\Validator,
         \Component\Caller\File\Fopen;
 
-    abstract class Env extends \Component\Core {
+    abstract class Environment extends \Component\Core {
 
         public function __construct(string $path, int $ttl = 0) {
             parent::__construct([
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "path" => new Validation(\Component\Path::construct($path)->getPath(), [new Validator\IsString\IsDir]),
+                "path" => new Validation(new \Component\Path($path), [new Validator\IsObject\Of("\Component\Path")]),
                 "file" => new Validation(false, [new Validator\IsString\IsPath]),
-                "pool" => new Validation(false, [new Validator\IsArray]),
                 "ttl" => new Validation($ttl, [new Validator\IsInteger]),
                 "pid" => new Validation($this->getPid(), [new Validator\IsInteger]),
                 "proc" => new Validation($this->getProc(), [new Validator\IsInteger]),
                 "load" => new Validation($this->getLoad(), [new Validator\IsFloat]),
                 "priority" => new Validation(100, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
+                "pool" => new Validation(false, [new Validator\IsArray])                
             ]);
 
-            $this->file = $this->touch($this->path . \DIRECTORY_SEPARATOR . $this->pid, "born");
+            $this->file = $this->touch($this->path->getPath() . \DIRECTORY_SEPARATOR . $this->pid, "born");
             $this->pool = $this->pool([$this->file]);
         }
 
@@ -46,7 +46,7 @@ namespace Component\Core {
         }
 
         private function pool(array $files = []): array {
-            foreach (\Component\Path::construct($this->path) as $file) {
+            foreach ($this->path as $file) {
                 if ($file->isFile() && !\in_array($file->getRealPath(), $files) && ($file->getMTime() + $this->ttl) > \time()) {
                     $files[] = $file->getRealPath();
                 }

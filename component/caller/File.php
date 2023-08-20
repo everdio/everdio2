@@ -4,44 +4,44 @@ namespace Component\Caller {
 
     abstract class File extends \Component\Caller {
 
-        public function __construct(string $_call, protected string $_file) {
+        public function __construct(string $_call, public string $file) {
             parent::__construct($_call);
         }
 
         public function getExtension(): string {
-            return (string) \pathinfo($this->_file, \PATHINFO_EXTENSION);
+            return (string) \pathinfo($this->file, \PATHINFO_EXTENSION);
         }
 
         public function getBasename(string $extension = ""): string {
-            return (string) \str_replace($extension, false, \pathinfo($this->_file, \PATHINFO_BASENAME));
+            return (string) \str_replace($extension, false, \pathinfo($this->file, \PATHINFO_BASENAME));
         }
 
         public function getPath(): string {
-            return (string) $this->_file;
+            return (string) $this->file;
         }
 
         public function getRealPath(): string {
-            return (string) $this->_file;
+            return (string) $this->file;
         }
 
         public function exists(): bool {
-            return (bool) \is_file($this->_file);
+            return (bool) \is_file($this->file);
         }
 
         public function chmod(int $mode = 0775): void {
-            \chmod($this->_file, $mode);
+            \chmod($this->file, $mode);
         }
 
         public function chown(string $user = "www-data"): void {
-            \chown($this->_file, $user);
+            \chown($this->file, $user);
         }
 
         public function chgrp(string $group = "www-data"): void {
-            \chgrp($this->_file, $group);
+            \chgrp($this->file, $group);
         }
 
         public function delete() {
-            return \unlink($this->_file);
+            return \unlink($this->file);
         }
 
         public function __destruct() {
