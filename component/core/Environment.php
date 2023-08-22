@@ -21,7 +21,7 @@ namespace Component\Core {
                 "pool" => new Validation(false, [new Validator\IsArray])                
             ]);
 
-            $this->file = $this->touch($this->path->getPath() . \DIRECTORY_SEPARATOR . $this->pid, "born");
+            $this->file = $this->touch($this->path->getPath() . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
             $this->pool = $this->pool([$this->file]);
         }
 
@@ -33,13 +33,13 @@ namespace Component\Core {
 
         abstract protected function ping(int $pid): bool;
 
-        private function touch(string $file, string $message): string {
+        private function touch(string $file, array $messages): string {
             $fopen = new Fopen($file, "a");
             if (!$fopen->exists()) {
                 $fopen->chmod(0770);
             }
 
-            $fopen->putcsv([\microtime(true), \memory_get_peak_usage(true), $message]);
+            $fopen->putcsv(\array_merge([\microtime(true), \memory_get_peak_usage(true)], $messages));
             unset ($fopen);
             
             return (string) $file;
@@ -122,13 +122,13 @@ namespace Component\Core {
         final public function update() {
             foreach ($this->pool as $file) {
                 if ($this->ping(\basename($file))) {
-                    $this->touch($file, "alive");
+                    $this->touch($file, ["alive"]);
                 }
             }
         }
-        
+ 
         public function __destruct() {
-            $this->touch($this->file, "died");
+            $this->touch($this->file, ["died"]);
         }
     }
 
