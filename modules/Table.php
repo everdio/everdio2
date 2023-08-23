@@ -1,7 +1,10 @@
 <?php
-namespace Modules {    
+
+namespace Modules {
+
     trait Table {
-        final public function statement(string $query) : \PDOStatement {
+
+        final public function statement(string $query): \PDOStatement {
             try {
                 if (($stm = $this->prepare($query)) && $stm->execute()) {
                     return (object) $stm;
@@ -9,63 +12,63 @@ namespace Modules {
             } catch (\ErrorException | \Exception $ex) {
                 if (isset($stm)) {
                     throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query));
-                } 
-                
+                }
+
                 throw new \RuntimeException("Invalid PDO Adapter");
             }
-        }    
-        
+        }
+
         final public function __set(string $parameter, $value) {
             if (!empty($value) && (!\is_array($value) && $this->getParameter($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
                 $value = \explode(",", $value);
             }
-            
-            return (bool) parent::__set($parameter, $value);
-        }          
 
-        public function count(array $validations = [], string $query = NULL, array $parents = []) : int {
+            return (bool) parent::__set($parameter, $value);
+        }
+
+        public function count(array $validations = [], string $query = NULL, array $parents = []): int {
             if (isset($this->parents)) {
                 foreach ($this->parents as $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
                 }
-                
+
                 $validations[] = new Table\Relation($this, $parents, "left");
-            } 
-            
+            }
+
             $find = new Table\Find(array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], $validations));
             return (int) $this->query($find->execute() . $query)->fetchColumn();
         }
 
-        public function find(array $validations = [], string $query = NULL) : self {
-            $find = new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));                                                           
-            $this->store($this->desanitize((array) $this->statement($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC)));                
+        public function find(array $validations = [], string $query = NULL): self {
+            $find = new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));
+            $this->store($this->desanitize((array) $this->statement($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC)));
             return (object) $this;
         }
-        
-        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []) : array {
+
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []): array {
             if (isset($this->parents)) {
                 foreach ($this->parents as $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
                 }
-                
+
                 $validations[] = new Table\Relation($this, $parents);
-            }         
-            
+            }
+
             $validations[] = new Table\Select(\array_merge($parents, [$this]));
-            
+
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
             }
-            
+
             if (\sizeof($orderby)) {
                 foreach ($orderby as $order => $parameters) {
                     $validations[] = new Table\OrderBy($this, [$order => $parameters]);
                 }
-            } else { 
+            } else {
                 if (isset($this->primary)) {
                     $validations[] = new Table\OrderBy($this, ["desc" => $this->primary]);
                 } elseif (isset($this->keys)) {
@@ -76,36 +79,37 @@ namespace Modules {
             $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this], "and", "LIKE")], $validations));
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
-        
-        public function connect(\Component\Core\Adapter\Mapper $mapper) : self {
+
+        public function connect(\Component\Core\Adapter\Mapper $mapper): self {
             if (isset($mapper->primary)) {
                 $this->store($mapper->restore($mapper->primary));
             }
             return (object) $this;
         }
-        
-        public function save() : self {
+
+        public function save(): self {
             $save = new Table\Save($this);
-            if ($this->statement($save->execute())) {    
+            if ($this->statement($save->execute())) {
                 $this->find();
             }
-            
+
             return (object) $this;
         }
-        
-        public function delete() : self {
+
+        public function delete(): self {
             if (\sizeof($this->restore($this->mapping))) {
                 $filter = new Table\Filter([$this]);
                 try {
-                    $this->query(\sprintf("DELETE FROM`%s`.`%s`WHERE%s", $this->database, $this->table, $filter->execute()));    
+                    $this->query(\sprintf("DELETE FROM`%s`.`%s`WHERE%s", $this->database, $this->table, $filter->execute()));
                 } catch (\ErrorException | \Exception $ex) {
                     throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->table, $filter->execute()));
                 }
-                
+
                 $this->reset($this->mapping);
             }
             return (object) $this;
         }
     }
+
 }
 

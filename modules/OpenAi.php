@@ -1,7 +1,12 @@
 <?php
+
 namespace Modules {
-    use \Component\Validation, \Component\Validator;     
+
+    use \Component\Validation,
+        \Component\Validator;
+
     class OpenAi extends \Component\Core\Adapter {
+
         public function __construct() {
             parent::__construct([
                 "url" => new Validation("https://api.openai.com/v1/completions", [new Validator\IsString\IsUrl]),
@@ -17,21 +22,22 @@ namespace Modules {
                 "n" => new Validation(1, [new Validator\IsInteger]),
                 "stream" => new Validation(false, [new Validator\IsBool]),
                 "stop" => new Validation(false, [new Validator\IsString]),
-            ]);            
+            ]);
         }
-        
-        final protected function __init() : object {
+
+        final protected function __init(): object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_URL => $this->url,
                 \CURLOPT_HTTPHEADER => ["Content-Type: application/json", "Authorization: Bearer " . $this->key],
-                \CURLOPT_RETURNTRANSFER => true]); 
+                \CURLOPT_RETURNTRANSFER => true]);
             return (object) $curl;
-        }          
-        
-        public function getResponse() : object {
+        }
+
+        public function getResponse(): object {
             $this->post(\json_encode($this->restore(["model", "prompt", "temperature", "max_tokens", "top_p", "frequency_penalty", "presence_penalty", "n", "stream", "stop"])));
             return (object) \json_decode($this->execute());
-        }        
+        }
     }
+
 }
