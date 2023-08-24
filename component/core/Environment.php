@@ -8,20 +8,20 @@ namespace Component\Core {
 
     abstract class Environment extends \Component\Core {
 
-        public function __construct(string $path, int $ttl = 0) {
+        public function __construct(string $dir, int $ttl = 0) {
             parent::__construct([
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "path" => new Validation(new \Component\Path($path), [new Validator\IsObject\Of("\Component\Path")]),
+                "dir" => new Validation($dir, [new Validator\IsString\IsDir]),
                 "file" => new Validation(false, [new Validator\IsString\IsPath]),
                 "ttl" => new Validation($ttl, [new Validator\IsInteger]),
                 "pid" => new Validation($this->getPid(), [new Validator\IsInteger]),
                 "proc" => new Validation($this->getProc(), [new Validator\IsInteger]),
                 "load" => new Validation($this->getLoad(), [new Validator\IsFloat]),
                 "priority" => new Validation(100, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
-                "pool" => new Validation(false, [new Validator\IsArray])                
+                "pool" => new Validation(false, [new Validator\IsArray])
             ]);
 
-            $this->file = $this->touch($this->path->getPath() . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
+            $this->file = $this->touch($this->dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
             $this->pool = $this->pool([$this->file]);
         }
 
@@ -40,17 +40,31 @@ namespace Component\Core {
             }
 
             $fopen->putcsv(\array_merge([\microtime(true), \memory_get_peak_usage(true)], $messages));
-            unset ($fopen);
-            
+            unset($fopen);
+
             return (string) $file;
         }
-
+        
+        /*
         private function pool(array $files = []): array {
-            foreach ($this->path as $file) {
-                if ($file->isFile() && !\in_array($file->getRealPath(), $files) && ($file->getMTime() + $this->ttl) > \time()) {
-                    $files[] = $file->getRealPath();
+            $dir = new \Component\Caller\Dir($this->dir);
+            while (false !== ($file = $dir->read())) {
+                if (\is_file($this->dir . \DIRECTORY_SEPARATOR . $file) && !\in_array($this->dir . \DIRECTORY_SEPARATOR . $file, $files) && (\filemtime($this->dir . \DIRECTORY_SEPARATOR . $file) + $this->ttl) > \time()) {
+                    $files[] = $this->dir . \DIRECTORY_SEPARATOR . $file;
+                }                
+            }
+            return (array) $files;
+        }    
+         * 
+         */    
+
+        private function pool(array $files = []): array {           
+            foreach (\glob(\sprintf("%s/*", $this->dir)) as $file) {
+                if (\is_file($file) && !\in_array($file, $files) && (\filemtime($file) + $this->ttl) > \time()) {
+                    $files[] = $file;
                 }
             }
+
             return (array) $files;
         }
 
@@ -69,8 +83,8 @@ namespace Component\Core {
             $stats = \array_column($this->stats($file), "message", "memory");
             return (int) \max(\array_keys($stats)) - \array_search("born", \array_reverse($stats));
         }
-        
-        final public function getMem() : int {
+
+        final public function getMem(): int {
             return (int) $this->mem($this->file);
         }
 
@@ -96,8 +110,8 @@ namespace Component\Core {
             $stats = \array_column($this->stats($file), "message", "time");
             return (float) \abs(\max(\array_keys($stats)) - \array_search("born", \array_reverse($stats)));
         }
-        
-        final public function getTime() : float {
+
+        final public function getTime(): float {
             return (float) $this->time($this->file);
         }
 
@@ -126,7 +140,7 @@ namespace Component\Core {
                 }
             }
         }
- 
+
         public function __destruct() {
             $this->touch($this->file, ["died"]);
         }
