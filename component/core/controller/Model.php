@@ -54,15 +54,19 @@ namespace Component\Core\Controller {
 
         final public function getModel(string $path, bool $reset = false): string {
             if ($this->hasModel($path)) {
-                foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {
-                    if (!\in_array($parameter, $this->reserved)) {
-                        if (\is_array($value)) {
-                            $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
-                            $this->{$parameter}->store($value);
-                        } else {
-                            $this->addParameter($parameter, new Validation\Parameter($value), $reset);
+                try {
+                    foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {
+                        if (!\in_array($parameter, $this->reserved)) {
+                            if (\is_array($value)) {
+                                $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
+                                $this->{$parameter}->store($value);
+                            } else {
+                                $this->addParameter($parameter, new Validation\Parameter($value), $reset);
+                            }
                         }
                     }
+                } catch (\ErrorException $ex) {
+                    throw new \LogicException(\sprintf("invalid ini file %s: %s", $this->path . \DIRECTORY_SEPARATOR . $path . ".ini", $ex->getMessage()), 0, $ex);
                 }
             }
 
