@@ -13,16 +13,16 @@ namespace Modules {
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
                     ] + $_parameters);
         }
-
+        
         public function autoCallbacks(string $parameter, float $time = 0.0001): void {
             if (isset($this->{$parameter})) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->{$this->_library}->{$mapper})) {
-                        if (($object = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
+                        if (($finder = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {
                                 try {
                                     if (\is_string($label)) {
-                                        $this->_controller->store([$mapper => [$label => $object->callback($this->getCallbacks($callback))]]);
+                                        $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
@@ -48,7 +48,7 @@ namespace Modules {
                                             }
                                         }
                                     } else {
-                                        $object->callback($this->getCallbacks($callback));
+                                        $finder->callback($this->getCallbacks($callback));
                                     }
 
                                     if (isset($this->debug) && isset($this->request->{$this->debug})) {
