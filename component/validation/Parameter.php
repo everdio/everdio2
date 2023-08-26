@@ -13,6 +13,7 @@ namespace Component\Validation {
                 new Validator\IsResource,
                 new Validator\IsObject,
                 new Validator\IsInteger,
+                new Validator\IsNumeric,
                 new Validator\IsString,
                 new Validator\IsBool,
                 new Validator\IsArray\Intersect($options),

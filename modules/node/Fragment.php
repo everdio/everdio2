@@ -10,7 +10,7 @@ namespace Modules\Node {
                 $first = \reset($xparts);
                 $last = \end($xparts);
                 
-                parent::__construct(\sprintf($wrap, \sprintf("/%s/%s%s", $first, $last, \str_replace($xpath, false, $xfragment))), [new \Component\Validator\IsString]);
+                parent::__construct(\sprintf($wrap, \sprintf("/%s/%s%s", $first, \trim($last, "[]"), \str_replace($xpath, false, $xfragment))), [new \Component\Validator\IsString]);
             }
         }
         

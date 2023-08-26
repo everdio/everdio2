@@ -11,7 +11,7 @@ namespace Modules {
                 $filter = new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]);
                 return (string) \sprintf("(%s)", $filter->execute());
             } else {
-                $find = new Node\Find($this->path, \array_merge([new Node\Filter($this->path, [new Node\Condition($this)])], $validations));
+                $find = new Node\Find($this->path, \array_merge($validations, [new Node\Filter($this->path, [new Node\Condition($this)])]));
                 return (string) $find->execute();
             }
         }

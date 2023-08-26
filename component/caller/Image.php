@@ -5,7 +5,19 @@ namespace Component\Caller {
             parent::__construct("image%s");
         }
   
+        
+        /*
+         * sy() is height
+         * sx() is width
+         */
         public function crop(int $width, int $height) {   
+            if (($width / $height) > ($ratio = $this->sx() / $this->sy())) {
+                $this->scale($width, \round($width / $ratio));
+                
+            } else {
+                $this->scale(\round($height * $ratio), $height);
+            }
+            
             $this->handle = parent::crop(["y" => (($this->sy() - $height) / 2), "x" => (($this->sx() - $width) / 2), "width" => $width, "height" => $height]);
         }            
         
