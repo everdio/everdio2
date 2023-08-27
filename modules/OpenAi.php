@@ -7,7 +7,7 @@ namespace Modules {
 
     class OpenAi extends \Component\Core\Adapter {
 
-        public function __construct() {
+        public function __construct(array $values = []) {
             parent::__construct([
                 "url" => new Validation("https://api.openai.com/v1/completions", [new Validator\IsString\IsUrl]),
                 "key" => new Validation(false, [new Validator\IsString]),
@@ -23,6 +23,8 @@ namespace Modules {
                 "stream" => new Validation(false, [new Validator\IsBool]),
                 "stop" => new Validation(false, [new Validator\IsString]),
             ]);
+            
+            $this->store($values);
         }
 
         final protected function __init(): object {
