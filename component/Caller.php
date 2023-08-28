@@ -21,6 +21,10 @@ namespace Component {
         final public function hasHandle(): bool {
             return (bool) isset($this->handle);
         }
+        
+        final public function __invoke() {
+            return $this->handle;
+        }
 
         final public function __toString(): string {
             return (string) $this->_call;

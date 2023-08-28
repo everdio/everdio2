@@ -44,6 +44,8 @@ $controller->echo($controller->dehydrate($controller->request->restore()), ["bol
 $controller->break(2);
 
 try {
+    $env->update();
+    
     $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);
     
     $env->update();

@@ -9,7 +9,6 @@ namespace Modules {
         final protected function __init(): object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
-                \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC,
                 \CURLOPT_USERPWD => $this->username . ":" . $this->password]);
             return (object) $curl;

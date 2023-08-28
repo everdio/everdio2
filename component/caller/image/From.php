@@ -1,6 +1,9 @@
 <?php
+
 namespace Component\Caller\Image {
+
     class From extends \Component\Caller\Image {
+
         public function __construct(string $file) {
             parent::__construct();
             if (\is_file($file)) {
@@ -16,13 +19,17 @@ namespace Component\Caller\Image {
                         break;
                     case "image/webp":
                         $this->handle = \imagecreatefromwebp($file);
-                        break;                
+                        break;
+                    case "image/avif":
+                        $this->handle = \imagecreatefromavif($file);
+                        break;
                     default:
-                        throw new \InvalidArgumentException(\sprintf("%s incorrect %s", $file, \image_type_to_mime_type(\exif_imagetype($file))));
-                }     
+                        throw new \InvalidArgumentException(\sprintf("%s image %s not supported", $file, \image_type_to_mime_type(\exif_imagetype($file))));
+                }
             } else {
                 throw new \InvalidArgumentException(\sprintf("%s does not exist", $file));
             }
         }
     }
+
 }
