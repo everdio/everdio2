@@ -20,8 +20,8 @@ namespace Component\Core {
                 "pool" => new Validation(false, [new Validator\IsArray])
             ]);
             
-            $this->file = $this->touch($dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
-            $this->pool = $this->pool($dir, [$this->file]);
+            $this->file = $this->_touch($dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
+            $this->pool = $this->_pool($dir, [$this->file => $this->_stats($this->file)]);
         }
 
         abstract protected function getPid(): int;
@@ -30,79 +30,80 @@ namespace Component\Core {
 
         abstract protected function ping(int $pid): bool;
 
-        private function pool(string $dir, array $files = []): array {           
+        private function _pool(string $dir, array $files = []): array {           
             foreach (\glob(\sprintf("%s/*", $dir)) as $file) {
                 if (\is_file($file) && !\in_array($file, $files) && (\filemtime($file) + $this->ttl) > \time()) {
-                    $files[] = $file;
+                    $files[$file] = $this->_stats($file);
                 }
             }
 
             return (array) $files;
         }        
 
-        private function touch(string $file, array $messages): string {
+        private function _touch(string $file, array $messages): string {
             $fopen = new Fopen($file, "a");
             if (!$fopen->exists()) {
                 $fopen->chmod(0770);
             }
 
-            $fopen->putcsv(\array_merge([\microtime(true), $this->getLoad(), \memory_get_peak_usage(true), $this->process], $messages));
+            $fopen->putcsv(\array_merge([\microtime(true), $this->getLoad(), \memory_get_peak_usage(true), $this->process, $this->priority], $messages));
             unset($fopen);
 
             return (string) $file;
         }
 
-        public function stats(string $file, array $stats = []): array {
+        private function _stats(string $file, array $stats = []): array {
             $fopen = new Fopen($file, "r");
             while (!$fopen->eof() && ($data = $fopen->getcsv())) {
-                $stats[] = \array_combine(["time", "load", "memory", "process", "message"], $data);
+                $stats[] = \array_combine(["time", "load", "memory", "process", "priority", "message"], $data);
             }
 
             unset($fopen);
             
             return (array) $stats;
         }
+
+        private function _time(string $file): float {
+            $stats = \array_column($this->_stats($file), "message", "time");
+            return (float) \abs(\max(\array_keys($stats)) - \array_search("born", \array_reverse($stats)));
+        }        
         
-        private function mem(string $file): int {
-            $stats = \array_column($this->stats($file), "message", "memory");
+        private function _mem(string $file): int {
+            $stats = \array_column($this->_stats($file), "message", "memory");
             return (int) \max(\array_keys($stats)) - \array_search("born", \array_reverse($stats));
         }
 
         final public function getMem(): int {
-            return (int) $this->mem($this->file);
+            return (int) $this->_mem($this->file);
         }
 
         final public function getMemAlive(int $mem = 0): int {
             foreach ($this->pool as $file) {
                 if ($this->ping(\basename($file))) {
-                    $mem += $this->mem($file);
+                    $mem += $this->_mem($file);
                 }
             }
 
             return (int) $mem;
         }
 
-        final public function getMemAverage(int $mem = 0): float {
+        final public function getMemAverage(int $mem = 0): int {
             foreach ($this->pool as $file) {
-                $mem += $this->mem($file);
+                $mem += $this->_mem($file);
             }
 
-            return (float) \round($mem / \sizeof($this->pool));
+            return (int) \round($mem / \sizeof($this->pool));
         }
 
-        private function time(string $file): float {
-            $stats = \array_column($this->stats($file), "message", "time");
-            return (float) \abs(\max(\array_keys($stats)) - \array_search("born", \array_reverse($stats)));
-        }
 
         final public function getTime(): float {
-            return (float) $this->time($this->file);
+            return (float) $this->_time($this->file);
         }
 
         final public function getTimeAlive(float $time = NULL): float {
-            foreach ($this->pool as $file) {
+            foreach (\array_keys($this->pool) as $file) {
                 if ($this->ping(\basename($file))) {
-                    $time = \abs($time + $this->time($file));
+                    $time = \abs($time + $this->_time($file));
                 }
             }
 
@@ -110,23 +111,23 @@ namespace Component\Core {
         }
 
         final public function getTimeAverage(float $time = NULL): float {
-            foreach ($this->pool as $file) {
-                $time = \abs($time + $this->time($file));
+            foreach (\array_keys($this->pool) as $file) {
+                $time = \abs($time + $this->_time($file));
             }
 
             return (float) \abs($time / \sizeof($this->pool));
         }
 
         final public function update() {
-            foreach ($this->pool as $file) {
+            foreach (\array_keys($this->pool) as $file) {
                 if ($this->ping(\basename($file))) {
-                    $this->touch($file, ["alive"]);
+                    $this->_touch($file, ["alive"]);
                 }
             }
         }
 
         public function __destruct() {
-            $this->touch($this->file, ["died"]);
+            $this->_touch($this->file, ["died"]);
         }
     }
 

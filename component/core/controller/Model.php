@@ -40,7 +40,7 @@ namespace Component\Core\Controller {
          */
 
         final public function saveModel(string $path) {
-            $ini = new \Component\Caller\File\Fopen\Ini(\Component\Path::construct(\dirname($this->path . \DIRECTORY_SEPARATOR . $path))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+            $ini = new \Component\Caller\File\Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
             foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
                 if ($parameters instanceof Parameters) {
                     $ini->store($key, $parameters->restore());
