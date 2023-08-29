@@ -8,12 +8,7 @@ namespace Component\Core\Environment {
             return (int) \getmypid();
         }
 
-        protected function getProc(): int {
-            return (int) $this->dehydrate(\exec("nproc"));
-        }
-
         protected function getLoad(): float {
-
             return (float) \implode(false, \array_slice(\sys_getloadavg(), 0, 1));
         }
 

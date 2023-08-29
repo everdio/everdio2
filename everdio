@@ -9,8 +9,10 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$env = new \Component\Core\Environment\Linux("/home/evertdf/everdio2/.pool", 3600);
-$env->priority = 100;
+//$env = new \Component\Core\Environment\Linux("/home/evertdf/everdio2/.pool", 86400);
+//$env->priority = 100;
+
+$time = microtime(true);
 
 $controller = new \Component\Core\Controller\Model\Cli;
 $controller->server = $_SERVER;
@@ -44,12 +46,7 @@ $controller->echo($controller->dehydrate($controller->request->restore()), ["bol
 $controller->break(2);
 
 try {
-    $env->update();
-    
     $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);
-    
-    $env->update();
-    
 } catch (\Exception $ex) {
     if (isset($controller->request->{$controller->debug})) {
         throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
@@ -61,7 +58,7 @@ try {
 }
 
 $controller->break();
-$controller->echo("Time:\t", ["lightgray"]);
-$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round($env->getTime()))), ["green"]);
+$controller->echo("Time:\t\t", ["lightgray"]);
+$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round($time - \microtime(true)))), ["green"]);
 $controller->break(2);
 exit;

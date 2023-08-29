@@ -8,30 +8,37 @@ namespace Component\Core {
 
     abstract class Environment extends \Component\Core {
 
-        public function __construct(string $dir, int $ttl = 0) {
+        public function __construct(string $process, string $dir, int $ttl = 0) {
             parent::__construct([
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
-                "dir" => new Validation($dir, [new Validator\IsString\IsDir]),
                 "file" => new Validation(false, [new Validator\IsString\IsPath]),
-                "ttl" => new Validation($ttl, [new Validator\IsInteger]),
+                "ttl" => new Validation($ttl, [new Validator\IsInteger]),                
                 "pid" => new Validation($this->getPid(), [new Validator\IsInteger]),
-                "proc" => new Validation($this->getProc(), [new Validator\IsInteger]),
+                "process" => new Validation($process, [new Validator\IsString\IsFile]),                
                 "load" => new Validation($this->getLoad(), [new Validator\IsFloat]),
                 "priority" => new Validation(100, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
                 "pool" => new Validation(false, [new Validator\IsArray])
             ]);
-
-            $this->file = $this->touch($this->dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
-            $this->pool = $this->pool([$this->file]);
+            
+            $this->file = $this->touch($dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
+            $this->pool = $this->pool($dir, [$this->file]);
         }
 
         abstract protected function getPid(): int;
 
         abstract protected function getLoad(): float;
 
-        abstract protected function getProc(): int;
-
         abstract protected function ping(int $pid): bool;
+
+        private function pool(string $dir, array $files = []): array {           
+            foreach (\glob(\sprintf("%s/*", $dir)) as $file) {
+                if (\is_file($file) && !\in_array($file, $files) && (\filemtime($file) + $this->ttl) > \time()) {
+                    $files[] = $file;
+                }
+            }
+
+            return (array) $files;
+        }        
 
         private function touch(string $file, array $messages): string {
             $fopen = new Fopen($file, "a");
@@ -39,46 +46,23 @@ namespace Component\Core {
                 $fopen->chmod(0770);
             }
 
-            $fopen->putcsv(\array_merge([\microtime(true), \memory_get_peak_usage(true)], $messages));
+            $fopen->putcsv(\array_merge([\microtime(true), $this->getLoad(), \memory_get_peak_usage(true), $this->process], $messages));
             unset($fopen);
 
             return (string) $file;
         }
-        
-        /*
-        private function pool(array $files = []): array {
-            $dir = new \Component\Caller\Dir($this->dir);
-            while (false !== ($file = $dir->read())) {
-                if (\is_file($this->dir . \DIRECTORY_SEPARATOR . $file) && !\in_array($this->dir . \DIRECTORY_SEPARATOR . $file, $files) && (\filemtime($this->dir . \DIRECTORY_SEPARATOR . $file) + $this->ttl) > \time()) {
-                    $files[] = $this->dir . \DIRECTORY_SEPARATOR . $file;
-                }                
-            }
-            return (array) $files;
-        }    
-         * 
-         */    
 
-        private function pool(array $files = []): array {           
-            foreach (\glob(\sprintf("%s/*", $this->dir)) as $file) {
-                if (\is_file($file) && !\in_array($file, $files) && (\filemtime($file) + $this->ttl) > \time()) {
-                    $files[] = $file;
-                }
-            }
-
-            return (array) $files;
-        }
-
-        private function stats(string $file, array $stats = []): array {
+        public function stats(string $file, array $stats = []): array {
             $fopen = new Fopen($file, "r");
             while (!$fopen->eof() && ($data = $fopen->getcsv())) {
-                $stats[] = \array_combine(["time", "memory", "message"], $data);
+                $stats[] = \array_combine(["time", "load", "memory", "process", "message"], $data);
             }
 
             unset($fopen);
-
+            
             return (array) $stats;
         }
-
+        
         private function mem(string $file): int {
             $stats = \array_column($this->stats($file), "message", "memory");
             return (int) \max(\array_keys($stats)) - \array_search("born", \array_reverse($stats));
