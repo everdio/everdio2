@@ -6,9 +6,5 @@ namespace {{namespace}} {
             parent::__construct({{mapper}});
             $this->store($values);
         }
-        
-        static public function construct(array $values = []) : self {
-            return (object) new {{class}}($values);
-        }                
     }
 }

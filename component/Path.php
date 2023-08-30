@@ -16,10 +16,6 @@ namespace Component {
                 throw $ex;
             }
         }
-
-        static public function construct(string $path, int $mode = 0776, string $group = "www-data"): self {
-            return (object) new Path($path, $mode, $group);
-        }
     }
 
 }
