@@ -9,14 +9,15 @@ namespace Modules {
 
         public function __construct(array $values = []) {
             parent::__construct([
-                "url" => new Validation("https://api.openai.com/v1/completions", [new Validator\IsString\IsUrl]),
+                "url" => new Validation("https://api.openai.com/v1/chat/completions", [new Validator\IsString\IsUrl]),
                 "key" => new Validation(false, [new Validator\IsString]),
                 "adapter" => new Validation(["openai"], [new Validator\IsArray]),
-                "model" => new Validation("gpt-4", [new Validator\IsString]),
+                "model" => new Validation("gpt-3.5-turbo-16k", [new Validator\IsString]),
                 "prompt" => new Validation(false, [new Validator\IsString]),
                 "max_tokens" => new Validation(2048, [new Validator\IsInteger]),
-                "temperature" => new Validation(0.7, [new Validator\IsFloat]),
+                "temperature" => new Validation(0.5, [new Validator\IsFloat]),
                 "top_p" => new Validation(1, [new Validator\IsFloat]),
+                "messages" => new Validation([], [new Validator\IsArray]),
                 "presence_penalty" => new Validation(0, [new Validator\IsFloat]),
                 "frequency_penalty" => new Validation(0, [new Validator\IsFloat]),
                 "n" => new Validation(1, [new Validator\IsInteger]),
@@ -37,7 +38,7 @@ namespace Modules {
         }
 
         public function getResponse(): object {
-            $this->post(\json_encode($this->restore(["model", "prompt", "temperature", "max_tokens", "top_p", "frequency_penalty", "presence_penalty", "n", "stream", "stop"])));
+            $this->post(\json_encode($this->restore(["model", "prompt", "messages", "temperature", "max_tokens", "top_p", "frequency_penalty", "presence_penalty", "n", "stream", "stop"])));
             return (object) \json_decode($this->execute());
         }
     }

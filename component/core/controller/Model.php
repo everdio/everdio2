@@ -4,7 +4,8 @@ namespace Component\Core\Controller {
 
     use \Component\Validation,
         \Component\Validator,
-        \Component\Core\Parameters;
+        \Component\Core\Parameters,
+        \Component\Caller\File\Fopen;
 
     abstract class Model extends \Component\Core\Controller {
         /*
@@ -39,13 +40,18 @@ namespace Component\Core\Controller {
          * creating and (re)storing an ini file, directory should exist
          */
 
-        final public function saveModel(string $path) {
-            $ini = new \Component\Caller\File\Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+        final public function saveModel(string $path): void {
+            $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
             foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
                 if ($parameters instanceof Parameters) {
                     $ini->store($key, $parameters->restore());
                 }
             }
+        }
+
+        final public function deleteModel(string $path): void {
+            $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+            $ini->delete();
         }
 
         /*

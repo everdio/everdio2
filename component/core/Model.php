@@ -13,10 +13,8 @@ namespace Component\Core {
         public function __destruct() {
             $this->mapper = $this->__dry();
 
-            $path = new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace))));
-
-            $mapper = new Fopen($path->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php", "w+");
-            $mapper->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "mapper"]));
+            $file = new Fopen((new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)))))->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php", "w+");
+            $file->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "mapper"]));
         }
     }
 

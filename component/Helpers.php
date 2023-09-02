@@ -57,9 +57,9 @@ namespace Component {
             $words = \array_count_values(\str_word_count(\strip_tags(\nl2br($content)), 1));
             \asort($words);
             foreach (\array_keys(\array_reverse($words)) as $word) {
-                $word = $this->getName(\strtolower($word));
-                if (\strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
-                    $keywords[] = \trim($word);
+                $word = \trim($this->getName(\strtolower($word)));
+                if (!\in_array($word, $keywords) && \strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
+                    $keywords[] = $word;
                     $count += \strlen($word);
                 }
             }

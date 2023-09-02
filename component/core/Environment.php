@@ -47,9 +47,7 @@ namespace Component\Core {
             }
 
             $fopen->putcsv(\array_merge([\microtime(true), $this->getLoad(), \memory_get_peak_usage(true), $this->process, $this->priority], $messages));
-            unset($fopen);
-
-            return (string) $file;
+            return (string) $fopen->file;
         }
 
         private function _stats(string $file, array $stats = []): array {
@@ -58,8 +56,6 @@ namespace Component\Core {
                 $stats[] = \array_combine(["time", "load", "memory", "process", "priority", "message"], $data);
             }
 
-            unset($fopen);
-            
             return (array) $stats;
         }
 
