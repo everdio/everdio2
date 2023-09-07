@@ -11,7 +11,7 @@ namespace Modules\Node {
                 }
             }
             
-            parent::__construct($element, [new Validator\IsObject\Of("\DOMElement")]);
+            parent::__construct($element, [new Validator\IsObject]);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Modules\Node {
                 }
             }
             
-            parent::__construct($mapper, [new Validator\IsObject\Of("\Component\Core\Adapter\Mapper")]);
+            parent::__construct($mapper, [new Validator\IsObject]);
         }
     }
 }

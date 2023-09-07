@@ -41,16 +41,18 @@ namespace Component\Core\Controller {
          */
 
         final public function saveModel(string $path): void {
-            $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
-            foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
-                if ($parameters instanceof Parameters) {
-                    $ini->store($key, $parameters->restore());
+            if (\sizeof($this->restore($this->diff($this->reserved)))) {
+                $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+                foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
+                    if ($parameters instanceof Parameters) {
+                        $ini->store($key, $parameters->restore());
+                    }
                 }
             }
         }
 
         final public function deleteModel(string $path): void {
-            $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+            $ini = new Fopen\Ini($path, "w");
             $ini->delete();
         }
 

@@ -10,7 +10,7 @@ namespace Modules {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "_library" => new Validation(false, [new Validator\IsString]),
-                "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject\Of("\Component\Core\Parameters")]),
+                "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                     ] + $_parameters);
         }
         
