@@ -67,16 +67,17 @@ namespace Component {
             return (array) $keywords;
         }
 
-        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", array $lines = [], int $count = 0): string {
-            foreach ((array) \preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(str_replace(["\r", "\n", "!", "?"], $implode, $content))) as $line) {
+        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $lines = [], int $count = 0): string {
+            
+            
+            foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $line) {
                 if (\strlen($line) >= $min && (\strlen($line) + $count) <= $total && \sizeof($this->getWords($line))) {
-                    $lines[] = \trim($line, $implode);
+                    $lines[] = \trim($line, $eol);
                     $count += \strlen($line);
                 }
             }
-
-
-            return (string) \sprintf("%s.", \implode($implode, \array_unique($lines)));
+            
+            return (string) \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($lines)))) . $eol;
         }
     }
 
