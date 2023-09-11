@@ -84,7 +84,7 @@ namespace Component {
 
         final public function remove(string $parameter): void {
             if ($this->exists($parameter)) {
-                unset($this->_parameters[$parameter]);
+                unset ($this->_parameters[$parameter]);
             }
         }
 

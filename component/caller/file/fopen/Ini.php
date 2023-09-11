@@ -1,37 +1,48 @@
 <?php
+
 namespace Component\Caller\File\Fopen {
+
     class Ini extends \Component\Caller\File\Fopen {
+
         public function __construct(string $path, string $mode = "r") {
             parent::__construct(\sprintf("%s.ini", $path), $mode);
         }
-        
-        private function _prepare($value) : string {
+
+        private function _prepare($value): string {
             return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
         }
 
-        private function _writeSection(string $section) {
-            $this->write(\sprintf("[%s]\n", $section));
-        }        
-        
-        private function _writePair(string $parameter, $value) {
-            $this->write(\sprintf("%s = \"%s\";\n", $parameter, $this->_prepare($value)));
+        final public function writeSection(string $section) {
+            parent::write(\sprintf("[%s]\n", $section));
         }
 
-        private function _writeKeyPair(string | int $key, string | int $parameter, $value) {
-            $this->write(\sprintf("%s[%s] = \"%s\";\n", $key, $parameter, $this->_prepare($value)));
+        final public function writePair(string $parameter, $value) {
+            parent::write(\sprintf("%s = \"%s\";\n", $parameter, $this->_prepare($value)));
         }
-        
-        final public function store(string $section, array $data) {
-            $this->_writeSection($section);
-            foreach ($data as $key1 => $value1) {
-                if (\is_array($value1)) {
-                    foreach ($value1 as $key2 => $value2) {
-                        $this->_writeKeyPair($key1, $key2, $value2);
-                    }
+
+        final public function writeKeyPair(string|int $section, array $values) {
+            foreach ($values as $key => $value) {
+                parent::write(\sprintf("%s[%s] = \"%s\";\n", $section, $key, $this->_prepare($value)));
+            }
+        }
+
+        final public function write(array $array, string $section = NULL) {
+            if ($section) {
+                $this->writeSection($section);
+            }
+
+            foreach ($array as $key => $value) {
+                if (\is_array($value)) {
+                    $this->writeKeyPair($key, $value);
                 } else {
-                    $this->_writePair($key1, $value1);
+                    $this->writePair($key, $value);
                 }
             }
         }
+
+        final public function read(): array {
+            return (array) \parse_ini_string(parent::read(\filesize($this->file)), true, \INI_SCANNER_TYPED);
+        }
     }
+
 }

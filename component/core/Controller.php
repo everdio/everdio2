@@ -59,7 +59,7 @@ namespace Component\Core {
                 foreach ($matches[1] as $key => $match) {
                     try {
                         if (!\is_string(($data = $this->callback($match)))) {
-                            $data = \str_replace("false", false, $this->dehydrate($data));
+                            $data = \str_replace("false", "", $this->dehydrate($data));
                         }
                     } catch (\BadMethodCallException $ex) {
                         throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));

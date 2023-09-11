@@ -15,6 +15,7 @@ namespace Component {
                 foreach ($data as $key => $value) {
                     $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
                 }
+                
                 return (string) \sprintf("[%s]", \implode(", ", $array));
             } elseif (\is_object($data)) {
                 return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : \sprintf("new %s", \get_class($data)));
@@ -23,7 +24,7 @@ namespace Component {
             } elseif (\is_resource($data)) {
                 return (string) \get_resource_type($data);
             } else {
-                throw new \ValueError(\sprintf("unexpected data type %s", \gettype($data)));
+                throw new \ValueError(\sprintf("Unexpected data type %s", \gettype($data)));
             }
         }
 
@@ -37,19 +38,12 @@ namespace Component {
             } elseif (\is_bool($data)) {
                 return (bool) $data;
             } elseif (\is_string($data)) {
-                if (\str_starts_with($data, "[") && \str_ends_with($data, "]")) {
-                    if (\is_array(($array = \explode(",", \trim($data, "[]"))))) {
-                        foreach ($array as $value) {
-                            
-                        }
-                    }
-                }
-
                 return (string) $data;
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->hydrate($value);
                 }
+                
                 return (array) $data;
             } else {
                 return $data;

@@ -14,9 +14,11 @@ namespace Component {
         public $types = [];
 
         public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
-            $this->value = $value;
+            $this->setValue($value);
+            
             foreach ($validators as $validator) {
                 $key = (string) $validator;
+                
                 $this->_validators[$key] = $validator;
                 $this->_messages[$key] = $validator::MESSAGE;
                 $this->types[$key] = $validator::TYPE;
@@ -49,8 +51,8 @@ namespace Component {
             return (bool) (\sizeof(\array_intersect($this->types, $types)) === \sizeof($this->types));
         }
 
-        public function setValue($value): bool {
-            return (bool) ($this->value = $this->hydrate($value));
+        public function setValue($value): void {
+            $this->value = $this->hydrate($value);
         }
 
         public function getValue() {

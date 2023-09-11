@@ -41,19 +41,20 @@ namespace Component\Core\Controller {
          */
 
         final public function saveModel(string $path): void {
-            if (\sizeof($this->restore($this->diff($this->reserved)))) {
+            if (\sizeof(($sections = $this->restore($this->diff($this->reserved))))) {
                 $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
-                foreach ($this->restore($this->diff($this->reserved)) as $key => $parameters) {
-                    if ($parameters instanceof Parameters) {
-                        $ini->store($key, $parameters->restore());
+                foreach ($sections as $section => $parameters) {
+                    if ($parameters instanceof Parameters) {        
+                        $ini->write($parameters->restore(), $section);
                     }
                 }
             }
         }
 
         final public function deleteModel(string $path): void {
-            $ini = new Fopen\Ini($path, "w");
-            $ini->delete();
+            if ($this->hasModel($path)) {
+                \unlink ($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
+            }                
         }
 
         /*
@@ -63,7 +64,8 @@ namespace Component\Core\Controller {
         final public function getModel(string $path, bool $reset = false): string {
             if ($this->hasModel($path)) {
                 try {
-                    foreach (\array_merge_recursive(\parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED)) as $parameter => $value) {
+                    $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path , "r");
+                    foreach ($ini->read() as $parameter => $value) {
                         if (!\in_array($parameter, $this->reserved)) {
                             if (\is_array($value)) {
                                 $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
