@@ -43,7 +43,7 @@ namespace Component {
         }
 
         public function __dry(): string {
-            return (string) \sprintf("new %s(%s)", (string) $this, $this->_call);
+            return (string) \sprintf("new %s", (string) $this);
         }
     }
 

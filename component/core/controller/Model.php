@@ -51,12 +51,6 @@ namespace Component\Core\Controller {
             }
         }
 
-        final public function deleteModel(string $path): void {
-            if ($this->hasModel($path)) {
-                \unlink ($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
-            }                
-        }
-
         /*
          * parsing ini contents and set as Parameters container(s)
          */
@@ -65,14 +59,12 @@ namespace Component\Core\Controller {
             if ($this->hasModel($path)) {
                 try {
                     $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path , "r");
-                    foreach ($ini->read() as $parameter => $value) {
-                        if (!\in_array($parameter, $this->reserved)) {
-                            if (\is_array($value)) {
-                                $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
-                                $this->{$parameter}->store($value);
-                            } else {
-                                $this->addParameter($parameter, new Validation\Parameter($value), $reset);
-                            }
+                    foreach (\array_diff_key($ini->read(), \array_flip($this->reserved)) as $parameter => $value) {
+                        if (\is_array($value)) {
+                            $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
+                            $this->{$parameter}->store($value);
+                        } else {
+                            $this->addParameter($parameter, new Validation\Parameter($value), $reset);
                         }
                     }
                 } catch (\ErrorException $ex) {
@@ -82,6 +74,12 @@ namespace Component\Core\Controller {
 
             return (string) $path;
         }
+        
+        final public function deleteModel(string $path): void {
+            if ($this->hasModel($path)) {
+                \unlink ($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
+            }                
+        }        
 
         final public function resetModel(array $parameters = []) {
             foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {

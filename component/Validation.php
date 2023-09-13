@@ -5,6 +5,7 @@ namespace Component {
     class Validation {
 
         use Dryer,
+            Finder,
             Helpers;
 
         const NORMAL = "NORMAL";

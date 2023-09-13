@@ -4,6 +4,8 @@ namespace Component {
 
     class Path extends \RecursiveIteratorIterator {
 
+        use Finder;
+
         public function __construct(string $path, int $mode = 0776, string $group = "www-data") {
             try {
                 parent::__construct(new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);
