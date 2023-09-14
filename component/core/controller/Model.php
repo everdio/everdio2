@@ -44,7 +44,7 @@ namespace Component\Core\Controller {
             if (\sizeof(($sections = $this->restore($this->diff($this->reserved))))) {
                 $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
                 foreach ($sections as $section => $parameters) {
-                    if ($parameters instanceof Parameters) {        
+                    if ($parameters instanceof Parameters) {
                         $ini->write($parameters->restore(), $section);
                     }
                 }
@@ -58,7 +58,7 @@ namespace Component\Core\Controller {
         final public function getModel(string $path, bool $reset = false): string {
             if ($this->hasModel($path)) {
                 try {
-                    $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path , "r");
+                    $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path, "r");
                     foreach (\array_diff_key($ini->read(), \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
@@ -74,12 +74,12 @@ namespace Component\Core\Controller {
 
             return (string) $path;
         }
-        
+
         final public function deleteModel(string $path): void {
             if ($this->hasModel($path)) {
-                \unlink ($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
-            }                
-        }        
+                \unlink($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
+            }
+        }
 
         final public function resetModel(array $parameters = []) {
             foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {

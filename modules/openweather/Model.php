@@ -1,8 +1,14 @@
 <?php
+
 namespace Modules\OpenWeather {
-    use \Component\Validation, \Component\Validator;     
+
+    use \Component\Validation,
+        \Component\Validator;
+
     final class Model extends \Component\Core\Adapter\Model {
+
         use \Modules\OpenWeather;
+
         public function __construct() {
             parent::__construct([
                 "url" => new Validation(false, [new Validator\IsString\IsUrl]),
@@ -13,11 +19,11 @@ namespace Modules\OpenWeather {
                 "lat" => new Validation(false, [new Validator\IsFloat]),
                 "lon" => new Validation(false, [new Validator\IsFloat])
             ]);
-            
+
             $this->use = "\Modules\OpenWeather";
         }
 
-        public function setup() : void {         
+        public function setup(): void {
             $xpath = new \DOMXPath($this->getAdapter($this->unique(["url" => $this->url])));
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\OpenWeather\Api\Model;
@@ -25,16 +31,17 @@ namespace Modules\OpenWeather {
                 $model->adapter = $this->adapter;
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->setup();     
-            }                                     
+                $model->setup();
+            }
         }
-        
+
         public function __destruct() {
-            unset ($this->lon);
-            unset ($this->lat);
-            unset ($this->lang);
-            
+            unset($this->lon);
+            unset($this->lat);
+            unset($this->lang);
+
             parent::__destruct();
-        }           
+        }
     }
+
 }

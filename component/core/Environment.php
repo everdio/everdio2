@@ -12,14 +12,14 @@ namespace Component\Core {
             parent::__construct([
                 "time" => new Validation(\microtime(true), [new Validator\IsFloat]),
                 "file" => new Validation(false, [new Validator\IsString\IsPath]),
-                "ttl" => new Validation($ttl, [new Validator\IsInteger]),                
+                "ttl" => new Validation($ttl, [new Validator\IsInteger]),
                 "pid" => new Validation($this->getPid(), [new Validator\IsInteger]),
-                "process" => new Validation($process, [new Validator\IsString\IsFile]),                
+                "process" => new Validation($process, [new Validator\IsString\IsFile]),
                 "load" => new Validation($this->getLoad(), [new Validator\IsFloat]),
                 "priority" => new Validation(100, [new Validator\IsInteger, new Validator\Len\Smaller(3)]),
                 "pool" => new Validation(false, [new Validator\IsArray])
             ]);
-            
+
             $this->file = $this->_touch($dir . \DIRECTORY_SEPARATOR . $this->pid, ["born"]);
             $this->pool = $this->_pool($dir, [$this->file => $this->_stats($this->file)]);
         }
@@ -30,7 +30,7 @@ namespace Component\Core {
 
         abstract protected function ping(int $pid): bool;
 
-        private function _pool(string $dir, array $files = []): array {           
+        private function _pool(string $dir, array $files = []): array {
             foreach (\glob(\sprintf("%s/*", $dir)) as $file) {
                 if (\is_file($file) && !\in_array($file, $files) && (\filemtime($file) + $this->ttl) > \time()) {
                     $files[$file] = $this->_stats($file);
@@ -38,7 +38,7 @@ namespace Component\Core {
             }
 
             return (array) $files;
-        }        
+        }
 
         private function _touch(string $file, array $messages): string {
             $fopen = new Fopen($file, "a");
@@ -62,8 +62,8 @@ namespace Component\Core {
         private function _time(string $file): float {
             $stats = \array_column($this->_stats($file), "message", "time");
             return (float) \abs(\max(\array_keys($stats)) - \array_search("born", \array_reverse($stats)));
-        }        
-        
+        }
+
         private function _mem(string $file): int {
             $stats = \array_column($this->_stats($file), "message", "memory");
             return (int) \max(\array_keys($stats)) - \array_search("born", \array_reverse($stats));
@@ -90,7 +90,6 @@ namespace Component\Core {
 
             return (int) \round($mem / \sizeof($this->pool));
         }
-
 
         final public function getTime(): float {
             return (float) $this->_time($this->file);

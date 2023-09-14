@@ -10,7 +10,7 @@ namespace Component\Core\Controller\Model {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR"])], Validation::NORMAL),
+                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR", "SCRIPT_FILENAME"])], Validation::NORMAL),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
                 "host" => new Validation(false, [new IsString]),
@@ -57,8 +57,7 @@ namespace Component\Core\Controller\Model {
          */
 
         public function echo(string $content): void {
-            $output = new \Component\Caller\File\Fopen("php://output");
-            $output->puts($content);
+            (new \Component\Caller\File\Fopen("php://output"))->puts($content);
         }
 
         /*
@@ -70,11 +69,12 @@ namespace Component\Core\Controller\Model {
                 $this->referer = $this->server["HTTP_REFERER"];
             }
 
+            $this->self = $this->server["SCRIPT_FILENAME"];
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
-            $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));            
+            $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
         }
     }
 

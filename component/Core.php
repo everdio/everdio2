@@ -84,7 +84,7 @@ namespace Component {
 
         final public function remove(string $parameter): void {
             if ($this->exists($parameter)) {
-                unset ($this->_parameters[$parameter]);
+                unset($this->_parameters[$parameter]);
             }
         }
 
@@ -123,7 +123,7 @@ namespace Component {
 
             return (array) $values;
         }
-        
+
         final public function querystring(array $parameters = []): string {
             return (string) \http_build_query($this->restore($parameters));
         }

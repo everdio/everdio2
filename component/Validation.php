@@ -11,18 +11,17 @@ namespace Component {
         const NORMAL = "NORMAL";
         const STRICT = "STRICT";
 
-        private $_messages = [], $_validated = [], $_validators = [];
-        public $types = [];
+        private $_messages = [], $_validated = [], $_validators = [], $_types;
 
         public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
             $this->setValue($value);
-            
+
             foreach ($validators as $validator) {
                 $key = (string) $validator;
-                
+
                 $this->_validators[$key] = $validator;
                 $this->_messages[$key] = $validator::MESSAGE;
-                $this->types[$key] = $validator::TYPE;
+                $this->_types[$key] = $validator::TYPE;
             }
 
             $this->validate = \strtoupper($validate);
@@ -33,7 +32,7 @@ namespace Component {
         }
 
         public function __isset($type): bool {
-            return (bool) \in_array($type, $this->types);
+            return (bool) \in_array($type, $this->_types);
         }
 
         public function __get(string $validator): \Component\Validator {
@@ -45,11 +44,11 @@ namespace Component {
         }
 
         public function has(array $types): bool {
-            return (bool) \sizeof(\array_intersect($this->types, $types));
+            return (bool) \sizeof(\array_intersect($this->_types, $types));
         }
 
         public function match(array $types): bool {
-            return (bool) (\sizeof(\array_intersect($this->types, $types)) === \sizeof($this->types));
+            return (bool) (\sizeof(\array_intersect($this->_types, $types)) === \sizeof($this->_types));
         }
 
         public function setValue($value): void {

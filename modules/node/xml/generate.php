@@ -1,4 +1,5 @@
 <?php
+
 if ($this instanceof \Component\Core\Controller\Model\Cli) {
     $this->echo(\sprintf("Generating %s .. ", $this->model->namespace), ["cyan"]);
 
@@ -10,8 +11,8 @@ if ($this instanceof \Component\Core\Controller\Model\Cli) {
         $model = new \Modules\Node\Xml\Model;
         $model->store($this->model->restore());
         $model->node = $node;
-        $model->use = "\Modules\Node\Xml";        
-        $model->setup();    
+        $model->use = "\Modules\Node\Xml";
+        $model->setup();
     }
 
     $this->echo("done", ["green"]);

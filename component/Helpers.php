@@ -68,15 +68,15 @@ namespace Component {
         }
 
         public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $lines = [], int $count = 0): string {
-            
-            
+
+
             foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $line) {
                 if (\strlen($line) >= $min && (\strlen($line) + $count) <= $total && \sizeof($this->getWords($line))) {
                     $lines[] = \trim($line, $eol);
                     $count += \strlen($line);
                 }
             }
-            
+
             return (string) \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($lines)))) . $eol;
         }
     }

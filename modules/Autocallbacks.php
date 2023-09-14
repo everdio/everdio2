@@ -13,7 +13,7 @@ namespace Modules {
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                     ] + $_parameters);
         }
-        
+
         public function autoCallbacks(string $parameter, float $time = 0.0001): void {
             if (isset($this->{$parameter})) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {

@@ -24,7 +24,7 @@ namespace Modules {
                 "stream" => new Validation(false, [new Validator\IsBool]),
                 "stop" => new Validation(false, [new Validator\IsString]),
             ]);
-            
+
             $this->store($values);
         }
 

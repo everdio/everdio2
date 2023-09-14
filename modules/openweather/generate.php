@@ -1,7 +1,8 @@
 <?php
+
 if ($this instanceof \Component\Core\Controller\Model\Cli) {
     $this->echo(\sprintf("Generating %s .. ", $this->model->namespace), ["cyan"]);
-    
+
     foreach ($this->api->restore() as $api => $url) {
         $model = new \Modules\OpenWeather\Model;
         $model->store($this->model->restore());
@@ -10,9 +11,9 @@ if ($this instanceof \Component\Core\Controller\Model\Cli) {
         $model->url = $url;
         $model->setup();
     }
-    
-    $this->echo("done", ["green"]);    
-    $this->break(2);    
+
+    $this->echo("done", ["green"]);
+    $this->break(2);
 }
 
 

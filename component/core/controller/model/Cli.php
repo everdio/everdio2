@@ -9,7 +9,7 @@ namespace Component\Core\Controller\Model {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "PWD"])]),
+                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "PWD", "SCRIPT_FILENAME"])]),
                 "execute" => new Validation(false, [new Validator\IsString\IsPath])
                     ] + $_parameters);
         }
@@ -23,8 +23,7 @@ namespace Component\Core\Controller\Model {
         }
 
         final public function echo(string $content, array $styles = ["white", "blackbg"]): void {
-            $output = new \Component\Caller\File\Fopen("php://stdout");
-            $output->puts(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+            (new \Component\Caller\File\Fopen("php://stdout"))->puts(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                 "bold" => 1,
                 "italic" => 3,
                 "underline" => 4,
@@ -57,6 +56,7 @@ namespace Component\Core\Controller\Model {
         }
 
         final public function setup(array $request = [], array $arguments = []): void {
+            $this->self = $this->server["PWD"] . \trim($this->server["SCRIPT_FILENAME"], ".");
             if ($this->server["argc"] >= 2) {
                 $this->execute = $this->server["argv"][1];
                 foreach (\array_slice($this->server["argv"], 2) as $parameters) {

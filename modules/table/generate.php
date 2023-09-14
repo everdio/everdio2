@@ -1,8 +1,9 @@
 <?php
+
 $pdo = new \PDO($this->pdo->dsn, $this->pdo->username, $this->pdo->password);
 
 $stm = $pdo->prepare(\sprintf("SHOW TABLES FROM`%s`", $this->pdo->database));
-$stm->execute();    
+$stm->execute();
 
 foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
     $model = new \Modules\Table\Model;

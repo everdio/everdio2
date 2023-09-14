@@ -12,7 +12,6 @@ namespace Component\Core {
 
         public function __destruct() {
             $this->mapper = $this->__dry();
-
             $file = new Fopen((new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)))))->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php", "w+");
             $file->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "mapper"]));
         }

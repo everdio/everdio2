@@ -13,7 +13,7 @@ namespace Component {
         public function __construct(private string $_call) {
             $this->_call = $_call;
         }
-        
+
         final public function getHandle() {
             return $this->handle;
         }
@@ -21,7 +21,7 @@ namespace Component {
         final public function hasHandle(): bool {
             return (bool) isset($this->handle);
         }
-        
+
         final public function __invoke() {
             return $this->handle;
         }
