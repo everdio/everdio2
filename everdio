@@ -1,5 +1,4 @@
 #!/usr/bin/env php
-
 <?php
 \ini_set("memory_limit", "1536M");
 \date_default_timezone_set("Europe/Amsterdam");
@@ -9,16 +8,38 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-//$env = new \Component\Core\Environment\Linux("/home/evertdf/everdio2/.pool", 86400);
-//$env->priority = 100;
-
-$time = \microtime(true);
-
 $controller = new \Component\Core\Controller\Model\Cli;
-$controller->server = $_SERVER;
-$controller->debug = "_debug";
-$controller->path = __DIR__;
-$controller->setup();
+
+try {
+    if (isset($controller->request->_pid)) {
+        $cache = new \Component\Caller\File\Fopen\Cache($controller->request->_pid);
+        if ($cache->exists() && $cache->lock(\LOCK_EX)) {
+            $controller->import($cache->read());
+            $cache->truncate(0);
+            $controller->dispatch($controller->arguments);
+            $cache->lock(\LOCK_UN);     
+            $cache->delete();
+        }
+    } else {
+        $controller->self = __FILE__;
+        $controller->server = $_SERVER;
+        $controller->debug = "_debug";
+        $controller->path = __DIR__;        
+        $controller->setup();
+        $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
+    }    
+} catch (\Exception $ex) {
+    if (isset($controller->request->{$controller->debug})) {
+        throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
+    }
+    
+    $controller->break();
+    $controller->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
+    $controller->break(2);
+}
+
+/*
+$time = \microtime(true);
 $controller->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
 $controller->break(2);
 
@@ -46,12 +67,11 @@ $controller->echo($controller->dehydrate($controller->request->restore()), ["bol
 $controller->break(2);
 
 try {
-    $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);
+    $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);    
 } catch (\Exception $ex) {
     if (isset($controller->request->{$controller->debug})) {
         throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
     }
-    
     $controller->break();
     $controller->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
     $controller->break();
@@ -61,4 +81,6 @@ $controller->break();
 $controller->echo("Time:\t\t", ["lightgray"]);
 $controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round(\microtime(true) - $time))), ["green"]);
 $controller->break(2);
+ * 
+ */
 exit;

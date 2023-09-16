@@ -13,6 +13,7 @@ namespace Component\Core {
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                "pool" => new Validation(false, [new Validator\IsArray]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
@@ -82,7 +83,8 @@ namespace Component\Core {
         public function execute(string $path) {
             $controller = new $this;
             $controller->store($this->restore($this->reserved));
-            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
+            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));            
+            
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch(\basename($path)));
@@ -95,6 +97,19 @@ namespace Component\Core {
                 }
             }
         }
+        
+        final public function process(string $path): void {
+            $cache = new \Component\Caller\File\Fopen\Cache($this->unique($this->diff(), $path, "crc32"));
+            if (!$cache->exists() && $cache->lock(\LOCK_EX)) {
+                $cache->write($this->parameters($this->diff(["arguments"])));
+                $cache->lock(\LOCK_UN);
+                
+                $this->pool = [$cache->getBasename($cache->getExtension())];
+
+                \exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, $path, $cache->getBasename($cache->getExtension())));                
+            }
+        }
+        
     }
 
 }

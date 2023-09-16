@@ -13,7 +13,7 @@ namespace Component\Caller\File\Fopen {
         }
 
         final public function read() {
-            return \unserialize(parent::read());
+            return \unserialize(parent::read(\filesize($this->file)));
         }
     }
 

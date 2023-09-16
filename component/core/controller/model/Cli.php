@@ -9,13 +9,8 @@ namespace Component\Core\Controller\Model {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "PWD", "SCRIPT_FILENAME"])]),
-                "execute" => new Validation(false, [new Validator\IsString\IsPath])
+                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])])
                     ] + $_parameters);
-        }
-
-        final public function input(): string {
-            return (string) \trim(\fgets(\STDIN));
         }
 
         final public function break(int $breaks = 1): void {
@@ -56,10 +51,8 @@ namespace Component\Core\Controller\Model {
         }
 
         final public function setup(array $request = [], array $arguments = []): void {
-            $this->self = $this->server["PWD"] . \trim($this->server["SCRIPT_FILENAME"], ".");
-            if ($this->server["argc"] >= 2) {
-                $this->execute = $this->server["argv"][1];
-                foreach (\array_slice($this->server["argv"], 2) as $parameters) {
+            if ($this->server["argc"] > 1) {
+                foreach (\array_slice($this->server["argv"], 1) as $parameters) {
                     if (\strpos($parameters, "--") !== false) {
                         $arguments[] = \str_replace("--", "", $parameters);
                     } else {
@@ -69,7 +62,11 @@ namespace Component\Core\Controller\Model {
                 }
 
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
+            } else {
+                throw new \LogicException("Arguments required, nothing to execute");
             }
+            
+            $this->remove("server");
         }
     }
 
