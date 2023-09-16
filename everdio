@@ -9,23 +9,24 @@
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $controller = new \Component\Core\Controller\Model\Cli;
+$controller->self = __FILE__;
+$controller->server = $_SERVER;
+$controller->debug = "_debug";
+$controller->path = __DIR__;        
+$controller->setup();
 
 try {
     if (isset($controller->request->_pid)) {
         $cache = new \Component\Caller\File\Fopen\Cache($controller->request->_pid);
         if ($cache->exists() && $cache->lock(\LOCK_EX)) {
             $controller->import($cache->read());
-            $cache->truncate(0);
             $controller->dispatch($controller->arguments);
-            $cache->lock(\LOCK_UN);     
+            $cache->lock(\LOCK_UN);  
             $cache->delete();
+        } else {
+            throw new \LogicException(\sprintf("Unknown pid %s", $controller->request->_pid));
         }
     } else {
-        $controller->self = __FILE__;
-        $controller->server = $_SERVER;
-        $controller->debug = "_debug";
-        $controller->path = __DIR__;        
-        $controller->setup();
         $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
     }    
 } catch (\Exception $ex) {

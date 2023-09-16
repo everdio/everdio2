@@ -83,8 +83,8 @@ namespace Component\Core {
         public function execute(string $path) {
             $controller = new $this;
             $controller->store($this->restore($this->reserved));
-            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));            
-            
+            $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
+
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch(\basename($path)));
@@ -97,19 +97,23 @@ namespace Component\Core {
                 }
             }
         }
-        
-        final public function process(string $path): void {
-            $cache = new \Component\Caller\File\Fopen\Cache($this->unique($this->diff(), $path, "crc32"));
-            if (!$cache->exists() && $cache->lock(\LOCK_EX)) {
-                $cache->write($this->parameters($this->diff(["arguments"])));
-                $cache->lock(\LOCK_UN);
-                
-                $this->pool = [$cache->getBasename($cache->getExtension())];
 
-                \exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, $path, $cache->getBasename($cache->getExtension())));                
+        final public function process(string $path): void {
+            $pid = $this->unique($this->diff($this->reserved), $path, "crc32");
+            
+            $cache = new \Component\Caller\File\Fopen\Cache($pid);
+            if (!$cache->exists() && $cache->lock(\LOCK_EX)) {
+                $cache->write($this->parameters($this->diff($this->reserved)));
+                $cache->lock(\LOCK_UN);
+
+                $this->pool = [$pid];
+
+                //\exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $pid));
+                \exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $pid));
+            } else {
+                throw new \LogicException(\sprintf("Umable to process %s", $path));
             }
         }
-        
     }
 
 }
