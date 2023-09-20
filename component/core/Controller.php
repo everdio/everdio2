@@ -12,8 +12,9 @@ namespace Component\Core {
                 "self" => new Validation(false, [new Validator\IsString\IsFile]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
+                "task" => new Validation(false, [new Validator\IsString]),
+                "queue" => new Validation(false, [new Validator\IsArray]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                "pool" => new Validation(false, [new Validator\IsArray]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
@@ -98,20 +99,27 @@ namespace Component\Core {
             }
         }
 
+        final public function task(string $task) {
+            $cache = new \Component\Caller\File\Fopen\Cache($task);            
+            if ($cache->exists() && $cache->lock(\LOCK_EX)) {
+                $this->import($cache->read());
+                $cache->truncate(0);
+                $cache->write($this->dispatch($this->arguments));
+                $cache->lock(\LOCK_UN);
+            }
+
+            $cache->delete();
+        }
+
         final public function process(string $path): void {
-            $pid = $this->unique($this->diff($this->reserved), $path, "crc32");
-            
-            $cache = new \Component\Caller\File\Fopen\Cache($pid);
+            $cache = new \Component\Caller\File\Fopen\Cache(\crc32(\microtime()));            
             if (!$cache->exists() && $cache->lock(\LOCK_EX)) {
                 $cache->write($this->parameters($this->diff($this->reserved)));
                 $cache->lock(\LOCK_UN);
 
-                $this->pool = [$pid];
-
-                //\exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $pid));
-                \exec(\sprintf("%s --%s '_pid=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $pid));
-            } else {
-                throw new \LogicException(\sprintf("Umable to process %s", $path));
+                $this->queue = [$cache->getRealPath()];                
+                            
+                \exec(\sprintf("%s --%s '%s=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $this->task, $cache->getRealPath()));                
             }
         }
     }

@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-\ini_set("memory_limit", "1536M");
+\ini_set("memory_limit", "2048M");
 \date_default_timezone_set("Europe/Amsterdam");
 \setlocale(\LC_TIME, "nl_NL.utf8");
 \ini_set('intl.default_locale', 'nl-NL');
@@ -12,31 +12,23 @@ $controller = new \Component\Core\Controller\Model\Cli;
 $controller->self = __FILE__;
 $controller->server = $_SERVER;
 $controller->debug = "_debug";
+$controller->task = "_task";
 $controller->path = __DIR__;        
-$controller->setup();
 
 try {
-    if (isset($controller->request->_pid)) {
-        $cache = new \Component\Caller\File\Fopen\Cache($controller->request->_pid);
-        if ($cache->exists() && $cache->lock(\LOCK_EX)) {
-            $controller->import($cache->read());
-            $controller->dispatch($controller->arguments);
-            $cache->lock(\LOCK_UN);  
-            $cache->delete();
-        } else {
-            throw new \LogicException(\sprintf("Unknown pid %s", $controller->request->_pid));
-        }
+    $controller->setup();
+    
+    if (isset($controller->request->{$controller->task})) {
+        $controller->task($controller->request->{$controller->task});
     } else {
-        $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
+        $controller->echo($controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments));
     }    
 } catch (\Exception $ex) {
     if (isset($controller->request->{$controller->debug})) {
         throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
     }
     
-    $controller->break();
-    $controller->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
-    $controller->break(2);
+    $controller->echo(\sprintf("\n%s\n\n", \ucfirst($ex->getMessage())), ["red", "bold"]);
 }
 
 /*

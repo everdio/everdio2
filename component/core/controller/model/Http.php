@@ -56,8 +56,10 @@ namespace Component\Core\Controller\Model {
          * echo $content to php://output stream
          */
 
-        public function echo(string $content): void {
-            (new \Component\Caller\File\Fopen("php://output"))->puts($content);
+        public function echo(string $content = NULL): void {
+            if ($content) {
+                (new \Component\Caller\File\Fopen("php://output"))->puts($content);
+            }
         }
 
         /*
@@ -69,7 +71,8 @@ namespace Component\Core\Controller\Model {
                 $this->referer = $this->server["HTTP_REFERER"];
             }
 
-            $this->self = $this->server["SCRIPT_FILENAME"];
+            //$this->self = "/home/evertdf/everdio2/everdio";
+            $this->self = $this->server["SCRIPT_FILENAME"];            
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
