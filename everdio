@@ -12,17 +12,21 @@ $controller = new \Component\Core\Controller\Model\Cli;
 $controller->self = __FILE__;
 $controller->server = $_SERVER;
 $controller->debug = "_debug";
-$controller->task = "_task";
+$controller->thread = "_thread";
 $controller->path = __DIR__;        
 
 try {
     $controller->setup();
-    
+    /*
     if (isset($controller->request->{$controller->task})) {
         $controller->task($controller->request->{$controller->task});
     } else {
-        $controller->echo($controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments));
-    }    
+        
+    } 
+     * 
+     */  
+    
+    $controller->echo($controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments));
 } catch (\Exception $ex) {
     if (isset($controller->request->{$controller->debug})) {
         throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);

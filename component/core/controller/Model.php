@@ -15,12 +15,6 @@ namespace Component\Core\Controller {
         abstract public function setup(): void;
 
         /*
-         * A required echo function to output data
-         */
-
-        abstract public function echo(string $content): void;
-
-        /*
          * dispatching the Model if exists
          */
 

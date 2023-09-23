@@ -12,10 +12,10 @@ namespace Component\Core {
                 "self" => new Validation(false, [new Validator\IsString\IsFile]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
-                "task" => new Validation(false, [new Validator\IsString]),
-                "queue" => new Validation(false, [new Validator\IsArray]),
+                "thread" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
+                "queue" => new Validation(false, [new Validator\IsArray]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
@@ -81,8 +81,9 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
 
-        public function execute(string $path) {
+        final public function execute(string $path) {
             $controller = new $this;
+            $controller->reset($controller->reserved);
             $controller->store($this->restore($this->reserved));
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
 
@@ -99,27 +100,25 @@ namespace Component\Core {
             }
         }
 
-        final public function task(string $task) {
-            $cache = new \Component\Caller\File\Fopen\Cache($task);            
-            if ($cache->exists() && $cache->lock(\LOCK_EX)) {
-                $this->import($cache->read());
-                $cache->truncate(0);
-                $cache->write($this->dispatch($this->arguments));
-                $cache->lock(\LOCK_UN);
-            }
+        final public function thread(string $path, bool $queue = true): void {
+            if (isset($this->thread) && isset($this->self)) {
+                $thread = new Thread;
+                $thread->class = $class = "Th" . \substr(\md5(\uniqid(\mt_rand(), true)), 0, 6);
+                $thread->namespace = $namespace = "Threads";
+                $thread->extends = \get_class($this);
+                $thread->parameters = $this->__dry();
+                
+                $file = (string) $thread;
+                
+                unset ($thread);
+                
+                \exec(\sprintf("%s --%s '%s=%s/%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $this->thread, $namespace, $class));
 
-            $cache->delete();
-        }
-
-        final public function process(string $path): void {
-            $cache = new \Component\Caller\File\Fopen\Cache(\crc32(\microtime()));            
-            if (!$cache->exists() && $cache->lock(\LOCK_EX)) {
-                $cache->write($this->parameters($this->diff($this->reserved)));
-                $cache->lock(\LOCK_UN);
-
-                $this->queue = [$cache->getRealPath()];                
-                            
-                \exec(\sprintf("%s --%s '%s=%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $this->task, $cache->getRealPath()));                
+                //\unlink ($file);
+                
+                if ($queue) {
+                    $this->queue = [$file];
+                }
             }
         }
     }

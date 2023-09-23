@@ -20,21 +20,6 @@ namespace Component\Core\Controller\Model {
         }
 
         /*
-         * dispatching a html (template) file if exists and adding to parent dispatch (controller)
-         * if debug is set (true) output is not compressed
-         */
-
-        public function dispatch(string $path): string {
-            $output = (string) parent::dispatch($path) . $this->getHtml($path);
-
-            if (isset($this->request->{$this->debug})) {
-                return (string) $output;
-            }
-
-            return (string) \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output);
-        }
-
-        /*
          * checks if html file exists based on path
          */
 
@@ -50,16 +35,21 @@ namespace Component\Core\Controller\Model {
             if ($this->hasHtml($path)) {
                 return (string) \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
             }
-        }
+        }        
 
         /*
-         * echo $content to php://output stream
+         * dispatching a html (template) file if exists and adding to parent dispatch (controller)
+         * if debug is set (true) output is not compressed
          */
 
-        public function echo(string $content = NULL): void {
-            if ($content) {
-                (new \Component\Caller\File\Fopen("php://output"))->puts($content);
+        public function dispatch(string $path): string {
+            $output = (string) parent::dispatch($path) . $this->getHtml($path);
+
+            if (isset($this->request->{$this->debug})) {
+                return (string) $output;
             }
+
+            return (string) \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output);
         }
 
         /*
@@ -71,8 +61,6 @@ namespace Component\Core\Controller\Model {
                 $this->referer = $this->server["HTTP_REFERER"];
             }
 
-            //$this->self = "/home/evertdf/everdio2/everdio";
-            $this->self = $this->server["SCRIPT_FILENAME"];            
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
@@ -80,6 +68,7 @@ namespace Component\Core\Controller\Model {
             $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
             $this->remove("server");
         }
+
     }
 
 }

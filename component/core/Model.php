@@ -7,13 +7,15 @@ namespace Component\Core {
     trait Model {
 
         public function __toString(): string {
-            return (string) $this->namespace . "\\" . $this->class;
+            return \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace))) . \DIRECTORY_SEPARATOR . $this->class . ".php";
         }
 
         public function __destruct() {
-            $this->mapper = $this->__dry();
-            $file = new Fopen((new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)))))->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php", "w+");
-            $file->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "mapper"]));
+            
+            $this->parameters = $this->__dry();
+            
+            $file = new Fopen((new \Component\Path(\dirname((string) $this)))->getPath() . \DIRECTORY_SEPARATOR . \basename((string) $this), "w+");
+            $file->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "extends", "parameters"]));
         }
     }
 

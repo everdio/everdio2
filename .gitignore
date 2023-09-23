@@ -8,6 +8,8 @@
 *.out
 www/
 .pool/
+.threads/
+threads/
 cache/
 uploads/
 library/

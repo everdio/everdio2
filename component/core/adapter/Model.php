@@ -16,7 +16,7 @@ namespace Component\Core\Adapter {
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),
                 "use" => new Validation(false, [new Validator\IsString]),
-                "mapper" => new Validation(false, [new Validator\IsString])
+                "parameters" => new Validation(false, [new Validator\IsString])
                     ] + $_parameters);
         }
 
