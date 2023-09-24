@@ -16,8 +16,8 @@ namespace Modules\OpenWeather {
                 "lang" => new Validation(false, [new Validator\IsString]),
                 "units" => new Validation("metric", [new Validator\IsString\InArray(["standard", "metric", "imperial"])]),
                 "mode" => new Validation("xml", [new Validator\IsString\InArray(["xml", "json"])]),
-                "lat" => new Validation(false, [new Validator\IsFloat]),
-                "lon" => new Validation(false, [new Validator\IsFloat])
+                "lat" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric]),
+                "lon" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric])
             ]);
 
             $this->use = "\Modules\OpenWeather";

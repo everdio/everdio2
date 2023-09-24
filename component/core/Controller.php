@@ -9,13 +9,12 @@ namespace Component\Core {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "self" => new Validation(false, [new Validator\IsString\IsFile]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "debug" => new Validation(false, [new Validator\IsString]),
-                "thread" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "queue" => new Validation(false, [new Validator\IsArray]),
+                "threads" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
+                "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
@@ -77,6 +76,22 @@ namespace Component\Core {
             return (string) $output;
         }
 
+        final public function thread(string $path, bool $queue = false, string $output = "/dev/null"): void {
+            $model = new Thread;
+            $model->import($this->parameters($this->diff()));
+            $model->arguments = $path;
+            $model->thread = $thread = \sprintf("%s/th%s.php", $this->threads, \substr(\md5(\uniqid(\mt_rand(), true)), 0, 4));
+            $model->extends = \get_class($this);
+            unset($model);
+
+            if ($queue) {
+                $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                $this->queue->{$thread} = $output;
+            }
+
+            \exec(\sprintf("php -f %s > %s &", $thread, $output));
+        }
+
         /*
          * executing this controller by dispatching a path and setting that path as reference for follow ups
          */
@@ -89,35 +104,24 @@ namespace Component\Core {
 
             if (isset($controller->path)) {
                 try {
-                    return $controller->getCallbacks($controller->dispatch(\basename($path)));
+                    $content = $controller->dispatch(\basename($path));
+
+                    while (\sizeof($this->queue->restore())) {
+                        foreach ($this->queue->restore() as $thread => $output) {
+                            if (!\file_exists($thread) && \file_exists($output)) {
+                                $content .= \file_get_contents($output);
+                                $this->queue->remove($thread);
+                            }
+                        }
+                    }
+
+                    return $controller->getCallbacks($content);
                 } catch (\UnexpectedValueException $ex) {
                     throw new \LogicException(\sprintf("invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
                     throw new \LogicException(\sprintf("parameter %s required in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                }
-            }
-        }
-
-        final public function thread(string $path, bool $queue = true): void {
-            if (isset($this->thread) && isset($this->self)) {
-                $thread = new Thread;
-                $thread->class = $class = "Th" . \substr(\md5(\uniqid(\mt_rand(), true)), 0, 6);
-                $thread->namespace = $namespace = "Threads";
-                $thread->extends = \get_class($this);
-                $thread->parameters = $this->__dry();
-                
-                $file = (string) $thread;
-                
-                unset ($thread);
-                
-                \exec(\sprintf("%s --%s '%s=%s/%s' > /dev/null &", $this->self, \str_replace(\dirname($this->self) . \DIRECTORY_SEPARATOR, "", \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path))) . \DIRECTORY_SEPARATOR . \basename($path), $this->thread, $namespace, $class));
-
-                //\unlink ($file);
-                
-                if ($queue) {
-                    $this->queue = [$file];
                 }
             }
         }

@@ -9,75 +9,23 @@
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $controller = new \Component\Core\Controller\Model\Cli;
-$controller->self = __FILE__;
 $controller->server = $_SERVER;
 $controller->debug = "_debug";
-$controller->thread = "_thread";
 $controller->path = __DIR__;        
+$controller->threads = __DIR__ . \DIRECTORY_SEPARATOR . "threads";
 
 try {
     $controller->setup();
-    /*
-    if (isset($controller->request->{$controller->task})) {
-        $controller->task($controller->request->{$controller->task});
-    } else {
-        
-    } 
-     * 
-     */  
-    
-    $controller->echo($controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments));
+    echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
+    $controller->echo(\PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL . \PHP_EOL, ["red", "bold"]);
     if (isset($controller->request->{$controller->debug})) {
-        throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
+        echo $ex->getTraceAsString() . \PHP_EOL;
+        if ($ex->getPrevious()) {
+            echo $ex->getPrevious()->getMessage() . \PHP_EOL;
+            echo $ex->getPrevious()->getTraceAsString() . \PHP_EOL . \PHP_EOL;
+        }
     }
-    
-    $controller->echo(\sprintf("\n%s\n\n", \ucfirst($ex->getMessage())), ["red", "bold"]);
 }
 
-/*
-$time = \microtime(true);
-$controller->echo("Everdio2 CommandLine", ["yellow", "bold", "underline"]);
-$controller->break(2);
-
-if (!isset($controller->execute)) {
-    $controller->echo("Provide a valid execute path ..", ["lightgray", "bold"]);
-    $controller->break(2);
-    exit;
-}
-
-$controller->echo("Timestamp:\t", ["lighgray"]);
-$controller->echo(\date("Y-m-d H:i:s"), ["green"]);
-$controller->break();
-$controller->echo("Execute:\t", ["lighgray"]);
-$controller->echo($controller->execute, ["bold"]);
-$controller->break();
-
-if (isset($controller->arguments)) {
-    $controller->echo("Arguments:\t", ["lighgray"]);
-    $controller->echo($controller->arguments, ["bold"]);
-    $controller->break();
-}
-
-$controller->echo("Request:\t", ["lighgray"]);
-$controller->echo($controller->dehydrate($controller->request->restore()), ["bold"]);
-$controller->break(2);
-
-try {
-    $controller->execute(\DIRECTORY_SEPARATOR . $controller->execute);    
-} catch (\Exception $ex) {
-    if (isset($controller->request->{$controller->debug})) {
-        throw new \RuntimeException(\ucfirst($ex->getMessage()), 0, $ex);
-    }
-    $controller->break();
-    $controller->echo(\ucfirst($ex->getMessage()), ["red", "bold"]);
-    $controller->break();
-}
-
-$controller->break();
-$controller->echo("Time:\t\t", ["lightgray"]);
-$controller->echo(\sprintf("%ss", \gmdate("H:i:s", \round(\microtime(true) - $time))), ["green"]);
-$controller->break(2);
- * 
- */
 exit;

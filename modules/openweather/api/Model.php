@@ -10,8 +10,8 @@ namespace Modules\OpenWeather\Api {
         public function __construct() {
             parent::__construct([
                 "lang" => new Validation(false, [new Validator\IsString]),
-                "lat" => new Validation(false, [new Validator\IsFloat]),
-                "lon" => new Validation(false, [new Validator\IsFloat]),
+                "lat" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric]),
+                "lon" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric]),
                 "api" => new Validation(false, [new Validator\IsString])
             ]);
 

@@ -7,16 +7,19 @@ namespace Component\Core {
 
     class Thread extends \Component\Core {
 
-        use Model;
-
-        public function __construct(array $_parameters = []) {
+        public function __construct() {
             parent::__construct([
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Thread.tpl", [new Validator\IsString\IsFile]),
-                "namespace" => new Validation(false, [new Validator\IsString]),
-                "class" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
+                "thread" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "extends" => new Validation(false, [new Validator\IsString]),
-                "parameters" => new Validation(false, [new Validator\IsString])
-                    ] + $_parameters);
+                "parameters" => new Validation(false, [new Validator\IsString])]);
+        }
+
+        public function __destruct() {            
+            $this->parameters = $this->__dry();
+            
+            $fopen = new \Component\Caller\File\Fopen((new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread), "w+");
+            $fopen->write($this->replace(\file_get_contents($this->model), ["extends", "parameters"]));
         }
     }
 
