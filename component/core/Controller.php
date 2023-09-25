@@ -76,7 +76,7 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $path, bool $queue = false, string $output = "/dev/null"): void {
+        final public function thread(string $path, bool $queue = false, string $output = "/dev/null"): string {
             $model = new Thread;
             $model->import($this->parameters($this->diff()));
             $model->arguments = $path;
@@ -90,6 +90,27 @@ namespace Component\Core {
             }
 
             \exec(\sprintf("php -f %s > %s &", $thread, $output));
+
+            return (string) $thread;
+        }
+
+        final public function queue(array $threads, string $content = ""): string {
+            while (\sizeof($threads)) {
+                foreach ($threads as $key => $thread) {
+                    if (isset($this->queue->{$thread})) {
+                        if (!\file_exists($thread) && \file_exists($this->queue->{$thread})) {
+                            $content .= \file_get_contents($this->queue->{$thread});
+                            \unlink($this->queue->{$thread});
+                            $this->queue->remove($thread);
+                            unset($threads[$key]);
+                        }
+                    } else {
+                        unset($threads[$key]);
+                    }
+                }
+            }
+
+            return (string) $content;
         }
 
         /*
@@ -104,18 +125,7 @@ namespace Component\Core {
 
             if (isset($controller->path)) {
                 try {
-                    $content = $controller->dispatch(\basename($path));
-
-                    while (\sizeof($this->queue->restore())) {
-                        foreach ($this->queue->restore() as $thread => $output) {
-                            if (!\file_exists($thread) && \file_exists($output)) {
-                                $content .= \file_get_contents($output);
-                                $this->queue->remove($thread);
-                            }
-                        }
-                    }
-
-                    return $controller->getCallbacks($content);
+                    return $controller->getCallbacks($controller->dispatch(\basename($path)));
                 } catch (\UnexpectedValueException $ex) {
                     throw new \LogicException(\sprintf("invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
