@@ -22,8 +22,7 @@ namespace Component\Core {
         }
 
         /*
-         * #1 throttles based on socket pid file content (microseconds)
-         * #2 dispatching the Cojtroller if exists!
+         * dispatching the Cojtroller if exists!
          */
 
         public function dispatch(string $path): string {
@@ -94,18 +93,15 @@ namespace Component\Core {
             return (string) $thread;
         }
 
-        final public function queue(array $threads, string $content = ""): string {
-            while (\sizeof($threads)) {
-                foreach ($threads as $key => $thread) {
-                    if (isset($this->queue->{$thread})) {
-                        if (!\file_exists($thread) && \file_exists($this->queue->{$thread})) {
-                            $content .= \file_get_contents($this->queue->{$thread});
-                            \unlink($this->queue->{$thread});
-                            $this->queue->remove($thread);
-                            unset($threads[$key]);
-                        }
-                    } else {
-                        unset($threads[$key]);
+        final public function queue(array $threads, string $content = NULL) {
+            $queue = \array_intersect_key($this->queue->restore(), \array_flip($threads));
+            
+            while (\sizeof($queue)) {
+                foreach ($queue as $input => $output) {
+                    if (!\file_exists($input) && \is_file($output)) {
+                        $content .= \file_get_contents($output);
+                        \unlink($output);                            
+                        unset ($queue[$input]);
                     }
                 }
             }

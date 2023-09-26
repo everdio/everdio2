@@ -35,7 +35,7 @@ namespace Component\Core\Controller\Model {
             if ($this->hasHtml($path)) {
                 return (string) \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
             }
-        }        
+        }
 
         /*
          * dispatching a html (template) file if exists and adding to parent dispatch (controller)
