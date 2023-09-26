@@ -8,21 +8,17 @@ namespace Component\Caller\File\Fopen {
             parent::__construct(\sprintf("%s.ini", $path), $mode);
         }
 
-        private function _prepare($value): string {
-            return (string) \addcslashes(\trim(\trim($this->dehydrate($value), "'")), "\"");
-        }
-
         final public function writeSection(string $section) {
             parent::write(\sprintf("[%s]\n", $section));
         }
 
         final public function writePair(string $parameter, $value) {
-            parent::write(\sprintf("%s = \"%s\";\n", $parameter, $this->_prepare($value)));
+            parent::write(\sprintf("%s = %s;\n", $parameter, $this->dehydrate($value)));
         }
 
         final public function writeKeyPair(string|int $section, array $values) {
             foreach ($values as $key => $value) {
-                parent::write(\sprintf("%s[%s] = \"%s\";\n", $section, $key, $this->_prepare($value)));
+                parent::write(\sprintf("%s[%s] = %s;\n", $section, $key, $this->dehydrate($value)));
             }
         }
 
