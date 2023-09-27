@@ -12,7 +12,7 @@ $controller = new \Component\Core\Controller\Model\Cli;
 $controller->server = $_SERVER;
 $controller->debug = "_debug";
 $controller->path = __DIR__;        
-$controller->threads = __DIR__ . \DIRECTORY_SEPARATOR . "threads";
+$controller->pool = __DIR__ . \DIRECTORY_SEPARATOR . "threads";
 
 try {
     $controller->setup();

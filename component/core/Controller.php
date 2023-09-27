@@ -13,7 +13,7 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "threads" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
+                "pool" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
@@ -79,7 +79,7 @@ namespace Component\Core {
             $model = new Thread;
             $model->import($this->parameters($this->diff()));
             $model->arguments = $path;
-            $model->thread = $thread = \sprintf("%s/th%s.php", $this->threads, \substr(\md5(\uniqid(\mt_rand(), true)), 0, 4));
+            $model->thread = $thread = \sprintf("%s/th%s.php", $this->pool, \substr(\md5(\uniqid(\mt_rand(), true)), 0, 4));
             $model->extends = \get_class($this);
             unset($model);
 
@@ -93,8 +93,8 @@ namespace Component\Core {
             return (string) $thread;
         }
 
-        final public function queue(array $threads, string $content = NULL) {
-            $queue = \array_intersect_key($this->queue->restore(), \array_flip($threads));
+        final public function queue(array $pool, string $content = NULL) {
+            $queue = \array_intersect_key($this->queue->restore(), \array_flip($pool));
             
             while (\sizeof($queue)) {
                 foreach ($queue as $input => $output) {

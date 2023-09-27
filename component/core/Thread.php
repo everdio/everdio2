@@ -17,6 +17,7 @@ namespace Component\Core {
 
         public function __destruct() {            
             $this->parameters = $this->__dry();
+            
             $fopen = new \Component\Caller\File\Fopen((new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread), "w+");
             $fopen->write($this->replace(\file_get_contents($this->model), ["extends", "parameters"]));
         }
