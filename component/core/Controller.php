@@ -75,17 +75,16 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $path, bool $queue = false, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, string $output = "/dev/null"): string {
             $model = new Thread;
             $model->import($this->parameters($this->diff()));
-            $model->arguments = $path;
+            $model->callback = $callback;
             $model->thread = $thread = \sprintf("%s/th%s.php", $this->pool, \substr(\md5(\uniqid(\mt_rand(), true)), 0, 4));
             $model->extends = \get_class($this);
             unset($model);
 
             if ($queue) {
-                $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-                $this->queue->{$thread} = $output;
+                $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
             \exec(\sprintf("php -f %s > %s &", $thread, $output));
@@ -94,16 +93,18 @@ namespace Component\Core {
         }
 
         final public function queue(array $pool, string $content = NULL) {
-            $queue = \array_intersect_key($this->queue->restore(), \array_flip($pool));
+            $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
             
-            while (\sizeof($queue)) {
-                foreach ($queue as $input => $output) {
+            while (\sizeof($threads)) {
+                foreach ($threads as $input => $output) {
                     if (!\file_exists($input) && \is_file($output)) {
                         $content .= \file_get_contents($output);
                         \unlink($output);                            
-                        unset ($queue[$input]);
+                        unset ($threads[$input]);
                     }
                 }
+                
+                \usleep(10000);
             }
 
             return (string) $content;
