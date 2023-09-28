@@ -124,11 +124,11 @@ namespace Component {
             return (array) $values;
         }
 
-        final public function querystring(array $parameters = []): string {
+        public function querystring(array $parameters = []): string {
             return (string) \http_build_query($this->restore($parameters));
         }
 
-        final public function reset(array $parameters = []): void {
+        public function reset(array $parameters = []): void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
 

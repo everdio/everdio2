@@ -3,6 +3,13 @@
 namespace Component\Core\Adapter {
 
     abstract class Mapper extends \Component\Core\Adapter {
+        final public function reset(array $parameters = []): void {
+            if (isset($this->mapping)) {
+                $parameters = \array_merge($parameters, $this->mapping);
+            }
+            
+            parent::reset($parameters);
+        }
 
         final public function hasField(string $field): bool {
             return (bool) (isset($this->mapping) && \array_key_exists($field, $this->mapping));

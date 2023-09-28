@@ -104,14 +104,14 @@ namespace Component\Core {
                     }
                 }
                 
-                \usleep(10000);
+                \usleep(1000);
             }
 
             return (string) $content;
         }
 
         /*
-         * executing this controller by dispatching a path and setting that path as reference for follow ups
+         * executing this controller by dispatching a path and setting that path as a new reference for dispatches
          */
 
         final public function execute(string $path) {

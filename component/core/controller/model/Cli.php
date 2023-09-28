@@ -67,8 +67,6 @@ namespace Component\Core\Controller\Model {
             } else {
                 throw new \LogicException("Arguments required, nothing to execute");
             }
-
-            $this->remove("server");
         }
     }
 
