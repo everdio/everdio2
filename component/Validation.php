@@ -17,11 +17,13 @@ namespace Component {
             $this->setValue($value);
 
             foreach ($validators as $validator) {
-                $key = (string) $validator;
+                if ($validator instanceof Validator) {
+                    $key = \get_class($validator);
 
-                $this->_validators[$key] = $validator;
-                $this->_messages[$key] = $validator::MESSAGE;
-                $this->_types[$key] = $validator::TYPE;
+                    $this->_validators[$key] = $validator;
+                    $this->_messages[$key] = $validator::MESSAGE;
+                    $this->_types[$key] = $validator::TYPE;
+                }
             }
 
             $this->validate = \strtoupper($validate);

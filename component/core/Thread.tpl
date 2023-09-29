@@ -7,7 +7,7 @@ $controller->import({{parameters}});
 try {
     echo $controller->callback("{{callback}}");
 } catch (\Exception | \ErrorException | \TypeError | \ParseError | \Error $ex) {
-    echo \ucfirst($ex->getMessage()) . \PHP_EOL;
+    echo \PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL;
     if (isset($controller->request->{$controller->debug})) {
         echo $ex->getTraceAsString() . \PHP_EOL;
         if ($ex->getPrevious()) {
