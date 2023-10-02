@@ -6,15 +6,12 @@ $controller->import({{parameters}});
 
 try {
     echo $controller->callback("{{callback}}");
-} catch (\Exception | \ErrorException | \TypeError | \ParseError | \Error $ex) {
-    echo \PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL;
-    if (isset($controller->request->{$controller->debug})) {
-        echo $ex->getTraceAsString() . \PHP_EOL;
-        if ($ex->getPrevious()) {
-            echo $ex->getPrevious()->getMessage() . \PHP_EOL;
-            echo $ex->getPrevious()->getTraceAsString();
-        }        
-    }
+} catch (\UnexpectedValueException $ex) {
+    echo \sprintf("Invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()) . \PHP_EOL;
+} catch (\InvalidArgumentException $ex) {
+    echo \sprintf("Parameter %s required in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()) . \PHP_EOL;
+} catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
+    echo \sprintf("%s in %s (%s)", \ucfirst($ex->getMessage()), $ex->getFile(), $ex->getLine()) . \PHP_EOL;
 }
 
 \unlink(__FILE__);
