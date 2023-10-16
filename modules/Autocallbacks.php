@@ -14,13 +14,17 @@ namespace Modules {
                     ] + $_parameters);
         }
 
-        public function autoCallbacks(string $parameter, float $time = 0.0001): void {
+        public function autoCallbacks(string $parameter): void {
             if (isset($this->{$parameter})) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->{$this->_library}->{$mapper})) {
                         if (($finder = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {
-                                try {
+                                if (isset($this->debug) && isset($this->request->{$this->debug})) {
+                                    echo "<!-- " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
+                                }
+
+                                try {                                   
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
@@ -49,10 +53,6 @@ namespace Modules {
                                         }
                                     } else {
                                         $finder->callback($this->getCallbacks($callback));
-                                    }
-
-                                    if (isset($this->debug) && isset($this->request->{$this->debug})) {
-                                        echo "<!-- " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
                                     }
                                 } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
                                     throw new \LogicException(\sprintf("%s/%s/%s/%s: %s", $parameter, $mapper, $label, \trim($callback, "{{}}"), $ex->getMessage()), 0, $ex);
