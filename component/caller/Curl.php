@@ -43,7 +43,7 @@ namespace Component\Caller {
 
         public function execute() {
             if (($response = $this->exec()) === false) {
-                throw new \RuntimeException($this->error());
+                throw new \LogicException($this->error());
             }
 
             return (string) \trim($response);

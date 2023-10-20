@@ -19,12 +19,13 @@ namespace Component {
             }
         }
 
-        public function delete(array $extensions = []): void {
+        public function delete(array $extensions): void {
             while ($this->valid()) {
-                if ($this->isFile() && \in_array($this->getExtension(), $extensions)) {
+                if ($this->isFile() && \in_array(\strtolower($this->getExtension()), $extensions)) {
                     \unlink ($this->getRealPath());
                 } elseif ($this->isDir()) {
                     (new Path($this->getRealPath()))->delete($extensions);
+                    \rmdir($this->getRealPath());
                 }
             }
         }
