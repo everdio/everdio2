@@ -19,14 +19,18 @@ namespace Component {
             }
         }
 
-        public function delete(array $extensions): void {
+        public function delete(array $extensions, bool $recursive = false): void {
             while ($this->valid()) {
-                if ($this->isFile() && \in_array(\strtolower($this->getExtension()), $extensions)) {
+                if (!$this->isDir() && $this->isFile() && \in_array(\strtolower($this->getExtension()), $extensions)) {
                     \unlink ($this->getRealPath());
-                } elseif ($this->isDir()) {
+                } elseif ($recursive && $this->isDir()) {
                     (new Path($this->getRealPath()))->delete($extensions);
-                    \rmdir($this->getRealPath());
+                    if (!\sizeof(\glob($this->getRealPath()))) {
+                        \rmdir($this->getRealPath());
+                    }
                 }
+                
+                $this->next();
             }
         }
     }

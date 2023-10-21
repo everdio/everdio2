@@ -46,11 +46,11 @@ namespace Component {
             throw new \InvalidArgumentException($parameter);
         }
 
-        final public function __isset(string $parameter): bool {
+        public function __isset(string $parameter): bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
         }
 
-        final public function __unset(string $parameter) {
+        public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }

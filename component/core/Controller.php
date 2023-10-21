@@ -79,7 +79,7 @@ namespace Component\Core {
             $model = new Thread;
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
-            $model->thread = $thread = \sprintf("%s/th%s.php", $this->pool, \substr(\md5(\uniqid(\mt_rand(), true)), 0, 4));
+            $model->thread = $thread = \sprintf("%s/th_%s.php", $this->pool, \crc32($this->unique($this->diff())));
             $model->extends = \get_class($this);
             unset($model);
 
