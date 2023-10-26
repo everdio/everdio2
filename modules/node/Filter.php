@@ -6,7 +6,7 @@ namespace Modules\Node {
 
         public function __construct(string $xpath, array $validations = [], string $operator = "and", array $xparts = []) {
             foreach ($validations as $validation) {
-                if (($validation instanceof \Component\Validation && $validation->isValid())) {
+                if ($validation instanceof \Component\Validation && $validation->isValid()) {
                     $xparts[] = $validation->execute();
                 }
             }

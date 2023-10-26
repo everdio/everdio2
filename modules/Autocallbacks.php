@@ -20,10 +20,6 @@ namespace Modules {
                     if (isset($this->{$this->_library}->{$mapper})) {
                         if (($finder = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {
-                                if (isset($this->debug) && isset($this->request->{$this->debug})) {
-                                    echo "<!-- " . $parameter . "/" . $mapper . "[" . $label . "]" . "=" . \str_replace(["{{", "}}"], false, $callback) . "-->" . \PHP_EOL;
-                                }
-
                                 try {                                   
                                     if (\is_string($label)) {
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
@@ -54,7 +50,7 @@ namespace Modules {
                                     } else {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
-                                } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
+                                } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {                                    
                                     throw new \LogicException(\sprintf("%s/%s/%s/%s: %s", $parameter, $mapper, $label, \trim($callback, "{{}}"), $ex->getMessage()), 0, $ex);
                                 }
                             }

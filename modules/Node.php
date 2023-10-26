@@ -8,11 +8,9 @@ namespace Modules {
             if (isset($this->index) && isset($this->parent)) {
                 return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);
             } elseif (isset($this->parent)) {
-                $filter = new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]);
-                return (string) \sprintf("(%s)", $filter->execute());
+                return (string) \sprintf("(%s)", (new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]))->execute());
             } else {
-                $find = new Node\Find($this->path, \array_merge($validations, [new Node\Filter($this->path, [new Node\Condition($this)])]));
-                return (string) $find->execute();
+                return (string) (new Node\Find($this->path, $validations))->execute();
             }
         }
 
@@ -29,26 +27,20 @@ namespace Modules {
         }
 
         public function count(array $validations = [], string $query = null): int {
-            return (int) $this->evaluate($this->_prepare($validations) . $query);
+            return (int) $this->evaluate($this->_prepare(\array_merge($validations, [new Node\Via($this)])) . $query);
         }
 
         public function find(array $validations = [], string $query = null): self {
-            if (($node = $this->query($this->_prepare($validations) . $query)->item(0))) {
-                $map = new Node\Map($this, $node);
-                return (object) $map->execute();
+            if (($node = $this->query($this->_prepare(\array_merge($validations, [new Node\Via($this)])) . $query)->item(0))) {
+                return (object) (new Node\Map($this, $node))->execute();
             }
 
             return (object) $this;
         }
 
-        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = null, array $records = []): array {
-            if ($limit) {
-                $validations[] = new Node\Position($this->path, $position, $limit);
-            }
-
-            foreach ($this->query($this->_prepare($validations) . $query) as $index => $node) {
-                $map = new Node\Map(new $this, $node);
-                $records[$index + 1] = $map->execute()->restore(["index", "parent"] + $this->mapping);
+        public function findAll(array $validations = [], array $orderby = [], int $limit = 0, int $position = 0, string $query = null, array $records = []): array {
+            foreach ($this->query($this->_prepare(\array_merge($validations, ($limit ? [new Node\Via($this, [new Node\Position($this->path, $limit, $position)])] : [new Node\Via($this)]))) . $query) as $index => $node) {
+                $records[$index + 1] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent"] + $this->mapping);
             }
 
             if (\sizeof($orderby)) {
@@ -73,11 +65,7 @@ namespace Modules {
                 $cdata = $this->{$this->label};
             }
 
-            $create = new Node\Create($this, $cdata);
-            $save = new Node\Save($this, $create->execute());
-            $map = new Node\Map($this, $save->execute());
-
-            return (object) $map->execute();
+            return (object) (new Node\Map($this, (new Node\Save($this, (new Node\Create($this, $cdata))->execute()))->execute()))->execute();
         }
 
         public function delete(): self {
@@ -88,7 +76,7 @@ namespace Modules {
                 unset($this->index);
             } elseif (isset($this->mapping)) {
                 foreach ($this->findAll() as $row) {
-                    $mapper = new $this($row);
+                    $mapper = new self($row);
                     $mapper->delete();
                 }
             }
