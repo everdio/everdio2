@@ -75,39 +75,39 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $callback, bool $queue = false, string $output = "/dev/null"): string {
-            $model = new Thread;
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], string $output = "/dev/null"): string {
+            $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
-            $model->thread = $thread = \sprintf("%s/th_%s.php", $this->pool, \crc32($this->unique($this->diff())));
+            $model->thread = $thread = \sprintf("%s/%s.php", $this->pool, \crc32($this->unique($this->diff())));
             $model->extends = \get_class($this);
             unset($model);
 
             if ($queue) {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-            }
+            }            
 
             \exec(\sprintf("php -f %s > %s &", $thread, $output));
 
             return (string) $thread;
         }
 
-        final public function queue(array $pool, string $content = NULL) {
+        final public function queue(array $pool, array $output = []) {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
-            
+
             while (\sizeof($threads)) {
-                foreach ($threads as $input => $output) {
-                    if (!\file_exists($input) && \is_file($output)) {
-                        $content .= \file_get_contents($output);
-                        \unlink($output);                            
-                        unset ($threads[$input]);
+                foreach ($threads as $thread => $file) {
+                    if (!\file_exists($thread) && \is_file($file)) {
+                        $output[] = \file_get_contents($file);
+                        \unlink($file);
+                        unset($threads[$thread]);
                     }
                 }
-                
+
                 \usleep(1000);
             }
 
-            return (string) $content;
+            return (array) $output;
         }
 
         /*
