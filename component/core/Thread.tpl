@@ -1,4 +1,18 @@
 <?php
+declare(ticks = 1);
+
+\pcntl_signal(\SIGINT, "shutdown");  
+\pcntl_signal(\SIGHUP, "shutdown");  
+\pcntl_signal(\SIGTERM, "shutdown"); 
+
+function shutdown()  { 
+    if (\is_file(__FILE__)) {
+        \unlink(__FILE__);
+    }
+}
+
+\register_shutdown_function("shutdown");
+
 include_once(__DIR__ . "/../everdio.php");
 
 $controller = new {{extends}};
@@ -16,4 +30,4 @@ try {
     echo \sprintf("%s: %s in %s (%s)", \get_class($ex), \ucfirst($ex->getMessage()), $ex->getFile(), $ex->getLine()) . \PHP_EOL;
 }
 
-\unlink(__FILE__);
+exit;

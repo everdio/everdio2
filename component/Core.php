@@ -151,8 +151,8 @@ namespace Component {
 
             return (string) $content;
         }
-        
-        final public function import(array $parameters):void {
+
+        final public function import(array $parameters): void {
             foreach ($parameters as $parameter => $validation) {
                 if ($validation instanceof \Component\Validation) {
                     $this->addParameter($parameter, $validation, true);

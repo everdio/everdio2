@@ -100,11 +100,11 @@ namespace Component\Core {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
                         \unlink($file);
-                        unset($threads[$thread]);
+                        unset ($threads[$thread]);
                     }
                 }
-
-                \usleep(1000);
+                
+                \usleep(10000);
             }
 
             return (array) $output;

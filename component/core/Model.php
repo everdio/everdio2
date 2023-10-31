@@ -14,7 +14,7 @@ namespace Component\Core {
 
             $file = (string) $this;
             
-            $fopen = new Fopen((new \Component\Path(\dirname($file)))->getPath() . \DIRECTORY_SEPARATOR . \basename($file), "w+");
+            $fopen = new Fopen((new \Component\Path(\dirname($file)))->getPath() . \DIRECTORY_SEPARATOR . \basename($file), "w");
             $fopen->write($this->replace(\file_get_contents($this->model), ["namespace", "class", "use", "extends", "parameters"]));
         }
     }
