@@ -9,16 +9,15 @@ namespace Modules {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "_library" => new Validation(false, [new Validator\IsString]),
                 "_controller" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                     ] + $_parameters);
         }
 
         public function autoCallbacks(string $parameter): void {
-            if (isset($this->{$parameter})) {
+            if (isset($this->{$parameter}) && isset($this->_library)) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
-                    if (isset($this->{$this->_library}->{$mapper})) {
-                        if (($finder = ($this->{$this->_library}->{$mapper} === \get_class($this) ? $this : new $this->{$this->_library}->{$mapper}))) {
+                    if (isset($this->_library->{$mapper})) {
+                        if (($finder = ($this->_library->{$mapper} === \get_class($this) ? $this : new $this->_library->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {
                                 try {
                                     if (\is_string($label)) {

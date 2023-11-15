@@ -75,7 +75,7 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, array $_parameters = [], string $_output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
@@ -87,7 +87,7 @@ namespace Component\Core {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }            
 
-            \exec(\sprintf("php -f %s > %s &", $thread, $output));
+            \exec(\sprintf("sleep %s; php -f %s > %s &", $sleep, $thread, $output));
 
             return (string) $thread;
         }
@@ -98,7 +98,10 @@ namespace Component\Core {
             while (\sizeof($threads)) {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
-                        $output[] = \file_get_contents($file);
+                        if (($contents = \file_get_contents($file))) {
+                            $output[] = $contents;
+                        }
+                        
                         \unlink($file);
                         unset ($threads[$thread]);
                     }
