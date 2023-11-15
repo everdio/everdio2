@@ -107,7 +107,7 @@ namespace Component\Core {
                     }
                 }
                 
-                \usleep(10000);
+                \usleep(100);
             }
 
             return (array) $output;

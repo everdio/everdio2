@@ -22,12 +22,12 @@ namespace Modules {
             return (object) $this->_xpath()->query($query);
         }
 
-        public function evaluate(string $query): int {
-            return (int) $this->_xpath()->evaluate("count" . $query);
+        public function evaluate(string $query, string $function): int {
+            return (int) $this->_xpath()->evaluate($function . $query);
         }
 
         public function count(array $validations = [], string $query = null): int {
-            return (int) $this->evaluate($this->_prepare(\array_merge($validations, [new Node\Via($this)])) . $query);
+            return (int) $this->evaluate($this->_prepare(\array_merge($validations, [new Node\Via($this)])) . $query, "count");
         }
 
         public function find(array $validations = [], string $query = null): self {

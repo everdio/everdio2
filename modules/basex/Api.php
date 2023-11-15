@@ -25,17 +25,17 @@ namespace Modules\BaseX {
             return (object) $xpath->query(\sprintf("//%s/*", $api->root));
         }
 
-        public function evaluate(string $query): int {
+        public function evaluate(string $query, string $function): int {
             $api = new $this->api;
             foreach ($api::$_queries as $_query => $dom) {
                 $fragment = new \Modules\Node\Fragment($_query, $query);
                 if ($fragment->isValid()) {
                     $xpath = new \DOMXpath($dom);
-                    return (int) $xpath->evaluate("count" . $fragment->execute());
+                    return (int) $xpath->evaluate($function . $fragment->execute());
                 }
             }
 
-            return (int) $api->getResponse("count" . $query);
+            return (int) $api->getResponse($function . $query);
         }
     }
 
