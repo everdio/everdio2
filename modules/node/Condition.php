@@ -6,7 +6,7 @@ namespace Modules\Node {
 
     final class Condition extends \Component\Validation {
 
-        public function __construct(\Component\Core\Adapter\Mapper $mapper, string $operator = "and", string $expression = "=", string $match = "text()", array $key = [], array $conditions = []) {
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, string $operator = "and", string $expression = "=", array $key = [], array $conditions = []) {
             if (isset($mapper->index) && preg_match_all("/\[(\d+)\]/", $mapper->index, $key)) {
                 parent::__construct($key[1][0], [new Validator\IsNumeric]);
             } else {
@@ -22,8 +22,12 @@ namespace Modules\Node {
                     }
                 }
 
-                if (isset($mapper->{$mapper->label})) {
-                    $conditions[$mapper->label] = \sprintf((\is_numeric($mapper->{$mapper->label}) ? "%s%s%s" : "%s%s\"%s\""), $match, $expression, \html_entity_decode($mapper->{$mapper->label}, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
+                if (isset($mapper->{$mapper->label}) && ($value = $mapper->{$mapper->label})) {
+                    if (\is_numeric($value)) {
+                        $conditions[$mapper->label] = \sprintf("number()%s%s", $expression, $value);
+                    } else {
+                        $conditions[$mapper->label] = \sprintf("text()%s\"%s\"", $expression, \html_entity_decode($value, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
+                    }
                 }
 
                 if (\sizeof($conditions)) {
