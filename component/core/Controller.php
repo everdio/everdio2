@@ -75,7 +75,7 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, array $_parameters = [], string $_output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0.1, array $_parameters = [], string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
