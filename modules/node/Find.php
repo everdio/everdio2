@@ -4,7 +4,7 @@ namespace Modules\Node {
 
     final class Find extends \Component\Validation {
 
-        public function __construct(string $xpath, array $validations = [], string $wrap = "(%s)", string $operator = "and") {
+        public function __construct(string $xpath, array $validations = [], string $wrap = "(%s)") {
             $xparts = $parts = \explode(\DIRECTORY_SEPARATOR, $this->clean($xpath));
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {
@@ -19,7 +19,7 @@ namespace Modules\Node {
                 }
             }
     
-            parent::__construct(\sprintf($wrap, \str_replace("][", \sprintf(" %s ", $operator), \implode(\DIRECTORY_SEPARATOR, $xparts))), [new \Component\Validator\IsString]);
+            parent::__construct(\sprintf($wrap, \implode(\DIRECTORY_SEPARATOR, $xparts)), [new \Component\Validator\IsString]);
         }
         
         public function clean(string $xpath): string {

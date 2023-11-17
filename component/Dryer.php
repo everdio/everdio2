@@ -5,8 +5,10 @@ namespace Component {
     trait Dryer {
 
         public function dehydrate($data, array $array = []): string {
-            if (\is_numeric($data) || \is_integer($data)) {
+            if (\is_integer($data)) {
                 return (string) $data;
+            } elseif (\is_numeric($data)) {
+                return (string) \sprintf("\"%s\"", $data);
             } elseif (\is_bool($data)) {
                 return (string) ($data === true ? "true" : "false");
             } elseif (\is_string($data)) {
