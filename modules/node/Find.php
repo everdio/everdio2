@@ -13,13 +13,15 @@ namespace Modules\Node {
                         if (!\sizeof(\array_diff($fparts, $parts))) {
                             $xparts[$last] .= $filter;
                         } elseif (\sizeof(\array_diff($fparts, $parts))) {
-                            $xparts[$last] .= \sprintf("[./%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
+                            $xparts[$last] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
                         }
                     }
                 }
             }
     
             parent::__construct(\sprintf($wrap, \implode(\DIRECTORY_SEPARATOR, $xparts)), [new \Component\Validator\IsString]);
+            //parent::__construct(\sprintf($wrap, \str_replace("][", \sprintf(" %s ", $operator), \implode(\DIRECTORY_SEPARATOR, $xparts))), [new \Component\Validator\IsString]);
+            
         }
         
         public function clean(string $xpath): string {

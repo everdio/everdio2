@@ -76,6 +76,8 @@ namespace Component\Core {
         }
 
         final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, array $_parameters = [], string $output = "/dev/null"): string {
+            $time = \microtime(true);
+            
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
@@ -88,11 +90,11 @@ namespace Component\Core {
             }            
 
             \exec(\sprintf("sleep %s; php -f %s > %s &", $sleep, $thread, $output));
-
+            
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = []) {
+        final public function queue(array $pool, int $usleep = 10000, array $output = []) {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
             while (\sizeof($threads)) {
@@ -107,7 +109,7 @@ namespace Component\Core {
                     }
                 }
                 
-                \usleep(1000);
+                \usleep($usleep);
             }
 
             return (array) $output;
