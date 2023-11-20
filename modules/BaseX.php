@@ -16,8 +16,7 @@ namespace Modules {
 
         final public function getResponse(string $query): string {
             $this->setopt_array([
-                \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query),
-                \CURLOPT_CUSTOMREQUEST => "GET"]);
+                \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query)]);
             return (string) $this->execute();
         }
 
