@@ -75,9 +75,7 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, array $_parameters = [], string $output = "/dev/null"): string {
-            $time = \microtime(true);
-            
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0.025, string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
@@ -87,14 +85,14 @@ namespace Component\Core {
 
             if ($queue) {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-            }            
+            }
 
             \exec(\sprintf("sleep %s; php -f %s > %s &", $sleep, $thread, $output));
-            
+
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = [], int $usleep = 10000) {
+        final public function queue(array $pool, array $output = [], int $usleep = 1000) {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
             while (\sizeof($threads)) {
@@ -103,12 +101,12 @@ namespace Component\Core {
                         if (($contents = \file_get_contents($file))) {
                             $output[] = $contents;
                         }
-                        
+
                         \unlink($file);
-                        unset ($threads[$thread]);
+                        unset($threads[$thread]);
                     }
                 }
-                
+
                 \usleep($usleep);
             }
 
