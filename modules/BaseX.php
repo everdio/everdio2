@@ -15,9 +15,16 @@ namespace Modules {
         }
 
         final public function getResponse(string $query): string {
+            $time = \microtime(true);
+            
             $this->setopt_array([
                 \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query)]);
-            return (string) $this->execute();
+            
+            $response = $this->execute();
+            
+            \file_put_contents("basex.log", \sprintf("%s\t%s\t%s\n", \date("Y-m-d H:i:s"), \round(\microtime(true) - $time, 5), $query), \FILE_APPEND);
+            
+            return (string) $response;
         }
 
         final public function getDOMDocument(string $query): \DOMDocument {
