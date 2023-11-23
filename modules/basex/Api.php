@@ -16,26 +16,24 @@ namespace Modules\BaseX {
             foreach ($api::$_queries as $_query => $dom) {
                 $fragment = new \Modules\Node\Fragment($_query, $query);
                 if ($fragment->isValid()) {
-                    $xpath = new \DOMXpath($dom);
-                    return (object) $xpath->query($fragment->execute());
+                    return (object) $this->xpath($dom)->query($fragment->execute());
                 }
             }
+            
             $api::$_queries[$query] = $api->getDOMDocument($query);
-            $xpath = new \DOMXPath($api::$_queries[$query]);
-            return (object) $xpath->query(\sprintf("//%s/*", $api->root));
+            return (object) $this->xpath($api::$_queries[$query])->query(\sprintf("//%s/*", $api->root));
         }
 
-        public function evaluate(string $query, string $function): int {
+        public function evaluate(string $query, string $function): int|float|string {
             $api = new $this->api;
             foreach ($api::$_queries as $_query => $dom) {
                 $fragment = new \Modules\Node\Fragment($_query, $query);
                 if ($fragment->isValid()) {
-                    $xpath = new \DOMXpath($dom);
-                    return (int) $xpath->evaluate($function . $fragment->execute());
+                    return (int) $this->xpath($dom)->evaluate($function . $fragment->execute());
                 }
             }
 
-            return (int) $api->getResponse($function . $query);
+            return $api->getResponse($function . $query);
         }
     }
 
