@@ -12,7 +12,7 @@ namespace Component\Caller {
 
             $this->handle = $this->open($this->dir);
         }
-
+        
         public function __destruct() {
             $this->close();
         }
