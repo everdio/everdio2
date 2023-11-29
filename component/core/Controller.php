@@ -75,7 +75,7 @@ namespace Component\Core {
             return (string) $output;
         }
 
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0.01, string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
@@ -92,7 +92,7 @@ namespace Component\Core {
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = [], int $usleep = 100) {
+        final public function queue(array $pool, array $output = [], int $usleep = 1000) {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
             while (\sizeof($threads)) {
