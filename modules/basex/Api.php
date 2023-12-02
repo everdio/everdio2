@@ -19,7 +19,7 @@ namespace Modules\BaseX {
                     return (object) $this->xpath($dom)->query($fragment->execute());
                 }
             }
-            
+
             $api::$_queries[$query] = $api->getDOMDocument($query);
             return (object) $this->xpath($api::$_queries[$query])->query(\sprintf("//%s/*", $api->root));
         }

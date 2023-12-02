@@ -19,8 +19,6 @@ namespace Modules\BaseX {
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
             ]);
-
-            $this->use = "\Modules\BaseX";
         }
 
         public function setup(): void {
@@ -31,6 +29,7 @@ namespace Modules\BaseX {
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->use = "\Modules\BaseX\Api";
                 $model->adapter = $this->adapter;
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);

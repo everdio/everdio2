@@ -78,7 +78,7 @@ namespace Component {
                 return $this->value;
             }
 
-            throw new \ValueError(sprintf("%s with %s (%s)", $this->substring($this->dehydrate($this->value), 0, 150), \implode(", ", \array_intersect_key($this->_messages, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
+            throw new \ValueError(\sprintf("%s with %s (%s)", $this->dehydrate($this->value), \implode(", ", \array_intersect_key($this->_messages, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
         }
 
         public function __dry(array $validators = []): string {

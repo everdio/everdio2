@@ -11,23 +11,16 @@ namespace Modules {
             $curl->setopt_array([
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC,
                 \CURLOPT_USERPWD => $this->username . ":" . $this->password]);
+            
             return (object) $curl;
         }
 
-        final public function getResponse(string $query): string {
-            $time = \microtime(true);
-            
-            $this->setopt_array([
-                \CURLOPT_URL => $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query)]);
-            
-            $response = $this->execute();
-            
-            \file_put_contents("basex.log", \sprintf("%s\t%s\t%s\n", \date("Y-m-d H:i:s"), \round(\microtime(true) - $time, 5), $query), \FILE_APPEND);
-            
-            return (string) $response;
+        public function getResponse(string $query): string {
+            $this->setopt(\CURLOPT_URL, $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query));
+            return (string) $this->execute();
         }
 
-        final public function getDOMDocument(string $query): \DOMDocument {
+        public function getDOMDocument(string $query): \DOMDocument {
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($query), $this->root), \LIBXML_HTML_NODEFDTD | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS | \LIBXML_NOENT);
 

@@ -58,7 +58,7 @@ namespace Component\Core\Controller {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
                             $this->{$parameter}->store($value);
                         } else {
-                            $validation = new Validation\Parameter($value, true);
+                            $validation = new Validation\Parameter($this->getCallbacks($value), true);
                             $this->addParameter($parameter, $validation->getValidation($validation->getValidators()) , $reset);
                         }
                     }
