@@ -9,7 +9,7 @@ namespace Modules\Node {
 
         use \Modules\Node;
 
-        public function __construct(array $parameters = []) {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString]),
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
@@ -17,7 +17,7 @@ namespace Modules\Node {
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),
                 "parent" => new Validation(false, array(new Validator\IsString)),
                 "index" => new Validation(false, array(new Validator\IsString))
-                    ] + $parameters);
+                    ] + $_parameters);
         }
 
         public function setup(): void {

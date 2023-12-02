@@ -5,11 +5,11 @@ namespace Modules\BaseX {
     use \Component\Validation,
         \Component\Validator;
 
-    final class Model extends \Component\Core\Adapter\Model {
+    class Model extends \Component\Core\Adapter\Model {
 
         use \Modules\BaseX;
 
-        public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "username" => new Validation(false, [new Validator\IsString]),
                 "password" => new Validation(false, [new Validator\IsString]),
@@ -18,7 +18,9 @@ namespace Modules\BaseX {
                 "query" => new Validation(false, [new Validator\IsString]),
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
-            ]);
+            ] + $_parameters);
+            
+            $this->use = "\Modules\BaseX";
         }
 
         public function setup(): void {
@@ -28,11 +30,10 @@ namespace Modules\BaseX {
             $xpath = new \DOMXPath($dom);
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->use = "\Modules\BaseX\Api";
                 $model->adapter = $this->adapter;
-                $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->node = $node;
+                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);                
                 $model->setup();
 
                 if (isset($model->mapping)) {
@@ -43,6 +44,7 @@ namespace Modules\BaseX {
 
         public function __destruct() {
             $this->remove("query");
+            $this->remove("keys");
             parent::__destruct();
         }
     }

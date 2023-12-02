@@ -154,7 +154,9 @@ namespace Component {
 
         final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}"): string {
             foreach ($this->restore($parameters) as $parameter => $value) {
-                $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
+                if (\is_float($value) || \is_numeric($value) || \is_string($value)) {
+                    $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));
+                }
             }
 
             return (string) $content;
