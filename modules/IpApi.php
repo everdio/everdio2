@@ -12,11 +12,7 @@ namespace Modules {
                 \CURLOPT_URL => \sprintf("%s/%s", $this->url, \urldecode($this->ip))]);
 
             $dom = new \DOMDocument("1.0", "UTF-8");
-            $dom->preserveWhiteSpace = false;
-            $dom->formatOutput = false;
-            $dom->recover = true;
-            $dom->substituteEntities = false;
-            $dom->loadXML($curl->execute(), \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS);
+            $dom->loadXML($curl->execute(), \LIBXML_HTML_NODEFDTD | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS | \LIBXML_NOENT);            
 
             return (object) $dom;
         }
