@@ -11,11 +11,12 @@ namespace Modules\BaseX {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "username" => new Validation(false, [new Validator\IsString]),
-                "password" => new Validation(false, [new Validator\IsString]),
-                "database" => new Validation(false, [new Validator\IsString]),
-                "host" => new Validation(false, [new Validator\IsString\IsUrl]),
-                "query" => new Validation(false, [new Validator\IsString]),
+                "basex_username" => new Validation(false, [new Validator\IsString]),
+                "basex_password" => new Validation(false, [new Validator\IsString]),
+                "basex_database" => new Validation(false, [new Validator\IsString]),
+                "basex_host" => new Validation(false, [new Validator\IsString\IsUrl]),
+                "basex_log" => new Validation(false, [new Validator\IsString]),
+                "query" => new Validation(false, [new Validator\IsString]),                
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
             ] + $_parameters);
