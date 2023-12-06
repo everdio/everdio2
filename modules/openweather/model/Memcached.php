@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\BaseX\Model {
+namespace Modules\OpenWeather\Model {
 
     use \Component\Validation,
         \Component\Validator;
 
-    class Memcached extends \Modules\BaseX\Model {
+    class Memcached extends \Modules\OpenWeather\Model {
 
         public function __construct() {
             parent::__construct([

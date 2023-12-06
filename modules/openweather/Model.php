@@ -5,7 +5,7 @@ namespace Modules\OpenWeather {
     use \Component\Validation,
         \Component\Validator;
 
-    final class Model extends \Component\Core\Adapter\Model {
+    class Model extends \Component\Core\Adapter\Model {
 
         use \Modules\OpenWeather;
 
@@ -24,7 +24,7 @@ namespace Modules\OpenWeather {
         }
 
         public function setup(): void {
-            $xpath = new \DOMXPath($this->getAdapter($this->unique(["url" => $this->url])));
+            $xpath = new \DOMXPath($this->getDOMDocument());
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\OpenWeather\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);

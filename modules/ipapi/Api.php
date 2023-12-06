@@ -12,11 +12,11 @@ namespace Modules\IpApi {
             \Modules\IpApi;
 
         public function query(string $query): \DOMNodeList {
-            return (object) $this->xpath((new $this->api)->store($this->restore(["ip"]))->getAdapter($this->unique($this->adapter)))->query($query);
+            return (object) $this->xpath((new $this->api)->store($this->restore(["ip"]))->getDOMDocument())->query($query);
         }
 
-        public function evaluate(string $query): int|float|string {
-            return $this->xpath((new $this->api)->store($this->restore(["ip"]))->getAdapter($this->unique($this->adapter)))->evaluate(\sprintf("count%s", $query));
+        public function evaluate(string $query, string $function): int|float|string {
+            return (object) $this->xpath((new $this->api)->store($this->restore(["ip"]))->getDOMDocument())->evaluate($function . $query);            
         }
     }
 

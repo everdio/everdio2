@@ -10,14 +10,14 @@ namespace Modules\OpenWeather {
 
         use \Modules\Node,
             \Modules\OpenWeather;
-
+        
         public function query(string $query): \DOMNodeList {
-            return (object) $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getAdapter($this->unique($this->adapter)))->query($query);
+            return (object) $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getDOMDocument())->query($query);
         }
 
-        public function evaluate(string $query): int|float|string {
-            return $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getAdapter($this->unique($this->adapter)))->evaluate(\sprintf("count%s", $query));
-        }
+        public function evaluate(string $query, string $function): int|float|string {
+            return (object) $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getDOMDocument())->evaluate($function . $query);            
+        }       
     }
 
 }

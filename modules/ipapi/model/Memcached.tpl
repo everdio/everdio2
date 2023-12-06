@@ -10,20 +10,20 @@ namespace {{namespace}} {
             parent::__construct({{parameters}} + $_parameters);
         }
         
-        final public function getResponse(string $query): string {
+        final public function getResponse(): string {
             $memcached = new \Modules\Memcached;
             $memcached->id = __CLASS__;
             if (!\sizeof($memcached->getServerList())) {
                 $memcached->addServer($this->memcached_server, $this->memcached_port);
-            }         
+            }        
         
-            $memcached->key = $this->memcached_prefix . \crc32($query);
+            $memcached->key = $this->memcached_prefix . \crc32($this->ip);
             
             if ($memcached->find()->code === 0) {
                 return \unserialize($memcached->data);
             }
 
-            $memcached->data = \serialize($this->getApiResponse($query));
+            $memcached->data = \serialize($this->getApiResponse());
             $memcached->ttl = $this->memcached_ttl;
             $memcached->save();
 

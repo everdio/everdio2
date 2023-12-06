@@ -7,13 +7,13 @@ namespace Modules {
 
     class Memcached extends \Component\Core\Adapter\Wrapper {
 
-        final public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "key" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
                 "ttl" => new Validation(false, [new Validator\IsNumeric]),
                 "data" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
                 "code" => new Validation(false, [new Validator\IsInteger])
-            ]);
+            ] + $_parameters);
         }
 
         final public function find(): self {

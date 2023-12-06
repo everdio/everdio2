@@ -5,21 +5,21 @@ namespace Modules\IpApi {
     use \Component\Validation,
         \Component\Validator;
 
-    final class Model extends \Component\Core\Adapter\Model {
+    class Model extends \Component\Core\Adapter\Model {
 
         use \Modules\IpApi;
 
-        public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
-                "url" => new Validation(false, [new Validator\IsString\IsUrl]),
+                "ipapi_url" => new Validation(false, [new Validator\IsString\IsUrl]),
                 "ip" => new Validation(false, [new Validator\IsString])
-            ]);
+            ] + $_parameters);
 
             $this->use = "\Modules\IpApi";
         }
 
         public function setup(): void {
-            $xpath = new \DOMXPath($this->getAdapter($this->unique(["url" => $this->url])));
+            $xpath = new \DOMXPath($this->getDOMDocument());
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\IpApi\Api\Model;
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);

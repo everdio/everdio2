@@ -4,7 +4,6 @@ if ($this instanceof \Component\Core\Controller\Model\Cli) {
     $this->echo(\sprintf("Generating %s .. ", $this->model->namespace), ["cyan"]);
 
     $model = new \Modules\IpApi\Model;
-    $model->store($this->ipapi->restore());
     $model->store($this->model->restore());
     $model->setup();
 
