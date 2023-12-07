@@ -11,7 +11,7 @@ namespace Modules\IpApi {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "ipapi_url" => new Validation(false, [new Validator\IsString\IsUrl]),
+                "url" => new Validation(false, [new Validator\IsString\IsUrl]),
                 "ip" => new Validation(false, [new Validator\IsString])
             ] + $_parameters);
 

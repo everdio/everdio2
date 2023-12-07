@@ -14,7 +14,7 @@ namespace Modules {
         }
         
         public function getResponse(): string {
-            $this->setopt(\CURLOPT_URL, \sprintf("%s/%s", $this->ipapi_url, \urldecode($this->ip)));
+            $this->setopt(\CURLOPT_URL, \sprintf("%s/%s", $this->url, \urldecode($this->ip)));
             return (string) $this->execute(); 
         }
 
