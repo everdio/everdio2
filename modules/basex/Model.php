@@ -16,11 +16,11 @@ namespace Modules\BaseX {
                 "basex_database" => new Validation(false, [new Validator\IsString]),
                 "basex_host" => new Validation(false, [new Validator\IsString\IsUrl]),
                 "basex_log" => new Validation(false, [new Validator\IsString]),
-                "query" => new Validation(false, [new Validator\IsString]),                
+                "query" => new Validation(false, [new Validator\IsString]),
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
-            ] + $_parameters);
-            
+                    ] + $_parameters);
+
             $this->use = "\Modules\BaseX";
         }
 
@@ -34,7 +34,7 @@ namespace Modules\BaseX {
                 $model->adapter = $this->adapter;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->node = $node;
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);                
+                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->setup();
 
                 if (isset($model->mapping)) {
