@@ -12,7 +12,7 @@ namespace {{namespace}} {
         
         final public function getResponse(): string {
             $memcached = new \Modules\Memcached;
-            $memcached->id = __CLASS__;
+            $memcached->id = $this->memcached_id;
             if (!\sizeof($memcached->getServerList())) {
                 $memcached->addServer($this->memcached_server, $this->memcached_port);
             }        

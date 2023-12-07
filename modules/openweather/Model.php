@@ -9,7 +9,7 @@ namespace Modules\OpenWeather {
 
         use \Modules\OpenWeather;
 
-        public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "url" => new Validation(false, [new Validator\IsString\IsUrl]),
                 "appid" => new Validation(false, [new Validator\IsString]),
@@ -18,7 +18,7 @@ namespace Modules\OpenWeather {
                 "mode" => new Validation("xml", [new Validator\IsString\InArray(["xml", "json"])]),
                 "lat" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric]),
                 "lon" => new Validation(false, [new Validator\IsFloat, new Validator\IsNumeric])
-            ]);
+            ] + $_parameters);
 
             $this->use = "\Modules\OpenWeather";
         }
