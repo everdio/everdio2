@@ -12,7 +12,7 @@ $controller = new \Component\Core\Controller\Model\Cli;
 $controller->server = $_SERVER;
 $controller->debug = "_debug";
 $controller->path = __DIR__;        
-$controller->pool = __DIR__ . \DIRECTORY_SEPARATOR . "threads";
+$controller->pool = "/home/evertdf/tmp";
 
 try {
     $controller->setup();
