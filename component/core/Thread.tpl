@@ -13,7 +13,7 @@ function shutdown()  {
 
 \register_shutdown_function("shutdown");
 
-include_once(__DIR__ . "/../everdio.php");
+include_once("/home/evertdf/everdio2/everdio.php");
 
 $controller = new {{extends}};
 $controller->import({{parameters}});
