@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\Node {
+namespace Modules\Node\Html {
 
-    trait Html {
+    trait Document {
 
         use \Modules\Node;
 

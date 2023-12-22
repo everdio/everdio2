@@ -11,7 +11,6 @@ namespace Modules\Node {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString]),
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
                 "tag" => new Validation(false, array(new Validator\IsString)),
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),

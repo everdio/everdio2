@@ -13,7 +13,11 @@ namespace Modules {
                 "ttl" => new Validation(false, [new Validator\IsNumeric]),
                 "data" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
                 "code" => new Validation(false, [new Validator\IsInteger])
-            ] + $_parameters);
+                    ] + $_parameters);
+        }
+
+        final protected function __init(): object {
+            return (object) new \Memcached($this->id);
         }
 
         final public function find(): self {
@@ -25,8 +29,8 @@ namespace Modules {
             return (object) $this;
         }
 
-        final protected function __init(): object {
-            return (object) new \Memcached($this->id);
+        final public function __destruct() {
+            $this->quit();
         }
     }
 

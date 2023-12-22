@@ -43,10 +43,6 @@ namespace Component\Caller {
         public function delete() {
             return \unlink($this->file);
         }
-
-        public function __destruct() {
-            $this->close();
-        }
     }
 
 }

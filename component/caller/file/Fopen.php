@@ -12,6 +12,10 @@ namespace Component\Caller\File {
         public function exists(int $ttl = NULL): bool {
             return (bool) parent::exists() && ((!$ttl && \filesize($this->file)) || ($ttl && \filesize($this->file) && (\filemtime($this->file) + $ttl) > \time()));
         }
+
+        public function __destruct() {
+            $this->close();
+        }
     }
 
 }

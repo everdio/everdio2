@@ -33,6 +33,7 @@ namespace Component\Core {
                 return \call_user_func_array([$this->getAdapter($this->unique($this->adapter)), $method], $arguments);
             }
         }
+   
     }
 
 }

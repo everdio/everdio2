@@ -5,7 +5,9 @@ namespace Modules\OpenWeather\Api {
     use \Component\Validator,
         \Component\Validation;
 
-    class Model extends \Modules\Node\Xml\Model {
+    class Model extends \Modules\Node\Model {
+        
+        use \Modules\OpenWeather;
 
         public function __construct() {
             parent::__construct([

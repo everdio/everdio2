@@ -13,11 +13,10 @@ namespace Component\Core\Adapter {
                 "adapter" => new Validation(["id"], [new Validator\IsArray])
                     ] + $_parameters);
         }
-
+        
         final public function __dry(): string {
-            
-            return (string) \sprintf("(new \%s)->store(%s)", (string) $this, $this->dehydrate($this->restore($this->diff())));
-        }
+            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->diff())));
+        }             
     }
 
 }

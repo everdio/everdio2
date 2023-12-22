@@ -76,12 +76,6 @@ namespace Component {
             throw new \InvalidArgumentException($parameter);
         }
 
-        final public function setParameter(string $parameter, $value) {
-            if ($this->exists($parameter)) {
-                return $this->_parameters[$parameter]->setValue($value);
-            }
-        }
-
         final public function remove(string $parameter): void {
             if ($this->exists($parameter)) {
                 unset($this->_parameters[$parameter]);

@@ -5,7 +5,7 @@ namespace Modules\BaseX\Model {
     use \Component\Validation,
         \Component\Validator;
 
-    class Memcached extends \Modules\BaseX\Model {
+    final class Memcached extends \Modules\BaseX\Model {
 
         public function __construct() {
             parent::__construct([

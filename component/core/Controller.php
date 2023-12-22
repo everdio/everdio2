@@ -92,7 +92,7 @@ namespace Component\Core {
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = [], int $usleep = 100) {
+        final public function queue(array $pool, array $output = [], int $usleep = 1000): array {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
             while (\sizeof($threads)) {
