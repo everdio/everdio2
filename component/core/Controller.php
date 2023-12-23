@@ -80,7 +80,7 @@ namespace Component\Core {
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
             $model->thread = $thread = \sprintf("%s/%s.php", $this->pool, \crc32($this->unique($this->diff())));
-            $model->extends = \get_class($this);
+            $model->class = \get_class($this);
             unset($model);
 
             if ($queue) {
@@ -117,10 +117,10 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as a new reference for dispatches
          */
 
-        final public function execute(string $path) {
+        final public function execute(string $path, array $values = []) {
             $controller = new $this;
             $controller->reset($controller->reserved);
-            $controller->store($this->restore($this->reserved));
+            $controller->store($this->restore($this->reserved) + $values);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
 
             if (isset($controller->path)) {

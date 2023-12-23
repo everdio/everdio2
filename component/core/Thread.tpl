@@ -1,6 +1,8 @@
 <?php
 declare(ticks = 1);
 
+\pcntl_alarm({{timeout}});
+\pcntl_signal(\SIGALRM, "shutdown");
 \pcntl_signal(\SIGINT, "shutdown");  
 \pcntl_signal(\SIGHUP, "shutdown");  
 \pcntl_signal(\SIGTERM, "shutdown"); 
@@ -15,7 +17,7 @@ function shutdown()  {
 
 include_once("/home/evertdf/everdio2/everdio.php");
 
-$controller = new {{extends}};
+$controller = new {{class}};
 $controller->import({{parameters}});
 
 try {
