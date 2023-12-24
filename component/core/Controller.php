@@ -79,11 +79,11 @@ namespace Component\Core {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
-            $model->thread = $thread = \sprintf("%s/%s.php", $this->pool, \crc32($this->unique($this->diff())));
+            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . \crc32($callback) . ".php";
             $model->class = \get_class($this);
             unset($model);
 
-            if ($queue) {
+            if ($queue && !isset($this->queue->{$thread})) {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
