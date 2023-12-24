@@ -13,16 +13,10 @@ namespace Modules {
                 "key" => new Validation(false, [new Validator\IsString]),
                 "adapter" => new Validation(["openai"], [new Validator\IsArray]),
                 "model" => new Validation(false, [new Validator\IsString]),
-                "prompt" => new Validation(false, [new Validator\IsString]),
                 "max_tokens" => new Validation(false, [new Validator\IsInteger]),
                 "temperature" => new Validation(0.5, [new Validator\IsFloat]),
                 "top_p" => new Validation(1, [new Validator\IsFloat]),
                 "messages" => new Validation([], [new Validator\IsArray]),
-                "presence_penalty" => new Validation(0, [new Validator\IsFloat]),
-                "frequency_penalty" => new Validation(0, [new Validator\IsFloat]),
-                "n" => new Validation(1, [new Validator\IsInteger]),
-                "stream" => new Validation(false, [new Validator\IsBool]),
-                "stop" => new Validation(false, [new Validator\IsString]),
             ]);
 
             $this->store($values);

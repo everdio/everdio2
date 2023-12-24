@@ -87,30 +87,28 @@ namespace Component\Core {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
-            \exec(\sprintf("sleep %s; php -f %s > %s &", $sleep, $thread, $output));
+            \exec(\sprintf("sleep %s; nice -n %s php -f %s > %s &", $sleep, 0, $thread, $output));
 
             return (string) $thread;
         }
-
+      
         final public function queue(array $pool, array $output = [], int $usleep = 1000): array {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
             while (\sizeof($threads)) {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
-                        if (($contents = \file_get_contents($file))) {
-                            $output[] = $contents;
-                        }
-
+                        $output[] = \file_get_contents($file);
                         \unlink($file);
                         unset($threads[$thread]);
                     }
+
+                    \usleep($usleep);
                 }
-
-                \usleep($usleep);
             }
+            
 
-            return (array) $output;
+            return (array) \array_filter($output);
         }
 
         /*
