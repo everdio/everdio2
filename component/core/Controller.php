@@ -52,7 +52,7 @@ namespace Component\Core {
         }
 
         /*
-         * processing any existing callbacks from output string
+         * processing callbacks from output {{string}}
          */
 
         final public function getCallbacks(string $output, array $matches = []): string {
@@ -75,15 +75,18 @@ namespace Component\Core {
             return (string) $output;
         }
 
+        /*
+         * Creating a thread model to execute concurrently (threaded)
+         */
         final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
-            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . \crc32($callback) . ".php";
+            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . \crc32($model->unique($model->diff())) . ".php";
             $model->class = \get_class($this);
             unset($model);
 
-            if ($queue && !isset($this->queue->{$thread})) {
+            if ($queue) {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
@@ -99,7 +102,9 @@ namespace Component\Core {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
+                        
                         \unlink($file);
+                        
                         unset($threads[$thread]);
                     }
 

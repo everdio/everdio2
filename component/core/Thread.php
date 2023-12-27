@@ -11,7 +11,7 @@ namespace Component\Core {
             parent::__construct([
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Thread.tpl", [new Validator\IsString\IsFile]),
                 "thread" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "timeout" => new Validation(300, [new Validator\IsString, new Validator\IsInteger]),
+                "timeout" => new Validation(600, [new Validator\IsString, new Validator\IsInteger]),
                 "callback" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),
                 "parameters" => new Validation(false, [new Validator\IsString])
