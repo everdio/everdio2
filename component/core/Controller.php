@@ -78,6 +78,7 @@ namespace Component\Core {
         /*
          * Creating a thread model to execute concurrently (threaded)
          */
+
         final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
@@ -94,7 +95,7 @@ namespace Component\Core {
 
             return (string) $thread;
         }
-      
+
         final public function queue(array $pool, array $output = [], int $usleep = 1000): array {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
 
@@ -102,16 +103,15 @@ namespace Component\Core {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
-                        
+
                         \unlink($file);
-                        
+
                         unset($threads[$thread]);
                     }
 
                     \usleep($usleep);
                 }
             }
-            
 
             return (array) \array_filter($output);
         }
