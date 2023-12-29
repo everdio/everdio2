@@ -120,10 +120,11 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as a new reference for dispatches
          */
 
-        final public function execute(string $path, array $values = []) {
+        final public function execute(string $path, array $request = []) {
             $controller = new $this;
             $controller->reset($controller->reserved);
-            $controller->store($this->restore($this->reserved) + $values);
+            $controller->store($this->restore($this->reserved));
+            $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
 
             if (isset($controller->path)) {

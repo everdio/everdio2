@@ -75,7 +75,7 @@ namespace Component {
                 }
             }
 
-            return (string) \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($lines)))) . $eol;
+            return (string) \str_replace(["\"", "'", "`"], "", \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($lines))))) . $eol;
         }
     }
 
