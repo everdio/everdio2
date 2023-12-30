@@ -3,14 +3,14 @@
 namespace Component\Core\Controller\Model {
 
     use \Component\Validation,
-        \Component\Validator,
+        \Component\Validator\IsArray,
         \Component\Validator\IsString;
 
     class Http extends \Component\Core\Controller\Model {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR"])], Validation::NORMAL),
+                "server" => new Validation(false, [new IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR"])], Validation::NORMAL),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
                 "host" => new Validation(false, [new IsString]),
@@ -49,7 +49,7 @@ namespace Component\Core\Controller\Model {
                 return (string) $output;
             }
 
-            return (string) \str_replace("</source>", "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
+            return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
         }
 
         /*
