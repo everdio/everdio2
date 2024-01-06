@@ -125,14 +125,6 @@ namespace Component {
         public function reset(array $parameters = []): void {
             $this->store(\array_fill_keys($this->inter($parameters), false));
         }
-        
-        public function destroy(array $parameters = []) : void{
-            foreach ($parameters as $parameter) {
-                if ($this->exists($parameter)) {
-                    unset ($this->_parameters[$parameter]);
-                }
-            }
-        }
 
         final public function validations(array $parameters = [], array $validations = []): array {
             foreach ($this->inter($parameters) as $parameter) {

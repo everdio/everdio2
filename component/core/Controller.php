@@ -25,28 +25,10 @@ namespace Component\Core {
          * dispatching the Cojtroller if exists!
          */
 
-        public function dispatch(string $path): string {
-            return (string) $this->getController($path);
-        }
-
-        /*
-         * checks if controller php file exists
-         */
-
-        final public function hasController(string $path): bool {
-            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
-        }
-
-        /*
-         * including php file and catching it's output for returning
-         */
-
-        final public function getController(string $path) {
-            if ($this->hasController($path)) {
+        public function dispatch(string $path) {
+            if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
                 \ob_start();
-
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
-
                 return (string) \ob_get_clean();
             }
         }
@@ -103,12 +85,9 @@ namespace Component\Core {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
-
                         \unlink($file);
-
                         unset($threads[$thread]);
                     }
-
                     \usleep($usleep);
                 }
             }
@@ -122,11 +101,10 @@ namespace Component\Core {
 
         final public function execute(string $path, array $request = []) {
             $controller = new $this;
-            $controller->reset($controller->reserved);
             $controller->store($this->restore($this->reserved));
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-
+            
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch(\basename($path)));

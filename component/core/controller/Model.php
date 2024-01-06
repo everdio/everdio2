@@ -26,7 +26,7 @@ namespace Component\Core\Controller {
          * checks if model ini file exists
          */
 
-        final public function hasModel(string $path): bool {
+        final protected function hasModel(string $path): bool {
             return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
         }
 
@@ -49,17 +49,17 @@ namespace Component\Core\Controller {
          * parsing ini contents and set as Parameters container(s)
          */
 
-        final public function getModel(string $path, bool $reset = false): string {
+        final public function getModel(string $path): string {
             if ($this->hasModel($path)) {
                 try {
                     $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path, "r");
                     foreach (\array_diff_key($ini->read(), \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {
-                            $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
+                            $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]));
                             $this->{$parameter}->store($value);
                         } else {
                             $validation = new Validation\Parameter($this->getCallbacks($value), true);
-                            $this->addParameter($parameter, $validation->getValidation($validation->getValidators()) , $reset);
+                            $this->addParameter($parameter, $validation->getValidation($validation->getValidators()));
                         }
                     }
                 } catch (\ErrorException $ex) {
@@ -70,17 +70,22 @@ namespace Component\Core\Controller {
             return (string) $path;
         }
 
-        final public function deleteModel(string $path): void {
-            if ($this->hasModel($path)) {
-                \unlink($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
-            }
-        }
-
         final public function resetModel(array $parameters = []) {
             foreach (\array_diff($this->diff($parameters), $this->reserved) as $parameter) {
                 $this->remove($parameter);
             }
         }
+        
+        public function save(string $path, array $parameters): void {
+            if (\sizeof(($sections = $this->restore(\array_diff($this->inter($parameters), $this->reserved))))) {
+                $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+                foreach ($sections as $section => $parameters) {
+                    if ($parameters instanceof Parameters) {
+                        $ini->write($parameters->restore(), $section);
+                    }
+                }
+            }
+        }        
     }
 
 }

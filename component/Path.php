@@ -24,8 +24,10 @@ namespace Component {
                 if (!$this->isDir() && $this->isFile() && \in_array(\strtolower($this->getExtension()), $extensions)) {
                     \unlink ($this->getRealPath());
                 } elseif ($recursive && $this->isDir()) {
-                    (new Path($this->getRealPath()))->delete($extensions);
-                    if (!\sizeof(\glob($this->getRealPath()))) {
+                    $path = new Path($this->getRealPath());
+                    $path->delete($extensions, $recursive);
+                    $path->rewind();
+                    if (!$path->valid()) {
                         \rmdir($this->getRealPath());
                     }
                 }
