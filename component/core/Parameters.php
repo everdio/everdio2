@@ -14,8 +14,14 @@ namespace Component\Core {
                 if (\is_array($value)) {
                     if (!isset($this->{$field})) {
                         $this->{$field} = new self;
+                        $this->{$field}->store($value);
+                    } else {
+                        if ($this->{$field} instanceof self) {
+                            $this->{$field}->store($value);
+                        } else {
+                            $this->{$field} = $value;
+                        }
                     }
-                    $this->{$field}->store($value);
                 } else {
                     $this->{$field} = $value;
                 }

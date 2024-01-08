@@ -19,10 +19,6 @@ try {
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
     echo \PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL . \PHP_EOL;
-        if ($ex->getPrevious()) {
-            echo $ex->getPrevious()->getMessage() . \PHP_EOL;
-            echo $ex->getPrevious()->getTraceAsString() . \PHP_EOL . \PHP_EOL;
-        }
     if (isset($controller->request->{$controller->debug})) {
         echo $ex->getTraceAsString() . \PHP_EOL;
         if ($ex->getPrevious()) {
