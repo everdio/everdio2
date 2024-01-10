@@ -117,6 +117,12 @@ namespace Component {
 
             return (array) $values;
         }
+        
+        public function destroy(array $parameters = []) : void {
+            foreach ($parameters as $parameter) {
+                $this->remove($parameter);
+            }
+        }
 
         public function querystring(array $parameters = []): string {
             return (string) \http_build_query($this->restore($parameters));
@@ -158,6 +164,10 @@ namespace Component {
 
         public function __dry(): string {
             return (string) $this->dehydrate($this->_parameters);
+        }
+        
+        public function __clone() {
+            return (object) new $this;
         }
     }
 

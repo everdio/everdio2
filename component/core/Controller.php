@@ -10,6 +10,7 @@ namespace Component\Core {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
+                "basename" => new Validation(false, [new Validator\IsString]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
@@ -25,10 +26,28 @@ namespace Component\Core {
          * dispatching the Cojtroller if exists!
          */
 
-        public function dispatch(string $path) {
-            if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
+        public function dispatch(string $path): string {
+            return (string) $this->getController($path);
+        }
+
+        /*
+         * checks if controller php file exists
+         */
+
+        final public function hasController(string $path): bool {
+            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
+        }
+
+        /*
+         * including php file and catching it's output for returning
+         */
+
+        final public function getController(string $path) {
+            if ($this->hasController($path)) {
                 \ob_start();
+
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
+
                 return (string) \ob_get_clean();
             }
         }
@@ -101,13 +120,13 @@ namespace Component\Core {
 
         final public function execute(string $path, array $request = []) {
             $controller = new $this;
-            $controller->store($this->restore($this->reserved));
+            $controller->import($this->parameters($this->reserved));
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
-            
+            $controller->basename = \basename($path);
             if (isset($controller->path)) {
                 try {
-                    return $controller->getCallbacks($controller->dispatch(\basename($path)));
+                    return $controller->getCallbacks($controller->dispatch($this->basename));
                 } catch (\UnexpectedValueException $ex) {
                     throw new \LogicException(\sprintf("invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
@@ -116,6 +135,12 @@ namespace Component\Core {
                     throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }
+        }
+        
+        public function __clone() {
+            $controller = parent::__clone();
+            $controller->import($this->parameters($this->reserved));
+            return (object) $controller;
         }
     }
 
