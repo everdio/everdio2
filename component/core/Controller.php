@@ -84,7 +84,7 @@ namespace Component\Core {
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
-            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . \crc32($model->unique($model->diff())) . ".php";
+            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), "thread", "crc32") . ".php";
             $model->class = \get_class($this);
             unset($model);
 
@@ -105,6 +105,7 @@ namespace Component\Core {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
                         \unlink($file);
+                        
                         unset($threads[$thread]);
                     }
                     \usleep($usleep);

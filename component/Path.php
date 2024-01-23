@@ -22,7 +22,7 @@ namespace Component {
         public function delete(array $extensions, bool $recursive = false): void {
             while ($this->valid()) {
                 if (!$this->isDir() && $this->isFile() && \in_array(\strtolower($this->getExtension()), $extensions)) {
-                    \unlink ($this->getRealPath());
+                    \unlink($this->getRealPath());
                 } elseif ($recursive && $this->isDir()) {
                     $path = new Path($this->getRealPath());
                     $path->delete($extensions, $recursive);
@@ -31,7 +31,7 @@ namespace Component {
                         \rmdir($this->getRealPath());
                     }
                 }
-                
+
                 $this->next();
             }
         }

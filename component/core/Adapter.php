@@ -16,7 +16,10 @@ namespace Component\Core {
          * in order to save resources we store the adapter in a static array
          */
 
-        protected function getAdapter(string $key): object {
+        protected function getAdapter(): object {
+            
+            $key = $this->unique($this->adapter, "adapter", "crc32");
+            
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
             }
@@ -30,7 +33,7 @@ namespace Component\Core {
 
         public function __call(string $method, array $arguments = []) {
             if (!\method_exists($this, $method)) {
-                return \call_user_func_array([$this->getAdapter($this->unique($this->adapter)), $method], $arguments);
+                return \call_user_func_array([$this->getAdapter(), $method], $arguments);
             }
         }
    

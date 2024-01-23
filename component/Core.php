@@ -140,7 +140,7 @@ namespace Component {
             return (array) $validations;
         }
 
-        final public function unique(array $parameters = [], string $salt = "", string $algo = "sha512"): string {
+        final public function unique(array $parameters = [], string $salt = "", string $algo = "sha256"): string {
             return (string) \hash($algo, $this->querystring($parameters) . $salt);
         }
 

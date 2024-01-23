@@ -9,7 +9,17 @@ namespace Modules\Node {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "adapter" => new Validation(false, [new Validator\IsArray])] + $_parameters);
+                "adapter" => new Validation(false, [new Validator\IsArray])
+                ] + $_parameters);
+        }
+        
+        public function generate(string $model, array $parameters = [], string $query = "//*") {
+            foreach ($this->query($query) as $node) {
+                $mapper = new $model;
+                $mapper->store($parameters);
+                $mapper->node = $node;
+                $mapper->setup();
+            }            
         }
     }
 

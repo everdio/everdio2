@@ -21,10 +21,6 @@ namespace Modules {
                             foreach ($callbacks as $label => $callback) {
                                 try {
                                     if (\is_string($label)) {
-                                        if (isset($this->debug) && isset($this->request->{$this->debug})) {
-                                            echo "<!-- [" . $parameter . "]" . $mapper . \DIRECTORY_SEPARATOR . $label . " = \"" . \str_replace(["{", "}"], "", $callback) . "\";-->\n";
-                                        }
-
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value
@@ -50,11 +46,6 @@ namespace Modules {
                                                 unset($this->_controller->{$mapper}->{$label});
                                             }
                                         }
-                                        
-                                        if (isset($this->debug) && isset($this->request->{$this->debug})) {
-                                            //echo "<!-- " . \str_replace(["{", "}"], "", $this->dehydrate($this->_controller->{$mapper}->{$label})) . " -->\n";
-                                        }                                        
-                                        
                                     } else {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
