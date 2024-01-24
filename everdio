@@ -18,10 +18,9 @@ try {
     $controller->setup();
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
-    echo \PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL . $ex->getTraceAsString() . \PHP_EOL;
+    echo \PHP_EOL . \get_class($ex) . \PHP_EOL . \ucfirst($ex->getMessage()) . \PHP_EOL . $ex->getTraceAsString() . \PHP_EOL;
     if ($ex->getPrevious()) {
-        echo $ex->getPrevious()->getMessage() . \PHP_EOL;
-        echo $ex->getPrevious()->getTraceAsString() . \PHP_EOL . \PHP_EOL;
+        echo \PHP_EOL . \get_class($ex->getPrevious()) . \PHP_EOL . $ex->getPrevious()->getMessage() . \PHP_EOL . $ex->getPrevious()->getTraceAsString() . \PHP_EOL . \PHP_EOL;
     }
 }
 
