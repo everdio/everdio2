@@ -21,6 +21,11 @@ namespace Modules {
                             foreach ($callbacks as $label => $callback) {
                                 try {
                                     if (\is_string($label)) {
+                                        if (isset($this->request->{$this->debug})) {
+                                            echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \trim($callback, "{{}}"));
+                                        }
+                    
+                                        
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value

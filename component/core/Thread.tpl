@@ -3,11 +3,11 @@ declare(ticks = 1);
 
 \pcntl_alarm({{timeout}});
 \pcntl_signal(\SIGALRM, "shutdown");
-\pcntl_signal(\SIGINT, "shutdown");  
-\pcntl_signal(\SIGHUP, "shutdown");  
-\pcntl_signal(\SIGTERM, "shutdown"); 
+\pcntl_signal(\SIGINT, "shutdown");
+\pcntl_signal(\SIGHUP, "shutdown");
+\pcntl_signal(\SIGTERM, "shutdown");
 
-function shutdown()  { 
+function shutdown() {
     if (\is_file(__FILE__)) {
         \unlink(__FILE__);
     }
