@@ -24,7 +24,6 @@ namespace Modules {
                                         if (isset($this->request->{$this->debug})) {
                                             echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \trim($callback, "{{}}"));
                                         }
-                    
                                         
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
