@@ -7,12 +7,7 @@ namespace Component\Validator\IsString {
         const MESSAGE = "INVALID_DATETIME";
         const TYPE = "IS_DATETIME";
 
-        public function __construct(protected string $format = "Y-m-d H:i:s") {
-            
-        }
-
-        public function getFormat(): string {
-            return (string) $this->format;
+        public function __construct(protected string $format = "Y-m-d H:i:s") {            
         }
 
         public function execute($value): bool {

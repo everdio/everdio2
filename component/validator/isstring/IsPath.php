@@ -9,7 +9,6 @@ namespace Component\Validator\IsString {
 
         public function execute($value): bool {
             return (bool) (parent::execute($value) && \str_contains($value, \DIRECTORY_SEPARATOR));
-            //return (bool) (parent::execute($value) && \sizeof(\explode(\DIRECTORY_SEPARATOR, $value)) > 1);
         }
     }
 
