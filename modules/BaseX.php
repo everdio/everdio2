@@ -11,13 +11,17 @@ namespace Modules {
             $curl->setopt_array([
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC,
                 \CURLOPT_USERPWD => $this->username . ":" . $this->password]);
-            
+
             return (object) $curl;
         }
 
         public function getResponse(string $query): string {
-            $this->setopt(\CURLOPT_URL, $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query));
-            return (string) $this->execute();
+            try {
+                $this->setopt(\CURLOPT_URL, $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query));
+                return (string) $this->execute();
+            } catch (\ErrorException $ex) {
+                throw new \LogicException("BaseX " . $this->host . ": " . $ex->getMessage());
+            }
         }
 
         public function getDOMDocument(string $query): \DOMDocument {

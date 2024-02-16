@@ -6,7 +6,7 @@ namespace Component\Caller {
 
         public function __construct() {
             parent::__construct("curl_%s");
-            
+
             $this->handle = $this->init();
             $this->setopt_array([
                 \CURLOPT_TCP_FASTOPEN => true,
@@ -44,7 +44,7 @@ namespace Component\Caller {
 
         public function execute() {
             if (($response = $this->exec()) === false) {
-                throw new \LogicException($this->error());
+                throw new \ErrorException($this->error());
             }
 
             return (string) \trim($response);
