@@ -10,6 +10,7 @@ namespace Modules {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC,
+                \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_USERPWD => $this->username . ":" . $this->password]);
 
             return (object) $curl;

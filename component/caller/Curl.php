@@ -11,7 +11,6 @@ namespace Component\Caller {
             $this->setopt_array([
                 \CURLOPT_TCP_FASTOPEN => true,
                 \CURLOPT_ENCODING => "",
-                \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]);
         }
 
