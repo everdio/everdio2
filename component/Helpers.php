@@ -66,6 +66,19 @@ namespace Component {
 
             return (array) $keywords;
         }
+        
+        public function hasWords(string $haystack, array $needles) : bool {
+            return (bool) \sizeof(\array_intersect($this->getWords($haystack), $needles));
+        }
+        
+        public function hasInString(string $haystack, array $needles): bool {
+            return (bool) \array_reduce($needles, fn($a, $n) => $a || \str_contains($haystack, $n), false);
+        }
+        
+        public function hasAllInString(string $haystack, array $needles): bool{
+            return (bool) \array_reduce($needles, fn($a, $n) => $a && \str_contains($haystack, $n), true);
+        }        
+        
 
         public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $lines = [], int $count = 0): string {
             foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $line) {

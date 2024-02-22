@@ -9,23 +9,19 @@ namespace Modules\Node {
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {
                     if (\array_key_exists(($end = \array_key_last(\array_intersect(($fparts = \explode(\DIRECTORY_SEPARATOR, ($fpath = $this->clean(($filter = $validation->execute()))))), $parts))), $xparts)) {
-                        $filter = \str_replace($fpath, false, $filter);
-                        if (!\sizeof(\array_diff($fparts, $parts))) {
-                            $xparts[$end] .= $filter;
-                        } elseif (\sizeof(\array_diff($fparts, $parts))) {
-                            $xparts[$end] .= \sprintf("[%s]", \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter);
+                        if (($filter = \str_replace($fpath, false, $filter))) {
+                            $xparts[$end] .= (\sizeof(\array_diff($fparts, $parts)) ? "[" . \implode(\DIRECTORY_SEPARATOR, \array_diff($fparts, $parts)) . $filter . "]" : $filter);
                         }
                     }
                 }
             }
+
             parent::__construct(\sprintf($wrap, \implode(\DIRECTORY_SEPARATOR, $xparts)), [new \Component\Validator\IsString]);
-            //parent::__construct(\sprintf($wrap, \str_replace("][", \sprintf(" %s ", $operator), \implode(\DIRECTORY_SEPARATOR, $xparts))), [new \Component\Validator\IsString]);
-            
         }
-        
+
         public function clean(string $xpath): string {
             return (string) \preg_replace("/\[(.*?)\]/", false, $xpath);
-        }        
+        }
     }
 
 }

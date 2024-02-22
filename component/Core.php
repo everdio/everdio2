@@ -13,7 +13,7 @@ namespace Component {
                 $this->addParameter($parameter, $validation, true);
             }
         }
-
+        
         public function __get(string $parameter): null|bool|int|float|string|array|object {
             if ($this->exists($parameter)) {
                 try {

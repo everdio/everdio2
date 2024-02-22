@@ -93,21 +93,20 @@ namespace Component\Core {
             }
 
             \exec(\sprintf("sleep %s; nice -n %s php -f %s > %s &", $sleep, 0, $thread, $output));
-
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = [], int $usleep = 1000): array {
+        final public function queue(array $pool, array $output = [], int $usleep = 10000): array {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
-
             while (\sizeof($threads)) {
                 foreach ($threads as $thread => $file) {
                     if (!\file_exists($thread) && \is_file($file)) {
                         $output[] = \file_get_contents($file);
                         \unlink($file);
-                        
+
                         unset($threads[$thread]);
                     }
+
                     \usleep($usleep);
                 }
             }
@@ -137,7 +136,7 @@ namespace Component\Core {
                 }
             }
         }
-        
+
         public function __clone() {
             $controller = parent::__clone();
             $controller->import($this->parameters($this->reserved));
