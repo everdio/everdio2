@@ -37,7 +37,7 @@ namespace Modules {
                 $validations[] = new Table\Relation($this, $parents, "left");
             }
 
-            $find = new Table\Find(array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], $validations));
+            $find = new Table\Find(array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], \array_reverse($validations)));
             return (int) $this->query($find->execute() . $query)->fetchColumn();
         }
 
@@ -50,6 +50,7 @@ namespace Modules {
         public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []): array {
             if (isset($this->parents)) {
                 foreach ($this->parents as $parent) {
+
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
@@ -57,13 +58,12 @@ namespace Modules {
 
                 $validations[] = new Table\Relation($this, $parents);
             }
-
+            
             $validations[] = new Table\Select(\array_merge($parents, [$this]));
-
+            
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
             }
-
             if (\sizeof($orderby)) {
                 foreach ($orderby as $order => $parameters) {
                     $validations[] = new Table\OrderBy($this, [$order => $parameters]);
@@ -76,7 +76,7 @@ namespace Modules {
                 }
             }
 
-            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this], "and", "LIKE")], $validations));
+            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this])], \array_reverse($validations)));
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
 

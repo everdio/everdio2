@@ -5,6 +5,7 @@ namespace Component {
     abstract class Validator {
 
         use Dryer,
+            Helpers,
             Finder;
 
         const TYPE = self::TYPE;

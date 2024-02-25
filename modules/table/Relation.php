@@ -7,19 +7,18 @@ namespace Modules\Table {
 
     final class Relation extends \Component\Validation {
 
-        public function __construct(Mapper $thisMapper, array $mappers, string $join = "JOIN", string $operator = "AND", array $relations = []) {
+        public function __construct(Mapper $mapper, array $mappers, string $join = "join", string $operator = "and", array $relations = []) {
             foreach ($mappers as $thatMapper) {
-                if ($thatMapper instanceof Mapper && !$thisMapper instanceof $thatMapper) {
-                    if (isset($thatMapper->primary) && isset($thisMapper->keys) && \sizeof(\array_intersect($thatMapper->primary, $thisMapper->keys))) {
-                        $relation = new Join($thatMapper, $thisMapper, \array_intersect($thisMapper->keys, \array_intersect($thatMapper->primary, $thisMapper->keys)), $join, $operator);
+                if ($thatMapper instanceof Mapper && !$mapper instanceof $thatMapper) {
+                    if (isset($thatMapper->primary) && isset($mapper->keys) && \sizeof(\array_intersect($thatMapper->primary, $mapper->keys))) {
+                        $relation = new Join($thatMapper, $mapper, \array_intersect($mapper->keys, \array_intersect($thatMapper->primary, $mapper->keys)), \strtoupper($join), \strtoupper($operator));
                         $relations[] = $relation->execute();
-                    } elseif (isset($thisMapper->primary) && isset($thatMapper->keys) && \sizeof(\array_intersect($thisMapper->primary, $thatMapper->keys))) {
-                        $relation = new Join($thatMapper, $thisMapper, \array_intersect($thatMapper->keys, \array_intersect($thisMapper->primary, $thatMapper->keys)), $join, $operator);
+                    } elseif (isset($mapper->primary) && isset($thatMapper->keys) && \sizeof(\array_intersect($mapper->primary, $thatMapper->keys))) {
+                        $relation = new Join($thatMapper, $mapper, \array_intersect($thatMapper->keys, \array_intersect($mapper->primary, $thatMapper->keys)), \strtoupper($join), \strtoupper($operator));
                         $relations[] = $relation->execute();
                     }
                 }
             }
-
             parent::__construct(\implode(\PHP_EOL, $relations), [new Validator\IsEmpty, new Validator\IsString\Contains(["JOIN"])]);
         }
     }

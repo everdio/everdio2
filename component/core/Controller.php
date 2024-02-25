@@ -96,22 +96,24 @@ namespace Component\Core {
             return (string) $thread;
         }
 
-        final public function queue(array $pool, array $output = [], int $usleep = 10000): array {
+        final public function queue(array $pool, array $response = [], int $usleep = 1000): array {
             $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
+            
             while (\sizeof($threads)) {
-                foreach ($threads as $thread => $file) {
-                    if (!\file_exists($thread) && \is_file($file)) {
-                        $output[] = \file_get_contents($file);
-                        \unlink($file);
+                foreach ($threads as $thread => $output) {
+                    if (!\file_exists($thread) && \is_file($output)) {
+                        $response[\array_search($thread, $pool)] = \file_get_contents($output);
+                        \unlink($output);
 
-                        unset($threads[$thread]);
+                        unset ($this->queue->{$thread});
+                        unset ($threads[$thread]);
                     }
 
                     \usleep($usleep);
                 }
             }
-
-            return (array) \array_filter($output);
+            
+            return (array) \array_filter($response);
         }
 
         /*

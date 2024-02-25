@@ -63,8 +63,8 @@ namespace Modules\Table {
                         throw new \LogicException(\sprintf("unknown column type: %s (`%s`.`%s`)", $row["DATA_TYPE"], $this->table, $row["COLUMN_NAME"]));
                 }
 
-                $this->addParameter($this->getLabelized($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));
-                $this->mapping = [$row["COLUMN_NAME"] => $this->getLabelized($row["COLUMN_NAME"])];
+                $this->addParameter($this->beautify($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));
+                $this->mapping = [$row["COLUMN_NAME"] => $this->beautify($row["COLUMN_NAME"])];
             }
 
             $keys = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
@@ -73,7 +73,7 @@ namespace Modules\Table {
                 if ($row["CONSTRAINT_NAME"] == "PRIMARY") {
                     $this->primary = [$row["COLUMN_NAME"] => $this->mapping[$row["COLUMN_NAME"]]];
                 } elseif ($row["REFERENCED_COLUMN_NAME"]) {
-                    $this->keys = [$this->mapping[$row["COLUMN_NAME"]] => $this->getLabelized($row["REFERENCED_COLUMN_NAME"])];
+                    $this->keys = [$this->mapping[$row["COLUMN_NAME"]] => $this->beautify($row["REFERENCED_COLUMN_NAME"])];
                 }
             }
 
@@ -81,15 +81,18 @@ namespace Modules\Table {
             $foreign->execute();
             foreach ($foreign->fetchAll(\PDO::FETCH_ASSOC) as $row) {
                 if ($row["REFERENCED_COLUMN_NAME"]) {
-                    $this->parents = [$this->mapping[$row["COLUMN_NAME"]] => $this->namespace . "\\" . $this->getLabelized($row["REFERENCED_TABLE_NAME"])];
+                    $this->parents = [$this->mapping[$row["COLUMN_NAME"]] => $this->namespace . "\\" . $this->beautify($row["REFERENCED_TABLE_NAME"])];
                 }
             }
 
+            /*
             $many = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`REFERENCED_TABLE_NAME`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`!='%s'", $this->database, $this->table, $this->table));
             $many->execute();
             foreach ($many->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                //$this->parents = [$this->getLabelized($row["COLUMN_NAME"]) => $this->namespace . "\\" . $this->getLabelized($row["TABLE_NAME"])];
+                $this->parents = [$this->beautify($row["COLUMN_NAME"]) => $this->namespace . "\\" . $this->beautify($row["TABLE_NAME"])];
             }
+             * 
+             */
         }
     }
 

@@ -6,20 +6,12 @@ namespace Component\Validator\IsString {
 
         const MESSAGE = "STRING_DOES_NOT_CONTAIN";
 
-        public function __construct(private array $_array = false) {
+        public function __construct(private array $_needles) {
             
         }
 
         public function execute($value): bool {
-            if (parent::execute($value)) {
-                foreach ($this->_array as $string) {
-                    if (\strpos($value, (string) $string) !== false) {
-                        return (bool) true;
-                    }
-                }
-            }
-
-            return (bool) false;
+            return (bool) (parent::execute($value) && $this->hasInString($value, $this->_needles));
         }
 
         public function __dry(): string {
