@@ -95,18 +95,24 @@ namespace Component\Core {
             \exec(\sprintf("sleep %s; nice -n %s php -f %s > %s &", $sleep, 0, $thread, $output));
             return (string) $thread;
         }
+        
+        final public function retrieve(string $thread) {
+            if (isset($this->queue->{$thread})) {
+                return \current($this->queue([$thread]));
+            }
+        }
 
-        final public function queue(array $pool, array $response = [], int $usleep = 1000): array {
-            $threads = \array_intersect_key($this->queue->restore(), \array_flip($pool));
+        final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
+            $pool = \array_intersect_key($this->queue->restore(), \array_flip($threads));
             
-            while (\sizeof($threads)) {
-                foreach ($threads as $thread => $output) {
+            while (\sizeof($pool)) {
+                foreach ($pool as $thread => $output) {
                     if (!\file_exists($thread) && \is_file($output)) {
-                        $response[\array_search($thread, $pool)] = \file_get_contents($output);
+                        $response[\array_search($thread, $threads)] = \file_get_contents($output);
                         \unlink($output);
 
                         unset ($this->queue->{$thread});
-                        unset ($threads[$thread]);
+                        unset ($pool[$thread]);
                     }
 
                     \usleep($usleep);
