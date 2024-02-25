@@ -37,7 +37,11 @@ try {
 }
 
 if (isset($error)) {
-    (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a"))->write($error);
+    if (isset($controller->request->{$controller->debug})) {
+        (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a"))->write($error);
+    }
+    
+    echo $error;
 }
 
 exit;
