@@ -1,7 +1,6 @@
 <?php
 declare(ticks = 1);
 
-\pcntl_alarm({{timeout}});
 \pcntl_signal(\SIGALRM, "shutdown");
 \pcntl_signal(\SIGINT, "shutdown");
 \pcntl_signal(\SIGHUP, "shutdown");
@@ -20,10 +19,6 @@ include_once("{{autoloader}}");
 $controller = new {{class}};
 $controller->import({{parameters}});
 
-if (isset($controller->request->{$controller->debug})) {
-    (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".dbg", "a"))->write(\file_get_contents(__FILE__));
-}
-
 try {
     echo $controller->callback("{{callback}}");
 } catch (\RuntimeException | \LogicException $ex) {
@@ -39,6 +34,7 @@ try {
 if (isset($error)) {
     if (isset($controller->request->{$controller->debug})) {
         (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a"))->write($error);
+        (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".dbg", "a"))->write(\file_get_contents(__FILE__));
     }
     
     echo $error;

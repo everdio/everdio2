@@ -75,12 +75,35 @@ namespace Component\Core {
 
             return (string) $output;
         }
+        
+        /*
+         * fetching load from linux systems
+         */
+        private function _load() : float {
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
+            return (float) $this->hydrate($fopen->gets(5));
+        }
+
+        /*
+         * fetching amount of cpu cores on linux systems
+         */
+        private function _cores() : int {
+            return (int) $this->hydrate(\exec("nproc"));
+        }
+
+        /*
+         * calculating nicesess based on load (1 core is max 0.50)
+         */
+        private function _nice(int $factor = 3) : int {
+            return (int) \round((($this->_load() / ($this->_cores() / $factor)) * 100) * (39 / 100) - 19);
+        }        
 
         /*
          * Creating a thread model to execute concurrently (threaded)
          */
 
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
+            
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
             $model->callback = $callback;
@@ -92,7 +115,7 @@ namespace Component\Core {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
-            \exec(\sprintf("sleep %s; nice -n %s php -f %s > %s &", $sleep, 0, $thread, $output));
+            \exec(\sprintf("sleep %s; timeout %s; nice -n %s php -f %s > %s &", $sleep, $timeout, $this->_nice(), $thread, $output));
             return (string) $thread;
         }
         
