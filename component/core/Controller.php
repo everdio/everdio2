@@ -102,7 +102,7 @@ namespace Component\Core {
          * Creating a thread model to execute concurrently (threaded)
          */
 
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 600, string $output = "/dev/null"): string {
             
             $model = new Thread($_parameters);
             $model->import($this->parameters($this->diff()));
@@ -115,7 +115,8 @@ namespace Component\Core {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
-            \exec(\sprintf("sleep %s; timeout %s; nice -n %s php -f %s > %s &", $sleep, $timeout, $this->_nice(), $thread, $output));
+            \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s &", $sleep, $timeout, $this->_nice(), $thread, $output));
+
             return (string) $thread;
         }
         
