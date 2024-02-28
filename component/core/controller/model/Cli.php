@@ -9,7 +9,7 @@ namespace Component\Core\Controller\Model {
                 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc"])])
+                "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "REQUEST_TIME_FLOAT"])])
                     ] + $_parameters);
         }
 
@@ -60,7 +60,8 @@ namespace Component\Core\Controller\Model {
                         $this->request->store(\array_merge_recursive($request, $this->request->restore()));
                     }
                 }
-
+                
+                $this->time = $this->server["REQUEST_TIME_FLOAT"];
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
             } else {
                 throw new \LogicException("Arguments required, nothing to execute");
