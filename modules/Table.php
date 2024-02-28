@@ -34,7 +34,7 @@ namespace Modules {
                     $parents[] = $parent;
                 }
 
-                $validations[] = new Table\Relation($this, $parents, "left");
+                $validations[] = new Table\Relation($this, $parents);
             }
 
             $find = new Table\Find(array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], \array_reverse($validations)));
@@ -56,7 +56,7 @@ namespace Modules {
                     $parents[] = $parent;
                 }
 
-                $validations[] = new Table\Relation($this, $parents);
+                $validations[] = new Table\Relation($this, $parents, "left");
             }
             
             $validations[] = new Table\Select(\array_merge($parents, [$this]));

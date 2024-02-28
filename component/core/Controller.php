@@ -93,9 +93,8 @@ namespace Component\Core {
         }        
 
         /*
-         * Creating a thread model to execute concurrently (threaded) 
+         * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
          */
-
         final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 600, string $output = "/dev/null"): string {
             
             $model = new Thread($_parameters);
