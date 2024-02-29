@@ -61,7 +61,7 @@ namespace Component\Core\Controller\Model {
                     }
                 }
                 
-                $this->time = $this->server["REQUEST_TIME_FLOAT"];
+                $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
             } else {
                 throw new \LogicException("Arguments required, nothing to execute");
