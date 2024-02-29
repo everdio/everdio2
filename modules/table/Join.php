@@ -8,9 +8,9 @@ namespace Modules\Table {
     final class Join extends \Component\Validation {
         public function __construct(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "and", array $operators = []) {
             foreach ($keys as $thatKey => $thisKey) {                                                
-                if ($thatMapper->exists($thisKey) && $thisMapper->exists($thatKey)) {
-                    $join = (isset($thisMapper->getParameter($thatKey)->IS_EMPTY) ? "left join" : $join);
-                    $operators[] = sprintf("`%s`.`%s`.`%s`=`%s`.`%s`.`%s`", $thatMapper->database, $thatMapper->table, $thatMapper->getField($thisKey), $thisMapper->database, $thisMapper->table, $thisMapper->getField($thatKey));
+                if ($thatMapper->exists($thatKey) && $thisMapper->exists($thisKey)) {
+                    $join = (isset($thisMapper->getParameter($thisKey)->IS_EMPTY) ? "left join" : $join);
+                    $operators[] = sprintf("`%s`.`%s`.`%s`=`%s`.`%s`.`%s`", $thatMapper->database, $thatMapper->table, $thatMapper->getField($thatKey), $thisMapper->database, $thisMapper->table, $thisMapper->getField($thisKey));
                 }
             }
             

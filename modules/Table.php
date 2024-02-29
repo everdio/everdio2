@@ -14,7 +14,7 @@ namespace Modules {
                     throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query));
                 }
 
-                throw new \RuntimeException("Invalid PDO Adapter");
+                throw new \RuntimeException($ex->getMessage());
             }
         }
 
