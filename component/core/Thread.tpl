@@ -32,8 +32,8 @@ try {
 
 if (isset($error)) {
     if (isset($controller->request->{$controller->debug})) {
-        (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a"))->write($error);
-        (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".dbg", "a"))->write(\file_get_contents(__FILE__));
+        \file_put_contents(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", $error);
+        \file_put_contents(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".dbg", $\file_get_contents(__FILE__));
     }
     
     echo $error;
