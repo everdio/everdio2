@@ -1,5 +1,7 @@
 #!/usr/bin/env php
 <?php
+declare(ticks = 1);
+
 \ini_set("memory_limit", "2048M");
 \date_default_timezone_set("Europe/Amsterdam");
 \setlocale(\LC_TIME, "nl_NL.utf8");
@@ -13,6 +15,10 @@ $controller->server = $_SERVER;
 $controller->debug = "_debug";
 $controller->path = __DIR__;        
 $controller->pool = "/home/evertdf/tmp";
+
+\pcntl_async_signals(true);
+\pcntl_signal(\SIGINT, array($controller, "terminate"));
+\pcntl_signal(\SIGTERM, array($controller, "terminate"));
 
 try {
     $controller->setup();

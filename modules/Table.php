@@ -50,13 +50,12 @@ namespace Modules {
         public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []): array {
             if (isset($this->parents)) {
                 foreach ($this->parents as $parent) {
-
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
                 }
 
-                $validations[] = new Table\Relation($this, $parents, "left");
+                $validations[] = new Table\Relation($this, $parents);
             }
             
             $validations[] = new Table\Select(\array_merge($parents, [$this]));

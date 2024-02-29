@@ -1,11 +1,6 @@
 <?php
 declare(ticks = 1);
 
-\pcntl_signal(\SIGALRM, "shutdown");
-\pcntl_signal(\SIGINT, "shutdown");
-\pcntl_signal(\SIGHUP, "shutdown");
-\pcntl_signal(\SIGTERM, "shutdown");
-
 function shutdown() {
     if (\is_file(__FILE__)) {
         \unlink(__FILE__);
@@ -18,6 +13,10 @@ include_once("{{autoloader}}");
 
 $controller = new {{class}};
 $controller->import({{parameters}});
+
+\pcntl_async_signals(true);
+\pcntl_signal(\SIGINT, array($controller, "terminate"));
+\pcntl_signal(\SIGTERM, array($controller, "terminate"));
 
 try {
     echo $controller->callback("{{callback}}");

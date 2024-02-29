@@ -17,6 +17,7 @@ namespace Component\Core {
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "pool" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                "threads" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
@@ -75,30 +76,36 @@ namespace Component\Core {
             }
 
             return (string) $output;
-        }        
-        
+        }
+
         /*
          * process timer using the server global request_time_float
          */
-        public function getTiming() : float {
+
+        final public function getTiming(): float {
             return (float) (\microtime(true) - $this->time);
         }
-        
+
         /*
          * fetching load from linux systems
          */
-        public function getLoad() : float {
+
+        final public function getLoad(): float {
             $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
             return (float) $this->hydrate($fopen->gets(5));
-        }        
+        }
+
+        final public function getCPUs(): int {
+            return (int) $this->hydrate(\exec("nproc"));
+        }
 
         /*
          * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
          */
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 600, string $output = "/dev/null"): string {
-            
+
+        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 300, int $nice = 0, string $output = "/dev/null"): string {
             $model = new Thread($_parameters);
-            $model->import($this->parameters($this->diff()));
+            $model->import($this->parameters($this->diff(["threads", "queue"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), "thread", "crc32") . ".php";
             $model->class = \get_class($this);
@@ -108,34 +115,48 @@ namespace Component\Core {
                 $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
             }
 
-            \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s &", $sleep, $timeout, \round((($this->getLoad() / ($this->hydrate(\exec("nproc")) / 2)) * 100) * (39 / 100) - 19), $thread, $output));
-
+            $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $nice, $thread, $output));
             return (string) $thread;
         }
-        
+
         final public function retrieve(string $thread) {
             if (isset($this->queue->{$thread})) {
                 return \current($this->queue([$thread]));
             }
         }
+        
+        final public function terminate($signal) {
+            foreach ($this->threads->restore() as $thread => $pid) {
+                if (\posix_getpgid($pid)) {
+                    \posix_kill($pid, $signal);
+                }
+
+                if (isset($this->queue->{$thread}) && \is_file($this->queue->{$thread})) {
+                    \unlink ($this->queue->{$thread});
+                }
+            }
+            
+            exit;
+        }        
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
             $pool = \array_intersect_key($this->queue->restore(), \array_flip($threads));
-            
+
             while (\sizeof($pool)) {
                 foreach ($pool as $thread => $output) {
                     if (!\file_exists($thread) && \is_file($output)) {
                         $response[\array_search($thread, $threads)] = \file_get_contents($output);
                         \unlink($output);
-
-                        unset ($this->queue->{$thread});
-                        unset ($pool[$thread]);
+                        
+                        unset($this->queue->{$thread});
+                        unset($this->threads->{$thread});
+                        unset($pool[$thread]);
                     }
 
                     \usleep($usleep);
                 }
             }
-            
+
             return (array) \array_filter($response);
         }
 

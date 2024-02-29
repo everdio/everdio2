@@ -1,5 +1,6 @@
 <?php
 \libxml_use_internal_errors(false);
+
 \define("AUTOLOAD", __FILE__);
 
 \set_error_handler(function($errno, $errstr, $errfile, $errline ){
