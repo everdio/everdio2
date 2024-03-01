@@ -16,8 +16,8 @@ namespace Component\Core {
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "pool" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
-                "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "threads" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),                
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
@@ -94,17 +94,25 @@ namespace Component\Core {
             $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
             return (float) $this->hydrate($fopen->gets(5));
         }
-
+        
+        /*
+         * fetching # of cpu's from linux system
+         */
+        
         final public function getCPUs(): int {
             return (int) $this->hydrate(\exec("nproc"));
         }
+        
+        final public function getNiceness() : int {
+            return (int) \min(\max(-19, \round((($this->getLoad() / $this->getCPUs()) * 100) * (39 / 100) - 19)), 19);
+        }             
 
         /*
          * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
          */
 
-        final public function thread(string $callback, bool $queue = false, array $_parameters = [], int|float $sleep = 0, int $timeout = 300, int $nice = 0, string $output = "/dev/null"): string {
-            $model = new Thread($_parameters);
+        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, int $nice = 0, string $output = "/dev/null"): string {
+            $model = new Thread;
             $model->import($this->parameters($this->diff(["threads", "queue"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), "thread", "crc32") . ".php";
