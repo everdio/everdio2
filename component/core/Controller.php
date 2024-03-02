@@ -131,6 +131,8 @@ namespace Component\Core {
                 
                 return (string) $thread;
             }
+            
+            throw new \ParseError($thread);
         }
 
         final public function retrieve(string $thread) {
