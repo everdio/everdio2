@@ -103,6 +103,9 @@ namespace Component\Core {
             return (int) $this->hydrate(\exec("nproc"));
         }
         
+        /*
+         * calculating nicesses based on current load and cpu's
+         */
         final public function getNiceness() : int {
             return (int) \min(\max(-19, \round((($this->getLoad() / $this->getCPUs()) * 100) * (39 / 100) - 19)), 19);
         }             
@@ -111,7 +114,7 @@ namespace Component\Core {
          * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
          */
 
-        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, int $nice = 0, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
             $model = new Thread;
             $model->import($this->parameters($this->diff(["threads", "queue"])));
             $model->callback = $callback;
@@ -119,12 +122,15 @@ namespace Component\Core {
             $model->class = \get_class($this);
             unset($model);
 
-            if ($queue) {
-                $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+            if (\str_contains(\exec("php -l " . $thread), "No syntax errors detected")) {
+                if ($queue) {
+                    $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                }
+            
+                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->getNiceness(), $thread, $output));
+                
+                return (string) $thread;
             }
-
-            $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $nice, $thread, $output));
-            return (string) $thread;
         }
 
         final public function retrieve(string $thread) {
