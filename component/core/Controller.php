@@ -115,7 +115,7 @@ namespace Component\Core {
             $model = new Thread;
             $model->import($this->parameters($this->diff(["threads", "queue"])));
             $model->callback = $callback;
-            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), "thread", "crc32") . ".php";
+            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             unset($model);
 

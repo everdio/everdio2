@@ -11,7 +11,7 @@ namespace Modules\Table {
                 }
             }
 
-            parent::__construct("ORDER BY" . \implode(",", $values), [new \Component\Validator\IsString\Contains(["DESC", "ASC"])], self::STRICT);
+            parent::__construct(\sprintf("ORDER BY%s", \implode(",", $values)), [new \Component\Validator\IsString\Contains(["DESC", "ASC"])], self::STRICT);
         }
     }
 

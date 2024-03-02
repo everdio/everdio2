@@ -28,21 +28,23 @@ namespace Modules {
 
         public function count(array $validations = [], string $query = NULL, array $parents = []): int {
             if (isset($this->parents)) {
+                
                 foreach ($this->parents as $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
-                    $parents[] = $parent;
+                    
+                    $parents[(string) $parent] = $parent;
                 }
-
-                $validations[] = new Table\Relation($this, $parents);
+                
+                $validations[] = new \Table\Joins([new Table\Relation($this, $parents)]);
             }
-
-            $find = new Table\Find(array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], \array_reverse($validations)));
+            
+            $find = new Table\Find(array_merge([new Table\Select\Count(\implode(", ", \array_flip(\array_intersect($this->primary, $this->mapping)))), new Table\From([$this]), new Table\Filter([$this])], $validations));
             return (int) $this->query($find->execute() . $query)->fetchColumn();
         }
 
         public function find(array $validations = [], string $query = NULL): self {
-            $find = new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));
+            $find = new Table\Find(array_merge([new Table\Select\Tables([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));
             $this->store($this->desanitize((array) $this->statement($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC)));
             return (object) $this;
         }
@@ -55,10 +57,10 @@ namespace Modules {
                     $parents[] = $parent;
                 }
 
-                $validations[] = new Table\Relation($this, $parents);
+                $validations[] = new Table\Joins([new Table\Relation($this, $parents)]);
             }
             
-            $validations[] = new Table\Select(\array_merge($parents, [$this]));
+            $validations[] = new Table\Select\Tables(\array_merge($parents, [$this]));
             
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
@@ -74,8 +76,9 @@ namespace Modules {
                     $validations[] = new Table\OrderBy($this, ["desc" => $this->keys]);
                 }
             }
-
-            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this])], \array_reverse($validations)));
+            
+            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
+            echo \PHP_EOL . \PHP_EOL . $find->execute() . \PHP_EOL . \PHP_EOL;
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
 
