@@ -128,8 +128,8 @@ namespace Component {
             return (string) \http_build_query($this->restore($parameters));
         }
 
-        public function reset(array $parameters = []): void {
-            $this->store(\array_fill_keys($this->inter($parameters), false));
+        public function reset(array $parameters = []): self {
+            return (object) $this->store(\array_fill_keys($this->inter($parameters), false));
         }
 
         final public function validations(array $parameters = [], array $validations = []): array {

@@ -3,12 +3,12 @@
 namespace Component\Core\Adapter {
 
     abstract class Mapper extends \Component\Core\Adapter {
-        final public function reset(array $parameters = []): void {
+        final public function reset(array $parameters = []): self {
             if (isset($this->mapping)) {
                 $parameters = \array_merge($parameters, $this->mapping);
             }
             
-            parent::reset($parameters);
+            return (object) parent::reset($parameters);
         }
 
         final public function hasField(string $field): bool {
