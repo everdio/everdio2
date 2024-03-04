@@ -11,7 +11,7 @@ namespace Modules\Table {
                         $select[] = $validation->execute();
                     } elseif ($validation instanceof From) {
                         $from = $validation->execute();
-                    } elseif ($validation instanceof Filter) {
+                    } elseif ($validation instanceof Filter || $validation instanceof In) {
                         $operators[] = $validation->execute();
                     } elseif ($validation instanceof Joins) {
                         $joins[] = $validation->execute();                        
