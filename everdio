@@ -1,32 +1,35 @@
 #!/usr/bin/env php
 <?php
-declare(ticks = 1);
-
 \ini_set("memory_limit", "2048M");
 \date_default_timezone_set("Europe/Amsterdam");
 \setlocale(\LC_TIME, "nl_NL.utf8");
 \ini_set('intl.default_locale', 'nl-NL');
 \ini_set('display_errors', '1'); 
 
+declare(ticks = 1);
+
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$controller = new \Component\Core\Controller\Model\Cli;
-$controller->server = $_SERVER;
-$controller->debug = "_debug";
-$controller->path = __DIR__;        
-$controller->pool = "/home/evertdf/tmp";
-
-\pcntl_async_signals(true);
-\pcntl_signal(\SIGINT, array($controller, "terminate"));
-\pcntl_signal(\SIGTERM, array($controller, "terminate"));
-
 try {
+    $controller = new \Component\Core\Controller\Model\Cli;
+    $controller->server = $_SERVER;
+    $controller->debug = "_debug";
+    $controller->path = __DIR__;        
+    $controller->pool = "/home/evertdf/tmp";    
+    
+    \pcntl_async_signals(true);
+    \pcntl_signal(\SIGINT, array($controller, "terminate"));
+    \pcntl_signal(\SIGTERM, array($controller, "terminate"));    
+    
     $controller->setup();
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
-    echo \PHP_EOL . \get_class($ex) . " " . \ucfirst($ex->getMessage()) . \PHP_EOL . $ex->getTraceAsString() . \PHP_EOL;
-    if ($ex->getPrevious()) {
-        echo \PHP_EOL . \get_class($ex->getPrevious()) . " " . $ex->getPrevious()->getMessage() . \PHP_EOL . $ex->getPrevious()->getTraceAsString() . \PHP_EOL . \PHP_EOL;
+    echo \sprintf("\n%s: %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
+    if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
+        echo \sprintf("\n%s\n", $ex->getTraceAsString());
+        if ($ex->getPrevious()) {
+            echo \sprintf("\n%s: %s\n\n%s\n", \get_class($ex->getPrevious()), \ucfirst($ex->getPrevious()->getMessage()), $ex->getPrevious()->getTraceAsString());
+        }
     }
 }
 

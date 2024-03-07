@@ -21,7 +21,13 @@ try {
     
     echo $controller->callback("{{callback}}");
 } catch (\Exception $ex) {
-    echo \sprintf("%s: %s in %s(%s)\n\n%s", \get_class($ex), \ucfirst($ex->getMessage()), $ex->getFile(), $ex->getLine(), $ex->getTraceAsString());
+    echo \sprintf("\n%s: %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
+    if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
+        echo \sprintf("\n%s\n", $ex->getTraceAsString());
+        if ($ex->getPrevious()) {
+            echo \sprintf("\n%s: %s\n\n%s\n", \get_class($ex->getPrevious()), \ucfirst($ex->getPrevious()->getMessage()), $ex->getPrevious()->getTraceAsString());
+        }
+    }
 }
 
 exit;
