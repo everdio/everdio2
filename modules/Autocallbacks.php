@@ -22,9 +22,9 @@ namespace Modules {
                                 try {
                                     if (\is_string($label)) {
                                         if (isset($this->request->{$this->debug})) {
-                                            echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \trim($callback, "{{}}"));
+                                            echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \str_replace(["{{", "}}"], ["{", "}"], $callback));
                                         }
-                                        
+
                                         $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value
@@ -53,8 +53,8 @@ namespace Modules {
                                     } else {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
-                                } catch (\BadMethodCallException | \UnexpectedValueException | \InvalidArgumentException | \ErrorException | \ValueError | \TypeError | \ParseError | \Error $ex) {
-                                    throw new \LogicException(\sprintf("%s/%s/%s/%s: %s", $parameter, $mapper, $label, \trim($callback, "{{}}"), $ex->getMessage()), 0, $ex);
+                                } catch (\Exception $ex) {
+                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s: %s", $parameter, $mapper, $label, \str_replace(["{{", "}}"], ["{", "}"], $callback), $ex->getMessage()), 0, $ex);
                                 }
                             }
                         }

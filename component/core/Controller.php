@@ -15,7 +15,7 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "pool" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
+                "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "threads" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),                
                 "reserved" => new Validation(false, [new Validator\IsArray])
@@ -66,9 +66,9 @@ namespace Component\Core {
                             $data = \str_replace("false", "", $this->dehydrate($data));
                         }
                     } catch (\BadMethodCallException $ex) {
-                        throw new \LogicException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));
+                        throw new \RuntimeException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) {
-                        throw new \LogicException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
+                        throw new \RuntimeException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
                     }
 
                     $output = \str_replace($matches[0][$key], $data, $output);
@@ -114,11 +114,11 @@ namespace Component\Core {
          * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
          */
 
-        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
+        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
             $model = new Thread;
             $model->import($this->parameters($this->diff(["threads", "queue"])));
             $model->callback = $callback;
-            $model->thread = $thread = $this->pool . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
+            $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             unset($model);
 
@@ -130,9 +130,9 @@ namespace Component\Core {
                 $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->getNiceness(), $thread, $output));
                 
                 return (string) $thread;
+            } elseif (isset($this->debug) && isset($this->request->{$this->debug})) {
+                throw new \ParseError($thread);
             }
-            
-            throw new \ParseError($thread);
         }
 
         final public function retrieve(string $thread) {
@@ -156,24 +156,26 @@ namespace Component\Core {
         }        
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
-            $pool = \array_intersect_key($this->queue->restore(), \array_flip($threads));
+            if (\sizeof($threads)) {
+                $pool = \array_intersect_key($this->queue->restore(), \array_flip($threads));
 
-            while (\sizeof($pool)) {
-                foreach ($pool as $thread => $output) {
-                    if (!\file_exists($thread) && \is_file($output)) {
-                        $response[\array_search($thread, $threads)] = \file_get_contents($output);
-                        \unlink($output);
-                        
-                        unset($this->queue->{$thread});
-                        unset($this->threads->{$thread});
-                        unset($pool[$thread]);
+                while (\sizeof($pool)) {
+                    foreach ($pool as $thread => $output) {
+                        if (!\file_exists($thread) && \is_file($output)) {
+                            $response[\array_search($thread, $threads)] = \file_get_contents($output);
+                            \unlink($output);
+
+                            unset($this->queue->{$thread});
+                            unset($this->threads->{$thread});
+                            unset($pool[$thread]);
+                        }
+
+                        \usleep($usleep);
                     }
-
-                    \usleep($usleep);
                 }
             }
-
-            return (array) \array_filter($response);
+            
+            return (array) \array_filter($response);            
         }
 
         /*
@@ -186,16 +188,17 @@ namespace Component\Core {
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             $controller->basename = \basename($path);
+            
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch($this->basename));
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \LogicException(\sprintf("invalid parameter value %s in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("%s: invalid parameter value %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
-                    throw new \LogicException(\sprintf("parameter %s required in %s(%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } catch (\ErrorException | \TypeError | \ParseError | \Error $ex) {
-                    throw new \LogicException(\sprintf("%s in %s (%s)", $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                }
+                    throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                } catch (\ValueError | \ErrorException $ex) {
+                    throw new \RuntimeException(\sprintf("%s (%s) in %s (%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                } 
             }
         }
 

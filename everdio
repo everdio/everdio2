@@ -15,11 +15,11 @@ try {
     $controller->server = $_SERVER;
     $controller->debug = "_debug";
     $controller->path = __DIR__;        
-    $controller->pool = "/home/evertdf/tmp";    
+    $controller->storage = "/home/evertdf/tmp";    
     
     \pcntl_async_signals(true);
-    \pcntl_signal(\SIGINT, array($controller, "terminate"));
-    \pcntl_signal(\SIGTERM, array($controller, "terminate"));    
+    \pcntl_signal(\SIGINT, [$controller, "terminate"]);
+    \pcntl_signal(\SIGTERM, [$controller, "terminate"]);    
     
     $controller->setup();
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);

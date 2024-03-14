@@ -48,7 +48,7 @@ namespace Component\Core\Controller {
                         }
                     }
                 } catch (\ErrorException $ex) {
-                    throw new \LogicException(\sprintf("invalid ini file %s: %s", $this->path . \DIRECTORY_SEPARATOR . $path . ".ini", $ex->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("invalid ini file %s: %s", $this->path . \DIRECTORY_SEPARATOR . $path . ".ini", $ex->getMessage()), 0, $ex);
                 }
             }
 

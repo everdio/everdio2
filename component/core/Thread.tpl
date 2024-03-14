@@ -16,12 +16,12 @@ try {
     $controller->import({{parameters}});
 
     \pcntl_async_signals(true);
-    \pcntl_signal(\SIGINT, array($controller, "terminate"));
-    \pcntl_signal(\SIGTERM, array($controller, "terminate"));
+    \pcntl_signal(\SIGINT, [$controller, "terminate"]);
+    \pcntl_signal(\SIGTERM, [$controller, "terminate"]);
     
     echo $controller->callback("{{callback}}");
 } catch (\Exception $ex) {
-    echo \sprintf("\n%s: %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
+    echo \sprintf("%s: %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
     if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
         echo \sprintf("\n%s\n", $ex->getTraceAsString());
         if ($ex->getPrevious()) {

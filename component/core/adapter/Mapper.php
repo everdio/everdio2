@@ -20,7 +20,7 @@ namespace Component\Core\Adapter {
                 return (string) \array_search($parameter, $this->mapping);
             }
 
-            throw new \LogicException(\sprintf("unknown parameter %s", $parameter));
+            throw new \InvalidArgumentException($parameter);
         }
 
         final public function __dry(): string {
