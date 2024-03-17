@@ -24,12 +24,12 @@ namespace Component {
         public function getTimeformat(int $seconds, string $seperator = ":"): string {
             return (string) \sprintf("%02d%s%02d%s%02d", \floor($seconds / 3600), $seperator, ($seconds / 60 ) % 60, $seperator, $seconds % 60);
         }
-
+        
         public function substring(string $string, int $start = 0, $length = 25, string $prefix = "", string $suffix = "", bool $fill = false, string $encoding = "UTF-8"): string {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }
 
-        public function sanitize($data): string|array|null {
+        public function sanitize($data): int|string|array|null {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->sanitize($value);
@@ -41,7 +41,7 @@ namespace Component {
             return $data;
         }
 
-        public function desanitize($data): string|array|null {
+        public function desanitize($data): int|string|array|null {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->desanitize($value);
@@ -56,8 +56,10 @@ namespace Component {
         public function getWords(string $content, int $min = 1, $max = 9999, array $keywords = [], int $count = 0): array {
             $words = \array_count_values(\str_word_count(\strip_tags(\nl2br($content)), 1));
             \asort($words);
+            
             foreach (\array_keys(\array_reverse($words)) as $word) {
-                $word = \trim($this->reName(\strtolower($word)));
+                $word = \trim($this->reName($word));
+                
                 if (!\in_array($word, $keywords) && \strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
                     $keywords[] = $word;
                     $count += \strlen($word);
@@ -80,15 +82,15 @@ namespace Component {
         }        
         
 
-        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $lines = [], int $count = 0): string {
-            foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $line) {
-                if (\strlen($line) >= $min && (\strlen($line) + $count) <= $total && \sizeof($this->getWords($line))) {
-                    $lines[] = \trim($line, $eol);
-                    $count += \strlen($line);
+        public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $sentences = [], int $count = 0): string {
+            foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $sentence) {
+                if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {
+                    $sentences[] = \trim($sentence, $eol);
+                    $count += \strlen($sentence);
                 }
             }
 
-            return (string) \str_replace(["\"", "'", "`"], "", \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($lines))))) . $eol;
+            return (string) \str_replace(["\"", "'", "`"], "", \implode($implode, \explode(\trim($implode), \implode(\trim($implode), \array_unique($sentences))))) . $eol;
         }
     }
 

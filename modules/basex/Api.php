@@ -13,10 +13,10 @@ namespace Modules\BaseX {
 
         public function query(string $query): \DOMNodeList {
             $api = new $this->api;
-            foreach ($api::$_queries as $_query => $dom) {
+            foreach ($api::$_queries as $_query => $_dom) {
                 $fragment = new \Modules\Node\Fragment($_query, $query);
                 if ($fragment->isValid()) {
-                    return (object) $this->xpath($dom)->query($fragment->execute());
+                    return (object) $this->xpath($_dom)->query($fragment->execute());
                 }
             }
 
@@ -26,10 +26,10 @@ namespace Modules\BaseX {
 
         public function evaluate(string $query, string $function): int|float|string {
             $api = new $this->api;
-            foreach ($api::$_queries as $_query => $dom) {
+            foreach ($api::$_queries as $_query => $_dom) {
                 $fragment = new \Modules\Node\Fragment($_query, $query);
                 if ($fragment->isValid()) {
-                    return (int) $this->xpath($dom)->evaluate($function . $fragment->execute());
+                    return (int) $this->xpath($_dom)->evaluate($function . $fragment->execute());
                 }
             }
 

@@ -10,17 +10,21 @@ namespace {{namespace}} {
             parent::__construct({{parameters}} + $_parameters);
         }
         
-        final public function getResponse(string $query): string {
-            $this->memcached->key = $this->memcached->prefix . \crc32($query);
-            
-            if ($this->memcached->find()->code === 0) {
-                return \unserialize($this->memcached->data);
+        final public function getResponse(string $query, bool $memcached = true): string {
+            if ($memcached) {
+                $this->memcached->key = $this->memcached->prefix . \crc32($query);
+
+                if ($this->memcached->find()->code === 0) {
+                    return \unserialize($this->memcached->data);
+                }
+
+                $this->memcached->data = \serialize($this->getApiResponse($query));
+                $this->memcached->save();
+
+                return (string) \unserialize($this->memcached->data);
             }
-
-            $this->memcached->data = \serialize($this->getApiResponse($query));
-            $this->memcached->save();
-
-            return (string) \unserialize($this->memcached->data);
+            
+            return (string) $this->getApiResponse($query);
         }        
     }
     

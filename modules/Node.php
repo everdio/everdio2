@@ -16,8 +16,8 @@ namespace Modules {
 
         public function xpath(\DOMDocument $dom) : \DOMXPath {
             $xpath = new \DOMXPath($dom);
-            $xpath->registerNamespace("php", "http://php.net/xpath");
-            $xpath->registerPHPFunctions();
+            //$xpath->registerNamespace("php", "http://php.net/xpath");
+            //$xpath->registerPHPFunctions();
             return (object) $xpath;
         }
 
