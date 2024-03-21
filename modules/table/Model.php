@@ -5,11 +5,11 @@ namespace Modules\Table {
     use Component\Validation;
     use Component\Validator;
 
-    final class Model extends \Component\Core\Adapter\Mapper\Model {
+    class Model extends \Component\Core\Adapter\Mapper\Model {
 
         use \Modules\Table\Pdo;
 
-        public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
                 "dsn" => new Validation(false, array(new Validator\IsString)),
                 "username" => new Validation(false, array(new Validator\IsString)),
@@ -17,7 +17,7 @@ namespace Modules\Table {
                 "database" => new Validation(false, array(new Validator\IsString)),
                 "table" => new Validation(false, array(new Validator\IsString)),
                 "keys" => new Validation(false, array(new Validator\IsArray))
-            ]);
+                    ] + $_parameters);
 
             $this->use = "\Modules\Table\Pdo";
         }
@@ -86,11 +86,11 @@ namespace Modules\Table {
             }
 
             /*
-            $many = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`REFERENCED_TABLE_NAME`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`!='%s'", $this->database, $this->table, $this->table));
-            $many->execute();
-            foreach ($many->fetchAll(\PDO::FETCH_ASSOC) as $row) {
-                $this->parents = [$this->beautify($row["COLUMN_NAME"]) => $this->namespace . "\\" . $this->beautify($row["TABLE_NAME"])];
-            }
+              $many = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`REFERENCED_TABLE_NAME`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`!='%s'", $this->database, $this->table, $this->table));
+              $many->execute();
+              foreach ($many->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+              $this->parents = [$this->beautify($row["COLUMN_NAME"]) => $this->namespace . "\\" . $this->beautify($row["TABLE_NAME"])];
+              }
              * 
              */
         }

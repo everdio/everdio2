@@ -4,7 +4,7 @@ namespace Modules {
 
     trait Table {
 
-        final public function statement(string $query): \PDOStatement {
+        final public function statement(string $query, $stm = NULL): \PDOStatement {
             try {
                 if (($stm = $this->prepare($query)) && $stm->execute()) {
                     return (object) $stm;

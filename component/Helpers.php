@@ -29,7 +29,7 @@ namespace Component {
             return (string) (\strlen($string) >= $length ? $prefix . \mb_substr($string, $start, $length, $encoding) . $suffix : ($fill ? \str_pad($string, $length + \strlen($suffix), " ", \STR_PAD_RIGHT) : $string));
         }
 
-        public function sanitize($data): int|string|array|null {
+        public function sanitize($data): int|float|string|array|null {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->sanitize($value);
@@ -41,7 +41,7 @@ namespace Component {
             return $data;
         }
 
-        public function desanitize($data): int|string|array|null {
+        public function desanitize($data): int|float|string|array|null {
             if (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->desanitize($value);
