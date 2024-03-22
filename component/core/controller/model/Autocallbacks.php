@@ -4,8 +4,8 @@ namespace Component\Core\Controller\Model {
 
     trait Autocallbacks {
 
-        public function initialize(string $parameter): void {
-            if (isset($this->{$parameter}) && isset($this->_library)) {
+        public function autoCallbacks(string $parameter): void {
+            if (isset($this->{$parameter}) && isset($this->_library) && isset($this->_controller)) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->_library->{$mapper})) {
                         if (($finder = ($this->_library->{$mapper} === \get_class($this) ? $this : new $this->_library->{$mapper}))) {
