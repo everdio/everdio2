@@ -33,13 +33,6 @@ namespace Component\Core {
         }
         
         /*
-         * minifying content string
-         */
-        public function minify(string $content) : string {
-            return (string) \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $content);
-        }        
-
-        /*
          * checks if controller php file exists
          */
 
@@ -204,7 +197,7 @@ namespace Component\Core {
                 } catch (\InvalidArgumentException $ex) {
                     throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ValueError | \ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("%s (%s) in %s (%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("%s (%s) in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } 
             }
         }
