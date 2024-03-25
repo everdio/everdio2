@@ -2,9 +2,9 @@
 
 namespace Component\Core\Controller\Model {
 
-    trait Autocallbacks {
-
-        public function autoCallbacks(string $parameter): void {
+    trait Auto {
+        
+        public function initialize(string $parameter): void {
             if (isset($this->{$parameter}) && isset($this->_library) && isset($this->_controller)) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->_library->{$mapper})) {
