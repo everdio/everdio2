@@ -3,7 +3,7 @@ namespace {{namespace}} {
 
     class {{class}} extends \Modules\Memcached\Adapter {
         use {{use}} {
-            query as memcachedQuery;
+            query as apiQuery;
         }
         
         public function __construct(array $_parameters = []) {
@@ -18,13 +18,13 @@ namespace {{namespace}} {
                     return \unserialize($this->memcached->data);
                 }
 
-                $this->memcached->data = \serialize($this->memcachedQuery($query));
+                $this->memcached->data = \serialize($this->apiQuery($query));
                 $this->memcached->save();
 
                 return (string) \unserialize($this->memcached->data);
             }
             
-            return (string) $this->memcachedQuery($query);
+            return (string) $this->apiQuery($query);
         }        
     }
     
