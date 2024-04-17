@@ -62,9 +62,7 @@ namespace Component {
             \asort($words);
             
             foreach (\array_keys(\array_reverse($words)) as $word) {
-                $word = \trim($this->reName($word));
-                
-                if (!\in_array($word, $keywords) && \strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
+                if (!\in_array(($word = \trim($this->reName($word))), $keywords) && \strlen($word) >= $min && (\strlen($word) + $count) <= $max) {
                     $keywords[] = $word;
                     $count += \strlen($word);
                 }
