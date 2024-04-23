@@ -197,7 +197,7 @@ namespace Component\Core {
                 } catch (\InvalidArgumentException $ex) {
                     throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ValueError | \ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("%s (%s) in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } 
             }
         }

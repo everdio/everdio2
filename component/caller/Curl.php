@@ -8,7 +8,7 @@ namespace Component\Caller {
             parent::__construct("curl_%s");
 
             $this->handle = $this->init();
-            $this->setopt_array([
+            $this->setopt_array([                
                 \CURLOPT_TCP_FASTOPEN => true,
                 \CURLOPT_ENCODING => "",
                 \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]);
@@ -41,11 +41,15 @@ namespace Component\Caller {
                 \CURLOPT_CUSTOMREQUEST => "DELETE"]);
         }
 
-        public function execute() {
+        public function execute() {            
             if (($response = $this->exec()) === false) {
-                throw new \Error($this->error());
+                throw new \ErrorException(\sprintf("CURL empty response, error: %s", $this->error()));
             }
-
+            
+            if (\in_array(($code = $this->getinfo(\CURLINFO_HTTP_CODE)), \range(400, 599), true)) {
+                throw new \ErrorException(\sprintf("CURL response status code: %s", $code));
+            }
+            
             return (string) \trim($response);
         }
 
