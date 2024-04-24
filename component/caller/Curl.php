@@ -19,7 +19,7 @@ namespace Component\Caller {
             $this->setopt_array([
                 \CURLOPT_INFILE => $handle,
                 \CURLOPT_INFILESIZE => $size,
-                \CURLOPT_PUT => true]);
+                \CURLOPT_CUSTOMREQUEST => "PUT"]);
 
             \fseek($handle, 0);
         }
@@ -38,11 +38,15 @@ namespace Component\Caller {
 
         public function execute() {            
             if (($response = $this->exec()) === false) {
-                throw new \ErrorException(\sprintf("CURL empty response, error: %s", $this->error()));
+                if (!$this->errno()) {
+                    throw new \ErrorException("CURL empty response");
+                } else {
+                    throw new \LogicException(\sprintf("CURL error: %s", $this->error()));
+                }
             }
             
             if (\in_array(($code = $this->getinfo(\CURLINFO_HTTP_CODE)), \range(400, 599), true)) {
-                throw new \ErrorException(\sprintf("CURL response status code: %s", $code));
+                throw new \RuntimeException(\sprintf("CURL response status code: %s", $code));
             }
             
             return (string) \trim($response);

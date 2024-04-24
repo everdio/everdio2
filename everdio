@@ -24,7 +24,7 @@ try {
     $controller->setup();
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
-    echo \sprintf("\n%s catched %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
+    echo \sprintf("\n%s catched %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));
     if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
         echo \sprintf("\n%s\n", $ex->getTraceAsString());
         if ($ex->getPrevious()) {
