@@ -6,12 +6,7 @@ namespace Component\Caller {
 
         public function __construct() {
             parent::__construct("curl_%s");
-
             $this->handle = $this->init();
-            $this->setopt_array([                
-                \CURLOPT_TCP_FASTOPEN => true,
-                \CURLOPT_ENCODING => "",
-                \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4]);
         }
 
         final public function get($handle) {
