@@ -9,9 +9,6 @@ namespace Modules\Node\Html {
         protected function __init(): object {
             $curl = new \Component\Caller\Curl\Client;
             $curl->setopt_array([
-                \CURLOPT_TIMEOUT => 6,
-                \CURLOPT_AUTOREFERER => true,
-                \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_URL => $this->url]);
 
             $dom = new \DOMDocument("1.0", "UTF-8");

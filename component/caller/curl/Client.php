@@ -8,16 +8,19 @@ namespace Component\Caller\Curl {
             parent::__construct();
 
             $this->_cookie = \tempnam(\sys_get_temp_dir(), "everdio_caller_curl_api_cookie_");
-
+            
+            $agents = \explode(\PHP_EOL, \file_get_contents(__DIR__ . \DIRECTORY_SEPARATOR . "Agents.txt"));
+            
             $this->setopt_array([
+                \CURLOPT_USERAGENT => $agents[\array_rand($agents, 1)],
                 \CURLOPT_SSL_VERIFYPEER => false,
                 \CURLOPT_FOLLOWLOCATION => true,
-                \CURLOPT_ENCODING => "",
-                \CURLOPT_VERBOSE => false,
-                \CURLOPT_HEADER => true,
+                \CURLOPT_AUTOREFERER => true,
+                \CURLOPT_VERBOSE => true,
                 \CURLOPT_RETURNTRANSFER => true,
+                \CURLOPT_TIMEOUT => 9,                
+                \CURLOPT_COOKIESESSION => true,
                 \CURLOPT_COOKIEJAR => $this->_cookie,
-                \CURLOPT_TIMEOUT => 9,
                 \CURLOPT_COOKIEFILE => $this->_cookie,
             ]);
         }

@@ -17,7 +17,6 @@ namespace Component\Core\Adapter\Wrapper {
         }
 
         final protected function __init(): object {
-            //echo \sprintf("%s?%s", $this->uri, \urldecode($this->request->querystring()));
             $curl = new \Component\Caller\Curl\Client;
             $curl->setopt_array([
                 \CURLOPT_URL => \sprintf("%s?%s", $this->uri, $this->request->querystring()),
