@@ -14,7 +14,7 @@ namespace Modules\Node {
             if (\sizeof($xparts)) {
                 $xpath = \sprintf("%s[%s]", $xpath, \implode(\sprintf(" %s ", $operator), $xparts));
             }
-
+            
             parent::__construct($xpath, [new \Component\Validator\IsString]);
         }
     }
