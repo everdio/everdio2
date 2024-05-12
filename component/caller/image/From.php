@@ -23,8 +23,9 @@ namespace Component\Caller\Image {
                     case "image/avif":
                         $this->handle = \imagecreatefromavif($file);
                         break;
+                    case "application/octet-stream":
                     default:
-                        throw new \InvalidArgumentException(\sprintf("%s image %s not supported", $file, \image_type_to_mime_type(\exif_imagetype($file))));
+                        throw new \InvalidArgumentException(\sprintf("image %s type %s is not supported", $file, \image_type_to_mime_type(\exif_imagetype($file))));
                 }
             } else {
                 throw new \InvalidArgumentException(\sprintf("%s does not exist", $file));

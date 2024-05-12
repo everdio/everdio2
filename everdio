@@ -10,8 +10,10 @@ declare(ticks = 1);
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
+$controller = new \Component\Core\Controller\Model\Cli;
+
 try {
-    $controller = new \Component\Core\Controller\Model\Cli;
+    
     $controller->server = $_SERVER;
     $controller->debug = "_debug";
     $controller->path = __DIR__;        

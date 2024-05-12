@@ -21,13 +21,8 @@ try {
     
     echo $controller->callback("{{callback}}");
 } catch (\Exception $ex) {
-    echo \sprintf("%s: %s\n", \get_class($ex), \ucfirst($ex->getMessage()));
-    if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
-        echo \sprintf("\n%s\n", $ex->getTraceAsString());
-        if ($ex->getPrevious()) {
-            echo \sprintf("\n%s: %s\n\n%s\n", \get_class($ex->getPrevious()), \ucfirst($ex->getPrevious()->getMessage()), $ex->getPrevious()->getTraceAsString());
-        }
-    }
+    $error = new Fopen(__DIR__ . \DIRECTORY_SEPERATOR . \basename(__FILE__, ".php") . ".err", "a");
+    $error->write(\sprintf("%s: %s\n\n%s\n", \get_class($ex), \ucfirst($ex->getMessage()), $ex->getTraceAsString()));
 }
 
 exit;
