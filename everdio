@@ -1,28 +1,28 @@
 #!/usr/bin/env php
 <?php
+
 \ini_set("memory_limit", "2048M");
 \date_default_timezone_set("Europe/Amsterdam");
 \setlocale(\LC_TIME, "nl_NL.utf8");
 \ini_set('intl.default_locale', 'nl-NL');
-\ini_set('display_errors', '1'); 
+\ini_set('display_errors', '1');
 
-declare(ticks = 1);
+declare(ticks=1);
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
 $controller = new \Component\Core\Controller\Model\Cli;
 
 try {
-    
     $controller->server = $_SERVER;
     $controller->debug = "_debug";
-    $controller->path = __DIR__;        
-    $controller->storage = "/home/evertdf/tmp";    
-    
+    $controller->path = __DIR__;
+    $controller->storage = "/home/evertdf/tmp";
+
     \pcntl_async_signals(true);
     \pcntl_signal(\SIGINT, [$controller, "terminate"]);
-    \pcntl_signal(\SIGTERM, [$controller, "terminate"]);    
-    
+    \pcntl_signal(\SIGTERM, [$controller, "terminate"]);
+
     $controller->setup();
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception $ex) {
