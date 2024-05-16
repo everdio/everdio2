@@ -133,26 +133,6 @@ namespace Component\Core {
             } elseif (isset($this->debug) && isset($this->request->{$this->debug})) {
                 throw new \ParseError($thread);
             }
-        }
-
-        final public function retrieve(string $thread) {
-            if (isset($this->queue->{$thread})) {
-                return \current($this->queue([$thread]));
-            }
-        }
-        
-        final public function terminate($signal) {
-            foreach ($this->threads->restore() as $thread => $pid) {
-                if (\posix_getpgid($pid)) {
-                    \posix_kill($pid, $signal);
-                }
-
-                if (isset($this->queue->{$thread}) && \is_file($this->queue->{$thread})) {
-                    \unlink ($this->queue->{$thread});
-                }
-            }
-            
-            exit;
         }        
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
@@ -177,9 +157,29 @@ namespace Component\Core {
             
             return (array) \array_filter($response);            
         }
+        
+        final public function retrieve(string $thread) {
+            if (isset($this->queue->{$thread})) {
+                return \current($this->queue([$thread]));
+            }
+        }
+        
+        final public function terminate($signal) {
+            foreach ($this->threads->restore() as $thread => $pid) {
+                if (\posix_getpgid($pid)) {
+                    \posix_kill($pid, $signal);
+                }
+
+                if (isset($this->queue->{$thread}) && \is_file($this->queue->{$thread})) {
+                    \unlink ($this->queue->{$thread});
+                }
+            }
+            
+            exit;
+        }        
 
         /*
-         * executing this controller by dispatching a path and setting that path as a new reference for dispatches
+         * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
          */
 
         final public function execute(string $path, array $request = []) {

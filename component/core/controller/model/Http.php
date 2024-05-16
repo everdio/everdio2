@@ -62,14 +62,12 @@ namespace Component\Core\Controller\Model {
             }
 
             $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
-            
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->host = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
         }
-
     }
 
 }
