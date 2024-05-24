@@ -16,9 +16,9 @@ namespace Component\Core\Controller\Model {
         final public function break(int $breaks = 1): void {
             $this->echo(\str_repeat(\PHP_EOL, $breaks));
         }
-
-        final public function echo(int|string $content, array $styles = ["white", "blackbg"]): void {
-            (new \Component\Caller\File\Fopen("php://stdout"))->puts(\sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
+        
+        final public function style(int|string $content, array $styles): string {
+            return (string) \sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                 "bold" => 1,
                 "italic" => 3,
                 "underline" => 4,
@@ -47,7 +47,11 @@ namespace Component\Core\Controller\Model {
                 "bluebg" => 44,
                 "magentabg" => 45,
                 "cyanbg" => 46,
-                "lightgreybg" => 47]), $styles))), $content));
+                "lightgreybg" => 47]), $styles))), $content);
+        }
+
+        final public function echo(int|string $content, array $styles = ["white", "blackbg"]): void {
+            (new \Component\Caller\File\Fopen("php://stdout"))->puts($this->style($content, $styles));
         }
 
         final public function setup(array $request = [], array $arguments = []): void {
