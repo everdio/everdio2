@@ -17,7 +17,7 @@ namespace Component\Core {
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "threads" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                "queue" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),                
+                "pool" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
@@ -31,7 +31,7 @@ namespace Component\Core {
         public function dispatch(string $path): string {
             return (string) $this->getController($path);
         }
-        
+
         /*
          * checks if controller php file exists
          */
@@ -94,21 +94,22 @@ namespace Component\Core {
             $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
             return (float) $this->hydrate($fopen->gets(5));
         }
-        
+
         /*
          * fetching # of cpu's from linux system
          */
-        
+
         final public function getCPUs(): int {
             return (int) $this->hydrate(\exec("nproc"));
         }
-        
+
         /*
          * calculating nicesses based on current load and cpu's
          */
-        final public function getNiceness() : int {
+
+        final public function getNiceness(): int {
             return (int) \min(\max(-19, \round((($this->getLoad() / $this->getCPUs()) * 100) * (39 / 100) - 19)), 19);
-        }             
+        }
 
         /*
          * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
@@ -124,20 +125,24 @@ namespace Component\Core {
 
             if (\str_contains(\exec("php -l " . $thread), "No syntax errors detected")) {
                 if ($queue) {
-                    $this->queue->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                    $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
-            
+
                 $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->getNiceness(), $thread, $output));
-                
+
                 return (string) $thread;
-            } elseif (isset($this->debug) && isset($this->request->{$this->debug})) {
-                throw new \ParseError($thread);
+            } else {
+                if (isset($this->debug) && isset($this->request->{$this->debug})) {
+                    throw new \ParseError($thread);
+                }
+                
+                \unlink($thread);
             }
-        }        
+        }
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
             if (\sizeof($threads)) {
-                $pool = \array_intersect_key($this->queue->restore(), \array_flip($threads));
+                $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
 
                 while (\sizeof($pool)) {
                     foreach ($pool as $thread => $output) {
@@ -145,7 +150,7 @@ namespace Component\Core {
                             $response[\array_search($thread, $threads)] = \file_get_contents($output);
                             \unlink($output);
 
-                            unset($this->queue->{$thread});
+                            unset($this->pool->{$thread});
                             unset($this->threads->{$thread});
                             unset($pool[$thread]);
                         }
@@ -154,29 +159,31 @@ namespace Component\Core {
                     }
                 }
             }
-            
-            return (array) \array_filter($response);            
+
+            return (array) \array_filter($response);
         }
-        
+
         final public function retrieve(string $thread) {
-            if (isset($this->queue->{$thread})) {
+            if (isset($this->pool->{$thread})) {
                 return \current($this->queue([$thread]));
             }
         }
-        
+
         final public function terminate($signal) {
             foreach ($this->threads->restore() as $thread => $pid) {
+                //kill the process (php)
                 if (\posix_getpgid($pid)) {
                     \posix_kill($pid, $signal);
                 }
 
-                if (isset($this->queue->{$thread}) && \is_file($this->queue->{$thread})) {
-                    \unlink ($this->queue->{$thread});
+                //destroy the output (out)
+                if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
+                    \unlink($this->pool->{$thread});
                 }
             }
-            
+
             exit;
-        }        
+        }
 
         /*
          * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
@@ -188,7 +195,7 @@ namespace Component\Core {
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             $controller->basename = \basename($path);
-            
+
             if (isset($controller->path)) {
                 try {
                     return $controller->getCallbacks($controller->dispatch($this->basename));
@@ -198,7 +205,7 @@ namespace Component\Core {
                     throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ValueError | \ErrorException $ex) {
                     throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } 
+                }
             }
         }
 

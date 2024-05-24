@@ -28,18 +28,17 @@ namespace Modules {
 
         public function count(array $validations = [], string $query = NULL, array $parents = []): int {
             if (isset($this->parents)) {
-                
-                foreach ($this->parents as $parent) {
+
+                foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
+                    $parents[] = $parent;
                     
-                    $parents[(string) $parent] = $parent;
+                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->IS_EMPTY) ? "left join" : "join")))]);
                 }
-                
-                $validations[] = new Table\Joins([new Table\Relation($this, $parents)]);
             }
-            
-            $find = new Table\Find(\array_merge([new Table\Count(\implode(", ", \array_flip(\array_intersect($this->primary, $this->mapping)))), new Table\From([$this]), new Table\Filter([$this])], $validations));                                                
+
+            $find = new Table\Find(\array_merge([new Table\Count(\implode(", ", \array_flip(\array_intersect($this->primary, $this->mapping)))), new Table\From([$this]), new Table\Filter([$this])], $validations));
             return (int) $this->query($find->execute() . $query)->fetchColumn();
         }
 
@@ -51,20 +50,21 @@ namespace Modules {
 
         public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []): array {
             if (isset($this->parents)) {
-                foreach ($this->parents as $parent) {
+                foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
+                    
+                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->IS_EMPTY) ? "left join" : "join")))]);
                 }
-
-                $validations[] = new Table\Joins([new Table\Relation($this, $parents)]);
             }
-            
-            $validations[] = new Table\Tables($parents);
-            
+
+            //$validations[] = new Table\Tables($parents);
+
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
             }
+            
             if (\sizeof($orderby)) {
                 foreach ($orderby as $order => $parameters) {
                     $validations[] = new Table\OrderBy($this, [$order => $parameters]);
@@ -76,8 +76,8 @@ namespace Modules {
                     $validations[] = new Table\OrderBy($this, ["desc" => $this->keys]);
                 }
             }
-            
-            $find = new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));            
+
+            $find = new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
 
