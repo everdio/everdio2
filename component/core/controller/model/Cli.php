@@ -50,8 +50,8 @@ namespace Component\Core\Controller\Model {
                 "lightgreybg" => 47]), $styles))), $content);
         }
 
-        final public function echo(int|string $content, array $styles = ["white", "blackbg"]): void {
-            (new \Component\Caller\File\Fopen("php://stdout"))->puts($this->style($content, $styles));
+        final public function echo(int|string $content): void {
+            (new \Component\Caller\File\Fopen("php://stdout"))->puts($content);
         }
 
         final public function setup(array $request = [], array $arguments = []): void {
