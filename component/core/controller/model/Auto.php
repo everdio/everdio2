@@ -3,9 +3,9 @@
 namespace Component\Core\Controller\Model {
 
     trait Auto {
-        
+
         public function initialize(string $parameter): void {
-            if (isset($this->{$parameter}) && isset($this->_library) && isset($this->_controller)) {
+            if (isset($this->_library) && isset($this->_controller) && isset($this->{$parameter})) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->_library->{$mapper})) {
                         if (($finder = ($this->_library->{$mapper} === \get_class($this) ? $this : new $this->_library->{$mapper}))) {
