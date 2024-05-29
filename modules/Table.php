@@ -75,7 +75,7 @@ namespace Modules {
                 }
             }
 
-            $find = new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
+            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
             //echo \PHP_EOL . $find->execute() . \PHP_EOL;
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
