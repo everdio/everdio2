@@ -7,6 +7,7 @@ namespace Component\Core\Controller\Model {
         \Component\Validator\IsString;
 
     class Http extends \Component\Core\Controller\Model {
+        use \Component\Core\Controller\Model\Auto;
 
         public function __construct(array $_parameters = []) {
             parent::__construct([

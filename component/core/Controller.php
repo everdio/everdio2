@@ -16,13 +16,21 @@ namespace Component\Core {
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
-                "threads" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                "pool" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                "threads" => new Validation(new Parameters, [new Validator\IsObject]),
+                "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 
             $this->reserved = $this->diff();
         }
+
+        /*
+         * process timer using the server global request_time_float
+         */
+
+        final public function timing(): float {
+            return (float) (\microtime(true) - $this->time);
+        }        
 
         /*
          * dispatching the Cojtroller if exists!
@@ -77,20 +85,12 @@ namespace Component\Core {
 
             return (string) $output;
         }
-
-        /*
-         * process timer using the server global request_time_float
-         */
-
-        final public function getTiming(): float {
-            return (float) (\microtime(true) - $this->time);
-        }
-
+        
         /*
          * fetching load from linux systems
          */
 
-        final public function getLoad(): float {
+        final public function load(): float {
             $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
             return (float) $this->hydrate($fopen->gets(5));
         }
@@ -99,7 +99,7 @@ namespace Component\Core {
          * fetching # of cpu's from linux system
          */
 
-        final public function getCPUs(): int {
+        final public function cpus(): int {
             return (int) $this->hydrate(\exec("nproc"));
         }
 
@@ -107,8 +107,8 @@ namespace Component\Core {
          * calculating nicesses based on current load and cpu's
          */
 
-        final public function getNiceness(): int {
-            return (int) \min(\max(-19, \round((($this->getLoad() / $this->getCPUs()) * 100) * (39 / 100) - 19)), 19);
+        final public function niceness(): int {
+            return (int) \min(\max(-19, \round((($this->load() / $this->cpus()) * 100) * (39 / 100) - 19)), 19);
         }
 
         /*
@@ -117,7 +117,7 @@ namespace Component\Core {
 
         final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
             $model = new Thread;
-            $model->import($this->parameters($this->diff(["threads", "queue"])));
+            $model->import($this->parameters($this->diff(["threads", "pool"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
@@ -128,7 +128,7 @@ namespace Component\Core {
                     $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
-                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->getNiceness(), $thread, $output));
+                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->niceness(), $thread, $output));
 
                 return (string) $thread;
             } else {
@@ -137,35 +137,6 @@ namespace Component\Core {
                 }
                 
                 \unlink($thread);
-            }
-        }
-
-        final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
-            if (\sizeof($threads)) {
-                $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
-
-                while (\sizeof($pool)) {
-                    foreach ($pool as $thread => $output) {
-                        if (!\file_exists($thread) && \is_file($output)) {
-                            $response[\array_search($thread, $threads)] = \file_get_contents($output);
-                            \unlink($output);
-
-                            unset($this->pool->{$thread});
-                            unset($this->threads->{$thread});
-                            unset($pool[$thread]);
-                        }
-
-                        \usleep($usleep);
-                    }
-                }
-            }
-
-            return (array) \array_filter($response);
-        }
-
-        final public function retrieve(string $thread) {
-            if (isset($this->pool->{$thread})) {
-                return \current($this->queue([$thread]));
             }
         }
 
@@ -183,6 +154,37 @@ namespace Component\Core {
             }
 
             exit;
+        }        
+
+        final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
+            if (\sizeof($threads)) {
+                $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
+
+                while (\sizeof($pool)) {
+                    foreach ($pool as $thread => $output) {
+                        if (!\file_exists($thread) && \is_file($output)) {
+                            $response[\array_search($thread, $threads)] = \file_get_contents($output);
+                            
+                            \unlink($output);
+                            
+                            unset($pool[$thread]);
+                            unset($this->pool->{$thread});
+                            unset($this->threads->{$thread});
+                            
+                        }
+
+                        \usleep($usleep);
+                    }
+                }
+            }
+
+            return (array) \array_filter($response);
+        }
+
+        final public function retrieve(string $thread) {
+            if (isset($this->pool->{$thread})) {
+                return \current($this->queue([$thread]));
+            }
         }
 
         /*
