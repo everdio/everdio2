@@ -96,19 +96,11 @@ namespace Component\Core {
         }
 
         /*
-         * fetching # of cpu's from linux system
-         */
-
-        final public function cpus(): int {
-            return (int) $this->hydrate(\exec("nproc"));
-        }
-
-        /*
          * calculating nicesses based on current load and cpu's
          */
 
         final public function niceness(): int {
-            return (int) \min(\max(-19, \round((($this->load() / $this->cpus()) * 100) * (39 / 100) - 19)), 19);
+            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
         }
 
         /*
