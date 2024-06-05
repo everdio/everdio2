@@ -14,14 +14,6 @@ namespace Component {
             $this->_call = $_call;
         }
 
-        final public function getHandle() {
-            return $this->handle;
-        }
-
-        final public function hasHandle(): bool {
-            return (bool) isset($this->handle);
-        }
-
         final public function __invoke() {
             return $this->handle;
         }

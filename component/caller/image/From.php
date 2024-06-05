@@ -24,6 +24,8 @@ namespace Component\Caller\Image {
                         $this->handle = \imagecreatefromavif($file);
                         break;
                     case "application/octet-stream":
+                        $this->handle = \imagecreatefromstring(\base64_decode(\file_get_contents($file)));
+                        break;
                     default:
                         throw new \InvalidArgumentException(\sprintf("image %s type %s is not supported", $file, \image_type_to_mime_type(\exif_imagetype($file))));
                 }
