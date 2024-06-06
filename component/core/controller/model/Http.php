@@ -6,7 +6,8 @@ namespace Component\Core\Controller\Model {
         \Component\Validator\IsArray,
         \Component\Validator\IsString;
 
-    class Http extends \Component\Core\Controller\Model {
+    abstract class Http extends \Component\Core\Controller\Model {
+
         use \Component\Core\Controller\Model\Auto;
 
         public function __construct(array $_parameters = []) {
@@ -57,7 +58,7 @@ namespace Component\Core\Controller\Model {
          * setting up controller reserved parameters to initiate start!
          */
 
-        public function setup(): void {
+        final public function setup(): void {
             if (isset($this->server["HTTP_REFERER"])) {
                 $this->referer = $this->server["HTTP_REFERER"];
             }
