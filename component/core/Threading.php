@@ -29,7 +29,7 @@ namespace Component\Core {
             $model->class = \get_class($this);
             unset($model);
 
-            if (\str_contains(\exec("php -l " . $thread), "No syntax errors detected")) {
+            if (\str_contains(($check = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
                     $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
@@ -38,12 +38,9 @@ namespace Component\Core {
 
                 return (string) $thread;
             } else {
-                
-                if (isset($this->request) && isset($this->debug) && isset($this->request->{$this->debug})) {
-                    throw new \ParseError($thread);
-                }
-                
                 \unlink($thread);
+                
+                throw new \ParseError($check);
             }
         }
 
