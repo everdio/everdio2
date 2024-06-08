@@ -47,19 +47,14 @@ namespace Modules\BaseX {
         /*
          * additional basex fetching mapper based raw response
          */
-        public function fetch(array $validations = [], string $wrap = "(%s)"): string {
-            $api = new $this->api;
-            if (!\array_key_exists(($query = (new Node\Find($this->path, $validations, $wrap))->execute()), $api::_queries)) {
-                $api::$_queries[$query] = $api->getReponse($query);
-            }
-            
-            return (string) $api::$_queries[$query];
+        final public function fetch(array $validations = [], string $wrap = "(%s)"): string {
+            return (string) (new $this->api)->getResponse((new Node\Find($this->path, $validations, $wrap))->execute());
         }
 
         /*
          * additional basex fetching all mapper based raw distinct response
          */
-        public function fetchAll(string $parameter, array $validations = [], string $wrap = "distinct-values(%s)"): array {
+        final public function fetchAll(string $parameter, array $validations = [], string $wrap = "distinct-values(%s)"): array {
             if ($parameter !== $this->label) {
                 $wrap = \sprintf($wrap, "%s/@" . $this->getField($parameter));
             }

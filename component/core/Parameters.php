@@ -47,7 +47,7 @@ namespace Component\Core {
         }
 
         final public function __dry(): string {
-            return (string) \sprintf("new %s(%s)", \get_class($this), $this->dehydrate($this->parameters($this->diff())));
+            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->parameters($this->diff())));
         }
     }
 

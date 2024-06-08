@@ -43,23 +43,6 @@ namespace Component\Core {
         }
 
         /*
-         * fetching load from linux systems
-         */
-
-        final public function load(): float {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
-            return (float) $this->hydrate($fopen->gets(5));
-        }
-
-        /*
-         * calculating nicesses based on current load and cpu's
-         */
-
-        final public function niceness(): int {
-            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
-        }
-
-        /*
          * checks if controller php file exists
          */
 

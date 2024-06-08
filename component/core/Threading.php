@@ -4,6 +4,23 @@ namespace Component\Core {
 
     trait Threading {
 
+        /*
+         * fetching load from linux systems
+         */
+
+        final public function load(): float {
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
+            return (float) $this->hydrate($fopen->gets(5));
+        }
+
+        /*
+         * calculating nicesses based on current load and cpu's
+         */
+
+        final public function niceness(): int {
+            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
+        }
+        
         final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
             $model = new Thread;
             $model->import($this->parameters($this->diff(["autoloader", "model", "threads", "pool"])));
@@ -21,6 +38,11 @@ namespace Component\Core {
 
                 return (string) $thread;
             } else {
+                
+                if (isset($this->request) && isset($this->debug) && isset($this->request->{$this->debug})) {
+                    throw new \ParseError($thread);
+                }
+                
                 \unlink($thread);
             }
         }
