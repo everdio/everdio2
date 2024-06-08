@@ -17,9 +17,8 @@ namespace Component\Core {
          */
 
         protected function getAdapter(): object {
-            
             $key = $this->unique($this->adapter, "adapter", "crc32");
-            
+
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->__init();
             }
@@ -36,7 +35,6 @@ namespace Component\Core {
                 return \call_user_func_array([$this->getAdapter(), $method], $arguments);
             }
         }
-   
     }
 
 }

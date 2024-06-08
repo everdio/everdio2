@@ -48,8 +48,12 @@ namespace Modules\BaseX {
          * additional basex fetching mapper based raw response
          */
         public function fetch(array $validations = [], string $wrap = "(%s)"): string {
-            $find = new Node\Find($this->path, $validations, $wrap);
-            return (string) (new $this->api)->getResponse($find->execute());
+            $api = new $this->api;
+            if (!\array_key_exists(($query = (new Node\Find($this->path, $validations, $wrap))->execute()), $api::_queries)) {
+                $api::$_queries[$query] = $api->getReponse($query);
+            }
+            
+            return (string) $api::$_queries[$query];
         }
 
         /*

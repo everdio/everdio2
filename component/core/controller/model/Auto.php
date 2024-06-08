@@ -4,8 +4,8 @@ namespace Component\Core\Controller\Model {
 
     trait Auto {
 
-        public function initialize(string $parameter): void {
-            if (isset($this->_library) && isset($this->_controller) && isset($this->{$parameter})) {
+        public function auto(string $parameter): void {
+            if (isset($this->_library) && isset($this->_auto) && isset($this->{$parameter})) {
                 foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
                     if (isset($this->_library->{$mapper})) {
                         if (($finder = ($this->_library->{$mapper} === \get_class($this) ? $this : new $this->_library->{$mapper}))) {
@@ -16,29 +16,29 @@ namespace Component\Core\Controller\Model {
                                             echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \str_replace(["{{", "}}"], ["{", "}"], $callback));
                                         }
 
-                                        $this->_controller->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
+                                        $this->_auto->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
-                                        if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->_controller->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->_controller->{$mapper}->{$label})) {
-                                            unset($this->_controller->{$mapper}->{$label});
+                                        if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->_auto->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->_auto->{$mapper}->{$label})) {
+                                            unset($this->_auto->{$mapper}->{$label});
                                             return;
                                         }
 
                                         //is or isnot on callback value
                                         //[is] or [isnot]
-                                        if ((isset($this->is->{$mapper}->{$label}) && isset($this->_controller->{$mapper}->{$label}) && $this->callback($this->is->{$mapper}->{$label}) != $this->_controller->{$mapper}->{$label}) || (isset($this->isnot->{$mapper}->{$label}) && isset($this->_controller->{$mapper}->{$label}) && $this->callback($this->isnot->{$mapper}->{$label}) == $this->_controller->{$mapper}->{$label})) {
-                                            unset($this->_controller->{$mapper}->{$label});
+                                        if ((isset($this->is->{$mapper}->{$label}) && isset($this->_auto->{$mapper}->{$label}) && $this->callback($this->is->{$mapper}->{$label}) != $this->_auto->{$mapper}->{$label}) || (isset($this->isnot->{$mapper}->{$label}) && isset($this->_auto->{$mapper}->{$label}) && $this->callback($this->isnot->{$mapper}->{$label}) == $this->_auto->{$mapper}->{$label})) {
+                                            unset($this->_auto->{$mapper}->{$label});
                                             return;
                                         }
 
                                         //foreach loop
                                         //[foreach]
-                                        if (isset($this->foreach->{$mapper}->{$label}) && (isset($this->_controller->{$mapper}->{$label}) && $this->_controller->{$mapper}->{$label} instanceof \Component\Core\Parameters)) {
-                                            foreach ($this->_controller->{$mapper}->{$label}->restore() as $foreach) {
-                                                $this->_controller->store([$mapper => [$label => $foreach]]);
+                                        if (isset($this->foreach->{$mapper}->{$label}) && (isset($this->_auto->{$mapper}->{$label}) && $this->_auto->{$mapper}->{$label} instanceof \Component\Core\Parameters)) {
+                                            foreach ($this->_auto->{$mapper}->{$label}->restore() as $foreach) {
+                                                $this->_auto->store([$mapper => [$label => $foreach]]);
                                                 $this->callback($this->foreach->{$mapper}->{$label});
-                                                unset($this->_controller->{$mapper}->{$label});
+                                                unset($this->_auto->{$mapper}->{$label});
                                             }
                                         }
                                     } else {

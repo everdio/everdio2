@@ -7,6 +7,8 @@ namespace Component\Core {
 
     abstract class Controller extends \Component\Core {
 
+        use Threading;
+
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
@@ -15,7 +17,7 @@ namespace Component\Core {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
+                "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
                 "threads" => new Validation(new Parameters, [new Validator\IsObject]),
                 "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
@@ -25,19 +27,36 @@ namespace Component\Core {
         }
 
         /*
-         * process timer using the server global request_time_float
-         */
-
-        final public function timing(): float {
-            return (float) (\microtime(true) - $this->time);
-        }        
-
-        /*
          * dispatching the Cojtroller if exists!
          */
 
         public function dispatch(string $path): string {
             return (string) $this->getController($path);
+        }
+
+        /*
+         * process timer using the server global request_time_float
+         */
+
+        final public function timing(): float {
+            return (float) (\microtime(true) - $this->time);
+        }
+
+        /*
+         * fetching load from linux systems
+         */
+
+        final public function load(): float {
+            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
+            return (float) $this->hydrate($fopen->gets(5));
+        }
+
+        /*
+         * calculating nicesses based on current load and cpu's
+         */
+
+        final public function niceness(): int {
+            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
         }
 
         /*
@@ -84,99 +103,6 @@ namespace Component\Core {
             }
 
             return (string) $output;
-        }
-        
-        /*
-         * fetching load from linux systems
-         */
-
-        final public function load(): float {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
-            return (float) $this->hydrate($fopen->gets(5));
-        }
-
-        /*
-         * calculating nicesses based on current load and cpu's
-         */
-
-        final public function niceness(): int {
-            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
-        }
-
-        /*
-         * Creating a thread model to execute concurrently (threaded), calculating nicesess based on load (1 core is max 0.50, factor = 2)
-         */
-
-        final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
-            $model = new Thread;
-            $model->import($this->parameters($this->diff(["threads", "pool"])));
-            $model->callback = $callback;
-            $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
-            $model->class = \get_class($this);
-            unset($model);
-
-            if (\str_contains(\exec("php -l " . $thread), "No syntax errors detected")) {
-                if ($queue) {
-                    $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-                }
-
-                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->niceness(), $thread, $output));
-
-                return (string) $thread;
-            } else {
-                if (isset($this->debug) && isset($this->request->{$this->debug})) {
-                    throw new \ParseError($thread);
-                }
-                
-                \unlink($thread);
-            }
-        }
-
-        final public function terminate($signal) {
-            foreach ($this->threads->restore() as $thread => $pid) {
-                //kill the process (php)
-                if (\posix_getpgid($pid)) {
-                    \posix_kill($pid, $signal);
-                }
-
-                //destroy the output (out)
-                if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
-                    \unlink($this->pool->{$thread});
-                }
-            }
-
-            exit;
-        }        
-
-        final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
-            if (\sizeof($threads)) {
-                $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
-
-                while (\sizeof($pool)) {
-                    foreach ($pool as $thread => $output) {
-                        if (!\file_exists($thread) && \is_file($output)) {
-                            $response[\array_search($thread, $threads)] = \file_get_contents($output);
-                            
-                            \unlink($output);
-                            
-                            unset($pool[$thread]);
-                            unset($this->pool->{$thread});
-                            unset($this->threads->{$thread});
-                            
-                        }
-
-                        \usleep($usleep);
-                    }
-                }
-            }
-
-            return (array) \array_filter($response);
-        }
-
-        final public function retrieve(string $thread) {
-            if (isset($this->pool->{$thread})) {
-                return \current($this->queue([$thread]));
-            }
         }
 
         /*
