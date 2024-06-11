@@ -21,6 +21,10 @@ namespace Component\Core {
             return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
         }
         
+        /*
+         * callback executed as seperate thread
+         */
+        
         final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
             $model = new Thread;
             $model->import($this->parameters($this->diff(["autoloader", "model", "threads", "pool"])));
@@ -42,22 +46,6 @@ namespace Component\Core {
                 
                 throw new \ParseError($check);
             }
-        }
-
-        final public function terminate($signal) {
-            foreach ($this->threads->restore() as $thread => $pid) {
-                //kill the process (php)
-                if (\posix_getpgid($pid)) {
-                    \posix_kill($pid, $signal);
-                }
-
-                //destroy the output (out)
-                if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
-                    \unlink($this->pool->{$thread});
-                }
-            }
-
-            exit;
         }
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
@@ -89,6 +77,22 @@ namespace Component\Core {
                 return \current($this->queue([$thread]));
             }
         }
+        
+        final public function terminate($signal) {
+            foreach ($this->threads->restore() as $thread => $pid) {
+                //kill the process (php)
+                if (\posix_getpgid($pid)) {
+                    \posix_kill($pid, $signal);
+                }
+
+                //destroy the output (out)
+                if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
+                    \unlink($this->pool->{$thread});
+                }
+            }
+
+            exit;
+        }        
     }
 
 }

@@ -55,7 +55,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
 
-            throw new \InvalidArgumentException($parameter);
+            //throw new \InvalidArgumentException($parameter);
         }
 
         final public function exists(string $parameter): bool {
