@@ -39,7 +39,8 @@ namespace Component\Core {
         }
 
         final public function arguments(array $parameters = []): string {
-            return (string) \http_build_query([$this->restore($this->diff($parameters))]);
+
+            return (string) \http_build_query([$this->restore($parameters)]);
         }
 
         final public function implode(string $seperator = ", "): string {
