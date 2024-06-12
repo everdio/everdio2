@@ -35,8 +35,8 @@ namespace Component\Core\Controller\Model {
                                         //foreach loop
                                         //[foreach]
                                         if (isset($this->foreach->{$mapper}->{$label}) && (isset($this->_auto->{$mapper}->{$label}) && $this->_auto->{$mapper}->{$label} instanceof \Component\Core\Parameters)) {
-                                            foreach ($this->_auto->{$mapper}->{$label}->restore() as $foreach) {
-                                                $this->_auto->store([$mapper => [$label => $foreach]]);
+                                            foreach ($this->_auto->{$mapper}->{$label}->restore() as $key => $foreach) {
+                                                $this->_auto->store([$mapper => ["key" => $key, $label => $foreach]]);
                                                 $this->callback($this->foreach->{$mapper}->{$label});
                                                 unset($this->_auto->{$mapper}->{$label});
                                             }
