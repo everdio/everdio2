@@ -39,7 +39,6 @@ namespace Component\Core {
         }
 
         final public function arguments(array $parameters = []): string {
-
             return (string) \http_build_query([$this->restore($parameters)]);
         }
 

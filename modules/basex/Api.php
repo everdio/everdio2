@@ -11,10 +11,10 @@ namespace Modules\BaseX {
     trait Api {
 
         use \Modules\Node,
-            \Modules\BaseX;
+            \Modules\BaseX;                
 
         /*
-         * automatically overriding query from Modules\Node
+         * automatically overriding query from Modules\Node and checkfor previous results to see if we can re-use fragments of those DOMs
          */
         public function query(string $query): \DOMNodeList {
             $api = new $this->api;
@@ -33,21 +33,16 @@ namespace Modules\BaseX {
          * automatically overriding evaluate from Modules\Node
          */        
         public function evaluate(string $query, string $function): int|float|string {
-            $api = new $this->api;
-            foreach ($api::$_queries as $_query => $_dom) {
-                $fragment = new Node\Fragment($_query, $query);
-                if ($fragment->isValid()) {
-                    return (int) $this->xpath($_dom)->evaluate($function . $fragment->execute());
-                }
-            }
-
-            return $api->getResponse($function . $query);
+            return (new $this->api)->getResponse($function . $query);
         }
 
         /*
          * additional basex fetching mapper based raw response
          */
-        final public function fetch(array $validations = [], string $wrap = "(%s)"): string {
+        final public function fetch(string $parameter, array $validations = [], string $wrap = "(%s)"): string {
+            if ($parameter !== $this->label) {
+                $wrap = \sprintf($wrap, "%s/@" . $this->getField($parameter));
+            }
             return (string) (new $this->api)->getResponse((new Node\Find($this->path, $validations, $wrap))->execute());
         }
 
@@ -55,11 +50,7 @@ namespace Modules\BaseX {
          * additional basex fetching all mapper based raw distinct response
          */
         final public function fetchAll(string $parameter, array $validations = [], string $wrap = "distinct-values(%s)"): array {
-            if ($parameter !== $this->label) {
-                $wrap = \sprintf($wrap, "%s/@" . $this->getField($parameter));
-            }
-
-            return (array) \explode(\PHP_EOL, $this->fetch($validations, $wrap));
+            return (array) \explode(\PHP_EOL, $this->fetch($parameter, $validations, $wrap));
         }
     }
 
