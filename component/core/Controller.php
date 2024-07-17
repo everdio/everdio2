@@ -30,8 +30,8 @@ namespace Component\Core {
          * dispatching the Cojtroller if exists!
          */
 
-        public function dispatch(string $path): string {
-            return (string) $this->getController($path);
+        public function dispatch(string $path): string|null|int {
+            return $this->getController($path);
         }
 
         /*
@@ -60,7 +60,7 @@ namespace Component\Core {
 
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
 
-                return (string) \ob_get_clean();
+                return \ob_get_clean();
             }
         }
 
@@ -92,7 +92,7 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
          */
 
-        final public function execute(string $path, array $request = []) {
+        final public function execute(string $path, array $request = []): string|null|int {
             $controller = new $this;
             $controller->import($this->parameters($this->reserved));
             $controller->request->store($request);

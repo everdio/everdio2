@@ -43,6 +43,7 @@ namespace Modules\BaseX {
             if ($parameter !== $this->label) {
                 $wrap = \sprintf($wrap, "%s/@" . $this->getField($parameter));
             }
+            
             return (string) (new $this->api)->getResponse((new Node\Find($this->path, $validations, $wrap))->execute());
         }
 

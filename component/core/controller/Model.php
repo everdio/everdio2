@@ -18,8 +18,8 @@ namespace Component\Core\Controller {
          * dispatching the Model if exists
          */
 
-        public function dispatch(string $path): string {
-            return (string) parent::dispatch($this->getModel($path, false));
+        public function dispatch(string $path): string|null|int {
+            return parent::dispatch($this->getModel($path, false));
         }
 
         /*
