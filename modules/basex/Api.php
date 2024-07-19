@@ -32,7 +32,7 @@ namespace Modules\BaseX {
         /*
          * automatically overriding evaluate from Modules\Node
          */        
-        public function evaluate(string $query, string $function): int|float|string {
+        final public function evaluate(string $query, string $function): int|float|string {
             return (new $this->api)->getResponse($function . $query);
         }
 

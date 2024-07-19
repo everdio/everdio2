@@ -14,10 +14,11 @@ namespace Modules {
             }
         }
 
-        public function xpath(\DOMDocument $dom) : \DOMXPath {
+        public function xpath(\DOMDocument $dom, string $namespace = null): \DOMXPath {
             $xpath = new \DOMXPath($dom);
-            //$xpath->registerNamespace("php", "http://php.net/xpath");
-            //$xpath->registerPHPFunctions();
+            if ($namespace) {
+                $xpath->registerNamespace("ns", $namespace);
+            }
             return (object) $xpath;
         }
 

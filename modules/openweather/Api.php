@@ -16,7 +16,7 @@ namespace Modules\OpenWeather {
         }
 
         public function evaluate(string $query, string $function): int|float|string {
-            return (object) $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getDOMDocument())->evaluate($function . $query);            
+            return $this->xpath((new $this->api)->store($this->restore(["lat", "lon", "lang"]))->getDOMDocument())->evaluate($function . $query);            
         }       
     }
 

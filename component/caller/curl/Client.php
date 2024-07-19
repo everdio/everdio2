@@ -7,7 +7,7 @@ namespace Component\Caller\Curl {
         public function __construct(private $_cookie = "") {
             parent::__construct();
 
-            $this->_cookie = \tempnam(\sys_get_temp_dir(), "everdio_caller_curl_api_cookie_");
+            $this->_cookie = \tempnam(\sys_get_temp_dir(), "_everdio_caller_curl_cookie");
             
             $agents = \explode(\PHP_EOL, \file_get_contents(__DIR__ . \DIRECTORY_SEPARATOR . "Agents.txt"));
             
