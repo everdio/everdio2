@@ -17,8 +17,8 @@ namespace Component\Core {
          * calculating nicesses based on current load and cpu's
          */
 
-        final public function niceness(): int {
-            return (int) \min(\max(-19, \round((($this->load() / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
+        final public function niceness(float $load): int {
+            return (int) \min(\max(-19, \round((($load / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
         }
         
         /*
@@ -38,7 +38,7 @@ namespace Component\Core {
                     $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
-                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->niceness(), $thread, $output));
+                $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->niceness($this->load()), $thread, $output));
 
                 return (string) $thread;
             } else {
