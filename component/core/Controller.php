@@ -92,7 +92,7 @@ namespace Component\Core {
          * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
          */
 
-        final public function execute(string $path, array $request = []): string|null|int {
+        final public function execute(string $path, array $request = []) {
             $controller = new $this;
             $controller->import($this->parameters($this->reserved));
             $controller->request->store($request);
@@ -101,9 +101,9 @@ namespace Component\Core {
 
             if (isset($controller->path)) {
                 try {
-                    return $controller->getCallbacks($controller->dispatch($this->basename));
+                    return $controller->dispatch($this->basename);
                 } catch (\UnexpectedValueException $ex) {
-                    throw new \RuntimeException(\sprintf("%s: invalid parameter value %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("%s: invalid parameter %s value in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\InvalidArgumentException $ex) {
                     throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ValueError | \ErrorException $ex) {

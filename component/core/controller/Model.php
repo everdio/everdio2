@@ -37,8 +37,9 @@ namespace Component\Core\Controller {
         final public function getModel(string $path, bool $reset = true): string {
             if ($this->hasModel($path)) {
                 try {
-                    $ini = new Fopen\Ini($this->path . \DIRECTORY_SEPARATOR . $path, "r");
-                    foreach (\array_diff_key($ini->read(), \array_flip($this->reserved)) as $parameter => $value) {
+                    $parameters = (array) \parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED);
+                    
+                    foreach (\array_diff_key($parameters, \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
                             $this->{$parameter}->store($value);
