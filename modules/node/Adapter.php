@@ -13,9 +13,9 @@ namespace Modules\Node {
                 ] + $_parameters);
         }
         
-        public function generate(string $model, array $parameters = [], string $query = "//*") {
+        public function generate(array $parameters = [], string $query = "//*") {
             foreach ($this->query($query) as $node) {
-                $mapper = new $model;
+                $mapper = new $this->model;
                 $mapper->store($parameters);
                 $mapper->node = $node;
                 $mapper->setup();

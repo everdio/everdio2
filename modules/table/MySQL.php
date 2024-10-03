@@ -2,7 +2,7 @@
 
 namespace Modules\Table {
 
-    trait Pdo {
+    trait MySQL {
 
         use \Modules\Table;
 

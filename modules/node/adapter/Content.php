@@ -7,10 +7,11 @@ namespace Modules\Node\Adapter {
 
     abstract class Content extends \Modules\Node\Adapter {
 
-        public function __construct() {
+        public function __construct(array $_parameters = []) {
             parent::__construct([
-                "content" => new Validation(false, [new Validator\IsString\IsSstring])]);
-            
+                "content" => new Validation(false, [new Validator\IsString\IsSstring])
+                    ] + $_parameters);
+
             $this->adapter = ["content"];
         }
     }

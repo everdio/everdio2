@@ -6,11 +6,12 @@ namespace Modules\Node\Adapter {
         Component\Validator;
 
     abstract class Document extends \Modules\Node\Adapter {
-        
-        public function __construct() {
+
+        public function __construct(array $_parameters = []) {
             parent::__construct([
-                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString])]);
-            
+                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString])
+                    ] + $_parameters);
+
             $this->adapter = ["document"];
         }
     }

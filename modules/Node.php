@@ -14,7 +14,7 @@ namespace Modules {
             }
         }
 
-        public function xpath(\DOMDocument $dom, string $namespace = null): \DOMXPath {
+        public function xpath(\DOMDocument $dom, ?string $namespace = null): \DOMXPath {
             $xpath = new \DOMXPath($dom);
             if ($namespace) {
                 $xpath->registerNamespace("ns", $namespace);
@@ -30,11 +30,11 @@ namespace Modules {
             return $this->xpath($this->getAdapter())->evaluate($function . $query);
         }
 
-        public function count(array $validations = [], string $query = null): int {
+        public function count(array $validations = [], ?string $query = null): int {
             return (int) $this->evaluate($this->prepare(\array_merge($validations, [new Node\Via($this)])) . $query, "count");
         }
 
-        public function find(array $validations = [], string $query = null): self {
+        public function find(array $validations = [], ?string $query = null): self {
             if (($node = $this->query($this->prepare(\array_merge($validations, [new Node\Via($this)])) . $query)->item(0))) {
                 return (object) (new Node\Map($this, $node))->execute();
             }
@@ -42,7 +42,7 @@ namespace Modules {
             return (object) $this;
         }
 
-        public function findAll(array $validations = [], array $orderby = [], int $limit = 0, int $position = 0, string $query = null, array $records = []): array {
+        public function findAll(array $validations = [], array $orderby = [], int $limit = 0, int $position = 0, ?string $query = null, array $records = []): array {
             foreach ($this->query($this->prepare(\array_merge($validations, ($limit ? [new Node\Via($this, [new Node\Position($this->path, $limit, $position)])] : [new Node\Via($this)]))) . $query) as $node) {
                 $records[] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent"] + $this->mapping);
             }
@@ -64,7 +64,7 @@ namespace Modules {
             return (object) $this;
         }
 
-        public function save(string|int $cdata = null): self {
+        public function save(string|int|null $cdata = null): self {
             if (!$cdata && $this->exists($this->label) && isset($this->{$this->label})) {
                 $cdata = $this->{$this->label};
             }

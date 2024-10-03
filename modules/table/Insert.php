@@ -6,10 +6,10 @@ namespace Modules\Table {
 
     final class Insert extends \Component\Validation {
 
-        public function __construct(\Component\Core $table, array $values = NULL) {
-            foreach ($table->parameters($table->mapping) as $parameter => $validation) {
-                if (isset($table->{$parameter}) && !$validation->has([IsString\IsDatetime::TYPE, IsString\IsDatetime\Timestamp::TYPE])) {
-                    $values[$parameter] = \sprintf("`%s`.`%s`.`%s`", $table->database, $table->table, $table->getField($parameter));
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $values = NULL) {
+            foreach ($mapper->parameters($mapper->mapping) as $parameter => $validation) {
+                if (isset($mapper->{$parameter}) && !$validation->has([IsString\IsDatetime::TYPE, IsString\IsDatetime\Timestamp::TYPE])) {
+                    $values[$parameter] = \sprintf("%s.`%s`", $mapper->resource, $mapper->getField($parameter));
                 }
             }
 

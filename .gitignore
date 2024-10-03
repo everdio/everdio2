@@ -6,6 +6,7 @@
 *.txt
 *.ini
 *.out
+*.db
 tmp/
 www/
 .pool/

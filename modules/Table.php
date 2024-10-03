@@ -100,7 +100,7 @@ namespace Modules {
             if (\sizeof($this->restore($this->mapping))) {
                 $filter = new Table\Filter([$this]);
                 try {
-                    $this->query(\sprintf("DELETE FROM`%s`.`%s`WHERE%s", $this->database, $this->table, $filter->execute()));
+                    $this->query(\sprintf("DELETE FROM%sWHERE%s", $this->table, $filter->execute()));
                 } catch (\ErrorException | \Exception $ex) {
                     throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->table, $filter->execute()));
                 }

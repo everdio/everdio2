@@ -14,11 +14,15 @@ namespace Component {
             } elseif (\is_string($data)) {
                 return (string) \sprintf("\"%s\"", \addcslashes($data, "\""));
             } elseif (\is_array($data)) {
-                foreach ($data as $key => $value) {
-                    $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
-                }
+                if (\sizeof($data)) {
+                    foreach ($data as $key => $value) {
+                        $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
+                    }
 
-                return (string) \sprintf("[%s]", \implode(", ", $array));
+                    return (string) \sprintf("[%s]", \implode(", ", $array));
+                }
+                
+                return (string) "";
             } elseif (\is_object($data)) {
                 return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : \sprintf("new %s", \get_class($data)));
             } elseif ($data === NULL) {
