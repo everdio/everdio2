@@ -17,7 +17,7 @@ namespace Modules\Table\Adapter {
         }
 
         public function generate(array $parameters = []) {
-            $stm = $this->prepare(\sprintf("SHOW TABLES FROM %s", "$this->database"));
+            $stm = $this->prepare(\sprintf("SHOW TABLES FROM`%s`", $this->database));
             $stm->execute();
             
             foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
@@ -25,9 +25,8 @@ namespace Modules\Table\Adapter {
                 $model->store($parameters);
                 $model->label = $this->beautify($table);
                 $model->class = $this->beautify($table);
-                $model->database = $this->database;
                 $model->table = $table;
-                $model->resource = \sprintf("`%s`.`%s`", $model->database, $model->table);
+                $model->resource = \sprintf("`%s`.`%s`", $this->database, $table);
                 $model->setup();
             }
         }

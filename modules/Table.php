@@ -76,7 +76,6 @@ namespace Modules {
             }
 
             $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
-            //echo \PHP_EOL . $find->execute() . \PHP_EOL;
             return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
 
@@ -100,9 +99,9 @@ namespace Modules {
             if (\sizeof($this->restore($this->mapping))) {
                 $filter = new Table\Filter([$this]);
                 try {
-                    $this->query(\sprintf("DELETE FROM%sWHERE%s", $this->table, $filter->execute()));
+                    $this->query(\sprintf("DELETE FROM%sWHERE%s", $this->resource, $filter->execute()));
                 } catch (\ErrorException | \Exception $ex) {
-                    throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->table, $filter->execute()));
+                    throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->resource, $filter->execute()));
                 }
 
                 $this->reset($this->mapping);
