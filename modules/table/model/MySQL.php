@@ -5,7 +5,7 @@ namespace Modules\Table\Model {
     use Component\Validation,
         Component\Validator;
 
-    class MySQL extends \Modules\Table\Model {
+    final class MySQL extends \Modules\Table\Model {
 
         use \Modules\Table\MySQL;
 
@@ -18,7 +18,7 @@ namespace Modules\Table\Model {
                     ] + $_parameters);            
         }
 
-        public function setup(): void {
+        final public function setup(): void {
             $columns = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`COLUMNS`WHERE`information_schema`.`COLUMNS`.`TABLE_SCHEMA`='%s'AND`information_schema`.`COLUMNS`.`TABLE_NAME`='%s' ORDER BY `ORDINAL_POSITION` ASC", $this->database, $this->table));
             $columns->execute();
             foreach ($columns->fetchAll(\PDO::FETCH_ASSOC) as $row) {

@@ -4,8 +4,7 @@ namespace Component\Validator {
 
     class IsEmpty extends \Component\Validator {
 
-        const TYPE = "IS_EMPTY";
-        const MESSAGE = "NOT_EMPTY";
+        const TYPE = "empty";
 
         public function execute($value): bool {
             return (bool) $value === NULL || empty($value);

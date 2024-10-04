@@ -4,11 +4,7 @@ namespace Component\Validator\IsString {
 
     class Contains extends \Component\Validator\IsString {
 
-        const MESSAGE = "STRING_DOES_NOT_CONTAIN";
-
-        public function __construct(private array $_needles) {
-            
-        }
+        public function __construct(private array $_needles) {}
 
         public function execute($value): bool {
             return (bool) (parent::execute($value) && $this->hasInString($value, $this->_needles));

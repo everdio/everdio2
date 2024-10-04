@@ -4,12 +4,7 @@ namespace Component\Validator\IsArray {
 
     class Intersect extends \Component\Validator\IsArray {
 
-        const MESSAGE = "ARRAYS_NOT_MATCHING";
-        const TYPE = "IS_ARRAY_INTERSECT";
-
-        public function __construct(protected array $array = []) {
-            
-        }
+        public function __construct(protected array $array = []) {}
 
         public function getArray(): array {
             return (array) $this->array;

@@ -4,12 +4,7 @@ namespace Component\Validator\IsString {
 
     class InArray extends \Component\Validator\IsString {
 
-        const MESSAGE = "NOT_IN_ARRAY";
-        const TYPE = "IN_ARRAY";
-
-        public function __construct(protected array $array = []) {
-            
-        }
+        public function __construct(protected array $array = []) {}
 
         public function getArray(): array {
             return (array) $this->array;

@@ -34,7 +34,7 @@ namespace Modules {
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
                     
-                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->IS_EMPTY) ? "left join" : "join")))]);
+                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
 
@@ -55,7 +55,7 @@ namespace Modules {
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
                     
-                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->IS_EMPTY) ? "left join" : "join")))]);
+                    $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
 

@@ -4,11 +4,9 @@ namespace Component\Validator\IsString {
 
     class IsDatetime extends \Component\Validator\IsString {
 
-        const MESSAGE = "INVALID_DATETIME";
-        const TYPE = "IS_DATETIME";
+        const TYPE = "datetime";
 
-        public function __construct(protected string $format = "Y-m-d H:i:s") {            
-        }
+        public function __construct(protected string $format = "Y-m-d H:i:s") {}
 
         public function execute($value): bool {
             if (parent::execute($value)) {

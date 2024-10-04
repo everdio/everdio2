@@ -102,10 +102,8 @@ namespace Component\Core {
             if (isset($controller->path)) {
                 try {
                     return $controller->dispatch($this->basename);
-                } catch (\UnexpectedValueException $ex) {
-                    throw new \RuntimeException(\sprintf("%s: invalid parameter %s value in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } catch (\InvalidArgumentException $ex) {
-                    throw new \RuntimeException(\sprintf("%s: parameter %s required in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                } catch (\InvalidArgumentException | \UnexpectedValueException $ex) {
+                    throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 } catch (\ValueError | \ErrorException $ex) {
                     throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }

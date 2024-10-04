@@ -8,25 +8,26 @@ namespace Component {
             Finder,
             Helpers;
 
-        const NORMAL = "NORMAL";
-        const STRICT = "STRICT";
+        const NORMAL = "normal";
+        const STRICT = "strict";
+        
+        protected $value = false;
 
-        private $_messages = [], $_validated = [], $_validators = [], $_types;
+        private $_validated = [], $_validators = [], $_types;
 
-        public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
-            $this->setValue($value);
-
+        public function __construct($value = false, array $validators = [], public string $validate = self::NORMAL) {
+            $this->value = $this->hydrate($value);
+            
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
                     $key = \get_class($validator);
-
+                    
                     $this->_validators[$key] = $validator;
-                    $this->_messages[$key] = $validator::MESSAGE;
-                    $this->_types[$key] = $validator::TYPE;
+                    $this->_types[$key] = \strtolower($validator::TYPE);
                 }
             }
 
-            $this->validate = \strtoupper($validate);
+            $this->validate = \strtolower($validate);
         }
 
         public function __toString(): string {
@@ -34,7 +35,7 @@ namespace Component {
         }
 
         public function __isset($type): bool {
-            return (bool) \in_array($type, $this->_types);
+            return (bool) \in_array(\strtolower($type), $this->_types);
         }
 
         public function __get(string $validator): \Component\Validator {
@@ -77,8 +78,8 @@ namespace Component {
             if ($this->isValid()) {
                 return $this->value;
             }
-
-            throw new \ValueError(\sprintf("%s with %s (%s)", $this->dehydrate($this->value), \implode(", ", \array_intersect_key($this->_messages, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
+            
+            throw new \ValueError(\sprintf("%s, expecting: %s (%s)", $this->dehydrate($this->value), \implode(", ", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
         }
 
         public function __dry(array $validators = []): string {

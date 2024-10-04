@@ -19,11 +19,11 @@ namespace Component {
                 try {
                     return $this->_parameters[$parameter]->execute();
                 } catch (\ValueError $ex) {
-                    throw new \UnexpectedValueException($parameter, 0, $ex);
+                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter %s: %s", $parameter, $ex->getMessage()), 0, $ex);
                 }
             }
 
-            throw new \InvalidArgumentException($parameter);
+            throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         public function __set(string $parameter, $value) {
@@ -31,7 +31,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
             }
 
-            throw new \InvalidArgumentException($parameter);
+            throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         public function __toString(): string {
@@ -43,7 +43,7 @@ namespace Component {
                 return (object) $this->getParameter($parameter);
             }
 
-            throw new \InvalidArgumentException($parameter);
+            throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         public function __isset(string $parameter): bool {
@@ -55,7 +55,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->setValue(false);
             }
 
-            //throw new \InvalidArgumentException($parameter);
+            //throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         final public function exists(string $parameter): bool {
@@ -73,7 +73,7 @@ namespace Component {
                 return (object) $this->_parameters[$parameter];
             }
 
-            throw new \InvalidArgumentException($parameter);
+            throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         final public function remove(string $parameter): void {
@@ -161,14 +161,14 @@ namespace Component {
                 }
             }
         }
-
-        public function __dry(): string {
-            return (string) $this->dehydrate($this->_parameters);
-        }
         
         public function __clone() {
             return (object) new $this;
         }
+
+        public function __dry(): string {
+            return (string) $this->dehydrate($this->_parameters);
+        }        
     }
 
 }

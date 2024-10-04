@@ -9,7 +9,6 @@ namespace Component {
             Finder;
 
         const TYPE = self::TYPE;
-        const MESSAGE = self::MESSAGE;
 
         public function __toString() {
             return (string) \get_class($this);

@@ -4,8 +4,7 @@ namespace Component\Validator {
 
     class IsArray extends \Component\Validator {
 
-        const TYPE = "IS_ARRAY";
-        const MESSAGE = "INVALID_ARRAY";
+        const TYPE = "array";
 
         public function execute($value): bool {
             return (bool) \is_array($value);

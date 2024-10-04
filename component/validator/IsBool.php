@@ -4,8 +4,7 @@ namespace Component\Validator {
 
     class IsBool extends \Component\Validator {
 
-        const TYPE = "IS_BOOL";
-        const MESSAGE = "INVALID_BOOLEAN";
+        const TYPE = "bool";
 
         public function execute($value): bool {
             return (bool) \is_bool($value);

@@ -4,7 +4,7 @@ namespace Component\Validator\IsString\IsDatetime {
 
     class Timestamp extends \Component\Validator\IsString\IsDatetime {
 
-        const TYPE = "IS_TIMESTAMP";
+        const TYPE = "timestamp";
 
         public function __construct($format = "U") {
             parent::__construct($format);
