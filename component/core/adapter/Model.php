@@ -19,9 +19,13 @@ namespace Component\Core\Adapter {
                 "use" => new Validation(false, [new Validator\IsString]),
                 "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
                 "threads" => new Validation(new Parameters, [new Validator\IsObject]),
-                "pool" => new Validation(new Parameters, [new Validator\IsObject]),                
+                "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "parameters" => new Validation(false, [new Validator\IsString])
                     ] + $_parameters);
+        }
+
+        public function __toString(): string {
+            return (string) $this->namespace . "\\" . $this->class;
         }
 
         abstract public function setup(): void;

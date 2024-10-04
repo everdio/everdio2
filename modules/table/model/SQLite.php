@@ -25,8 +25,19 @@ namespace Modules\Table\Model {
             $this->resource = \sprintf("`%s`", $this->table);
         }
 
-        final public function create(): void {
-            print_r($this);
+        final public function create(array $columns = []): void {
+            
+            foreach ($this->mapping as $field => $parameter) {
+                $validation = $this->getParameter($parameter);
+
+                $length = ($validation->has(["length"]) ? \sprintf(" (%s)", $validation->getLen()) : false);
+
+                if ($validation->has(["string"])) {
+                    $columns[] = \sprintf("%s VARCHAR %s", $field, $length);
+                }
+            }
+            
+            $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $columns)));
         }
     }
 

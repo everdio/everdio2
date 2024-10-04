@@ -30,9 +30,9 @@ namespace Component\Core {
          * redirects methods via the adapter
          */
 
-        public function __call(string $method, array $arguments = []) {
-            if (!\method_exists($this, $method)) {
-                return \call_user_func_array([$this->getAdapter(), $method], $arguments);
+        public function __call(string $name, array $arguments = []) {
+            if (!\method_exists($this, $name)) {
+                return \call_user_func_array([$this->getAdapter(), $name], $arguments);
             }
         }
     }
