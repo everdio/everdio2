@@ -12,8 +12,8 @@ namespace Component\Validation {
                 new Validator\IsFloat,
                 new Validator\IsResource,
                 new Validator\IsObject,
-                new Validator\IsInteger,                
-                new Validator\IsNumeric,                
+                new Validator\IsInteger,
+                new Validator\IsNumeric,
                 new Validator\IsString,
                 new Validator\IsBool,
                 new Validator\IsArray\Intersect($options),
@@ -49,7 +49,7 @@ namespace Component\Validation {
                 $validate = self::STRICT;
             }
 
-            return new Validation(($this->_default ? $this->value : false), \array_unique($validators), $validate);
+            return new Validation(($this->_default ? $this->value : false), \array_unique(\array_merge($validators, $this->getValidators())), $validate);
         }
     }
 

@@ -59,7 +59,7 @@ namespace Modules\Table\Model {
                         throw new \LogicException(\sprintf("unknown column type: %s (`%s`.`%s`)", $row["DATA_TYPE"], $this->resource, $row["COLUMN_NAME"]));
                 }
 
-                $this->addParameter($this->beautify($row["COLUMN_NAME"]), $parameter->getValidation($parameter->getValidators()));
+                $this->addParameter($this->beautify($row["COLUMN_NAME"]), $parameter->getValidation());
                 $this->mapping = [$row["COLUMN_NAME"] => $this->beautify($row["COLUMN_NAME"])];
             }
 

@@ -32,6 +32,8 @@ namespace Modules\Table\Model {
                 
                 $length = ($validation->has(["length"]) ? $validation->getLen() : 0);
                 
+                $nullable = ($validation->has(["empty"]) ? false : "NOT NULL");
+                
                 if ($validation->has(["string"])) {
                     $type = "VARCHAR";
                     if ($length > 0 && $length <= 255) {
@@ -45,9 +47,9 @@ namespace Modules\Table\Model {
                 }
                 
                 if ($length) {
-                    $create[] = \sprintf("%s %s (%s)", $parameter, $type, $length);
+                    $create[] = \sprintf("%s %s (%s) %s", $parameter, $type, $length, $nullable);
                 } else {
-                    $create[] = \sprintf("%s %s", $parameter, $type);
+                    $create[] = \sprintf("%s %s %s", $parameter, $type, $nullable);
                 }
             }
             
