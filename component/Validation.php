@@ -26,7 +26,7 @@ namespace Component {
                     $this->_types[$key] = \strtolower($validator::TYPE);
                 }
             }
-
+            
             $this->validate = \strtolower($validate);
         }
 

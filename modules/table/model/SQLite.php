@@ -25,19 +25,47 @@ namespace Modules\Table\Model {
             $this->resource = \sprintf("`%s`", $this->table);
         }
 
-        final public function create(array $columns = []): void {
+        final public function create(array $create = []): void {
             
-            foreach ($this->mapping as $field => $parameter) {
+            foreach ($this->mapping as $parameter) {
                 $validation = $this->getParameter($parameter);
-
-                $length = ($validation->has(["length"]) ? \sprintf(" (%s)", $validation->getLen()) : false);
-
+                
+                $length = ($validation->has(["length"]) ? $validation->getLen() : 0);
+                
                 if ($validation->has(["string"])) {
-                    $columns[] = \sprintf("%s VARCHAR %s", $field, $length);
+                    $type = "VARCHAR";
+                    if ($length > 0 && $length <= 255) {
+                        $type = "VARCHAR";
+                    } elseif ($length > 255) {
+                        $type = "TEXT";
+                    }
+                    
+                } elseif ($validation->has(["integer"])) {
+                    $type = "INTEGER";
+                }
+                
+                if ($length) {
+                    $create[] = \sprintf("%s %s (%s)", $parameter, $type, $length);
+                } else {
+                    $create[] = \sprintf("%s %s", $parameter, $type);
                 }
             }
             
-            $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $columns)));
+            if (isset($this->primary)) {
+                $create[] = \sprintf("PRIMARY KEY (%s)", \implode($this->primary));
+            }
+            
+            if (isset($this->keys)) {
+                foreach ($this->keys as $key) {
+                    if (isset($this->parents)) {
+                        if (\array_key_exists($key, $this->parents)) {
+                            $create[] = \sprintf("FOREIGN KEY (%s) REFERENCES %s (%s)", $key, (new $this->parents[$key])->table, $this->keys[$key]);
+                        }
+                    }
+                }
+            }
+            
+            $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
         }
     }
 
