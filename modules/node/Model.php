@@ -11,6 +11,7 @@ namespace Modules\Node {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
+                "dom" => new Validation(false, [new Validator\IsObject\Of("\DOMDocument")]),
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
                 "tag" => new Validation(false, array(new Validator\IsString)),
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),
@@ -34,28 +35,40 @@ namespace Modules\Node {
                 foreach ($this->node->attributes as $attribute) {
                     $validators = [];
                     
+                    $validation = (new \Component\Validation\Parameter(\trim($attribute->value), false, true));
+
                     foreach ($this->query(\sprintf("%s/@%s", $this->path, $attribute->nodeName)) as $value) {
-                        $validation = (new \Component\Validation\Parameter(\trim($value->value), false, true));
+                        $validation = new \Component\Validation\Parameter(\trim($value->value), false, true);
                         $validators = $validation->getValidators($validators);
                     }
-                    
+
                     $parameter = $this->beautify($attribute->nodeName);
-                    
                     $this->addParameter($parameter, $validation->getValidation($validators));
-                    
                     $this->mapping = [$attribute->nodeName => $parameter];
                 }
             }
 
-            $this->mapping = [\strtolower($this->label) => $this->label];
-
             if ($this->node->hasChildNodes() && $this->node->childNodes->length === 1 && $this->node->firstChild->nodeType === \XML_TEXT_NODE) {
+                $validators = [];
+                
                 $validation = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);
-                $this->addParameter($this->label, $validation->getValidation());
+                
+                foreach ($this->query($this->path) as $value) {
+                    $validation = new \Component\Validation\Parameter(\trim($value->nodeValue), false, true);
+                    $validators = $validation->getValidators($validators);
+                }       
+                
+                $this->addParameter($this->label, $validation->getValidation($validators));
             }
 
-            $this->remove("node");
+            $this->mapping = [\strtolower($this->label) => $this->label];
         }
+        
+        public function __destruct() {
+            $this->remove("node");
+            
+            parent::__destruct();
+        }        
     }
 
 }

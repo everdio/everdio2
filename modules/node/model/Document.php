@@ -9,7 +9,7 @@ namespace Modules\Node\Model {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "document" => new Validation(false, [new Validator\IsString\IsFile, new Validator\IsString\IsUrl, new Validator\IsString]),
+                "document" => new Validation(false, [new Validator\IsString\IsFile]),
                     ] + $_parameters);
         }
     }

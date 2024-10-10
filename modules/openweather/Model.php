@@ -24,14 +24,16 @@ namespace Modules\OpenWeather {
         }
 
         public function setup(): void {
-            $xpath = new \DOMXPath($this->getDOMDocument());
-            foreach ($xpath->query("//*") as $node) {
+            $dom = $this->getDOMDocument();
+            foreach ((new \DOMXPath($dom))->query("//*") as $node) {
                 $model = new \Modules\OpenWeather\Api\Model;
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->content = $dom->saveXML();
                 $model->adapter = $this->adapter;
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->setup();
+                
+                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
             }
         }
 

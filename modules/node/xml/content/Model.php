@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Node\Xml\Document {
+namespace Modules\Node\Xml\Content {
 
     class Model extends \Modules\Node\Model\Content {
 

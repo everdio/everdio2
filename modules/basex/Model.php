@@ -31,21 +31,24 @@ namespace Modules\BaseX {
             $xpath = new \DOMXPath($dom);
             foreach ($xpath->query("//*") as $node) {
                 $model = new \Modules\BaseX\Api\Model;
+                $model->content = $dom->saveXML();
                 $model->adapter = $this->adapter;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->node = $node;
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->setup();
 
                 if (isset($model->mapping)) {
                     $model->primary = \array_intersect_key($this->keys, $model->mapping);
                 }
+                
+                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
             }
         }
 
         public function __destruct() {
             $this->remove("query");
             $this->remove("keys");
+            
             parent::__destruct();
         }
     }

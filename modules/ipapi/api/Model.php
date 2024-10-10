@@ -5,9 +5,9 @@ namespace Modules\IpApi\Api {
     use \Component\Validator,
         \Component\Validation;
 
-    class Model extends \Modules\Node\Model {
+    class Model extends \Modules\Node\Model\Content {
 
-        use \Modules\IpApi;
+        use \Modules\Node\Xml\Content;
         
         public function __construct() {
             parent::__construct([
@@ -17,9 +17,10 @@ namespace Modules\IpApi\Api {
 
             $this->use = "\Modules\IpApi\Api";
         }
-
+        
         public function __destruct() {
-            $this->remove("document");
+            $this->remove("content");
+            
             parent::__destruct();
         }
     }
