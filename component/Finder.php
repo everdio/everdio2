@@ -16,11 +16,13 @@ namespace Component {
             if (($query = \parse_url($url, \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }
-
+            
+            $arguments = $this->hydrate(\array_values($arguments));
+            
             //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        
             if (($method = \strstr($url, ":", true))) {
                 try {
-                    return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], \array_values($arguments))) : \call_user_func_array([$this, $method], \array_values($arguments)));
+                    return ($function ? \call_user_func($function, \call_user_func_array([$this, $method], $arguments)) : \call_user_func_array([$this, $method], $arguments));
                 } catch (\TypeError $ex) {
                     throw new \BadMethodCallException($ex->getMessage());
                 } catch (\ErrorException $ex) {
@@ -28,7 +30,7 @@ namespace Component {
                 }
             } elseif ($function) {
                 try {
-                    return \call_user_func_array($function, \array_values($arguments));
+                    return \call_user_func_array($function, $arguments);
                 } catch (\TypeError $ex) {
                     throw new \BadFunctionCallException($ex->getMessage());
                 }

@@ -45,7 +45,7 @@ namespace Component\Core\Controller {
                             $this->{$parameter}->store($value);
                         } else {
                             $validation = new Validation\Parameter($this->getCallbacks($value), true);
-                            $this->addParameter($parameter, $validation->getValidation($validation->getValidators()));
+                            $this->addParameter($parameter, $validation->getValidation());
                         }
                     }
                 } catch (\ErrorException $ex) {

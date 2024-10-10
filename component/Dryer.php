@@ -5,24 +5,18 @@ namespace Component {
     trait Dryer {
 
         public function dehydrate($data, array $array = []): string {
-            if (\is_integer($data)) {
+            if (\is_integer($data) || \is_numeric($data)) {
                 return (string) $data;
-            } elseif (\is_numeric($data)) {
-                return (string) \sprintf("\"%s\"", $data);
             } elseif (\is_bool($data)) {
                 return (string) ($data === true ? "true" : "false");
             } elseif (\is_string($data)) {
                 return (string) \sprintf("\"%s\"", \addcslashes($data, "\""));
             } elseif (\is_array($data)) {
-                if (\sizeof($data)) {
-                    foreach ($data as $key => $value) {
-                        $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
-                    }
-
-                    return (string) \sprintf("[%s]", \implode(", ", $array));
+                foreach ($data as $key => $value) {
+                    $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
                 }
-                
-                return (string) "";
+
+                return (string) \sprintf("[%s]", \implode(", ", $array));
             } elseif (\is_object($data)) {
                 return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : \sprintf("new %s", \get_class($data)));
             } elseif ($data === NULL) {
@@ -34,22 +28,28 @@ namespace Component {
             }
         }
 
-        public function hydrate($data) {
-            if (\is_integer($data)) {
+        public function hydrate($data):mixed {
+            if (\is_string($data)) {
+                if (\is_numeric($data)) {
+                    if (\floatval($data) != \intval($data)) {
+                        return (float) $data;
+                    } else {
+                        return (int) $data;
+                    }
+                }
+                
+                return (string) $data;   
+            } elseif (\is_integer($data)) {
                 if (\floatval($data) != \intval($data)) {
                     return (float) $data;
                 } else {
                     return (int) $data;
                 }
-            } elseif (\is_bool($data)) {
-                return (bool) $data;
-            } elseif (\is_numeric($data) || \is_string($data)) {
-                return (string) $data;
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->hydrate($value);
                 }
-
+                
                 return (array) $data;
             } else {
                 return $data;
@@ -60,4 +60,3 @@ namespace Component {
     }
 
 }
-

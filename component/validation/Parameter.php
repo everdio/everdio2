@@ -29,27 +29,28 @@ namespace Component\Validation {
                 foreach ($this->validated() as $validator) {
                     $validators[] = $validator;
                 }
-            } else {
-                $validators[] = new Validator\IsDefault;
+            } elseif (!$this->_length) {
+                $validators[] = new Validator\IsInteger;
+                $validators[] = new Validator\IsString;
             }
 
             if ($this->_mandatory === false) {
-                $validators[] = new Validator\IsEmpty;
+                $validators[] = new Validator\IsBool;
             }
 
             if ($this->_length) {
                 $validators[] = new Validator\Len\Smaller($this->_length);
             }
 
-            return (array) $validators;
+            return (array) \array_unique($validators);
         }
 
         final public function getValidation(array $validators = [], string $validate = self::NORMAL): Validation {
             if ($this->_length && $this->_mandatory) {
                 $validate = self::STRICT;
-            }
-
-            return new Validation(($this->_default ? $this->value : false), \array_unique(\array_merge($validators, $this->getValidators())), $validate);
+            }           
+            
+            return new Validation(($this->_default ? $this->value : false), \array_unique($this->getValidators($validators)), $validate);
         }
     }
 

@@ -79,7 +79,7 @@ namespace Component {
                 return $this->value;
             }
             
-            throw new \ValueError(\sprintf("%s, expecting: %s (%s)", $this->dehydrate($this->value), \implode(", ", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), $this->validate));
+            throw new \ValueError(\sprintf("%s must be of type %s, %s given (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
         public function __dry(array $validators = []): string {

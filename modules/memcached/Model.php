@@ -10,7 +10,7 @@ namespace Modules\Memcached {
         public function __construct(array $values = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsString]),
-                "port" => new Validation(false, [new Validator\IsNumeric]),
+                "port" => new Validation(false, [new Validator\IsInteger]),
                 "prefix" => new Validation(false, [new Validator\IsString, new Validator\IsEmpty])]);
             $this->store($values);
         }

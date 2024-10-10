@@ -9,9 +9,9 @@ namespace Modules {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "key" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
-                "ttl" => new Validation(false, [new Validator\IsNumeric]),
-                "data" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
+                "key" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
+                "ttl" => new Validation(false, [new Validator\IsInteger]),
+                "data" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "code" => new Validation(false, [new Validator\IsInteger])
                     ] + $_parameters);
         }

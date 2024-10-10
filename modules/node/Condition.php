@@ -8,12 +8,12 @@ namespace Modules\Node {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, string $operator = "and", string $expression = "=", array $key = [], array $conditions = []) {
             if (isset($mapper->index) && preg_match_all("/\[(\d+)\]/", $mapper->index, $key)) {
-                parent::__construct($key[1][0], [new Validator\IsNumeric]);
+                parent::__construct($key[1][0], [new Validator\IsInteger]);
             } else {
                 if ((isset($mapper->primary) && \sizeof(($values = $mapper->restore($mapper->primary)))) || \sizeof(($values = $mapper->restore($mapper->mapping)))) {
                     foreach ($values as $parameter => $value) {
                         if (!empty($value) && $parameter !== $mapper->label) {
-                            if (\is_numeric($value)) {
+                            if ($mapper->getParameter($parameter)->has(["integer", "numeric"])) {
                                 $conditions[$parameter] = \sprintf("@%s%s%s", $mapper->getField($parameter), $expression, $value);
                             } else {
                                 $conditions[$parameter] = \sprintf("@%s%s\"%s\"", $mapper->getField($parameter), $expression, \html_entity_decode($value, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));
@@ -23,7 +23,7 @@ namespace Modules\Node {
                 }
 
                 if (isset($mapper->{$mapper->label}) && ($value = $mapper->{$mapper->label})) {
-                    if (\is_numeric($value)) {
+                    if ($mapper->getParameter($mapper->label)->has(["integer", "numeric"])) {
                         $conditions[$mapper->label] = \sprintf("number()%s%s", $expression, $value);
                     } else {
                         $conditions[$mapper->label] = \sprintf("text()%s\"%s\"", $expression, \html_entity_decode($value, \ENT_QUOTES | \ENT_HTML5, "UTF-8"));

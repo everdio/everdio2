@@ -25,8 +25,6 @@ namespace Modules\Node {
         private function _clean(string $xpath): string {
             return (string) \preg_replace("/\[(.*?)\]/", false, $xpath);
         }
-        
-        
     }
 
 }

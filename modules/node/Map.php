@@ -15,10 +15,10 @@ namespace Modules\Node {
 
                 foreach ($mapper->mapping as $attribute => $parameter) {
                     if ($mapper->exists($parameter)) {
-                        $mapper->{$parameter} = \html_entity_decode($node->getAttribute($attribute), \ENT_QUOTES | \ENT_HTML5);
+                        $mapper->{$parameter} = \html_entity_decode($this->hydrate($node->getAttribute($attribute)), \ENT_QUOTES | \ENT_HTML5);
                     }
                 }
-
+                
                 if ($mapper->exists($mapper->label)) {
                     $mapper->{$mapper->label} = \html_entity_decode($node->nodeValue, \ENT_QUOTES | \ENT_HTML5);
                 }

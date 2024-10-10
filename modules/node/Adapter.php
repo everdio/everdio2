@@ -15,10 +15,10 @@ namespace Modules\Node {
         
         public function generate(array $parameters = [], string $query = "//*") {
             foreach ($this->query($query) as $node) {
-                $mapper = new $this->model;
-                $mapper->store($parameters);
-                $mapper->node = $node;
-                $mapper->setup();
+                $model = new $this->model;
+                $model->store($parameters);
+                $model->node = $node;
+                $model->setup();
             }            
         }
     }

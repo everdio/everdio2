@@ -18,11 +18,11 @@ namespace Modules\Node {
                 "index" => new Validation(false, array(new Validator\IsString))
                     ] + $_parameters);
         }
-
+        
         public function setup(): void {
             $this->path = \preg_replace('/\[(.*?)\]/', false, $this->node->getNodePath());
             $this->label = \ucFirst(\strtolower($this->node->tagName));
-            $this->class = \ucFirst(\strtolower($this->node->tagName));
+            $this->class = $this->label;
             $this->tag = $this->node->tagName;
 
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
@@ -32,17 +32,26 @@ namespace Modules\Node {
 
             if ($this->node->hasAttributes()) {
                 foreach ($this->node->attributes as $attribute) {
-                    $parameter = new \Component\Validation\Parameter((!empty(\trim($attribute->value)) ? \trim($attribute->value) : false), false, true);
-                    $this->addParameter($this->beautify($attribute->nodeName), $parameter->getValidation($parameter->getValidators()));
-                    $this->mapping = [$attribute->nodeName => $this->beautify($attribute->nodeName)];
+                    $validators = [];
+                    
+                    foreach ($this->query(\sprintf("%s/@%s", $this->path, $attribute->nodeName)) as $value) {
+                        $validation = (new \Component\Validation\Parameter(\trim($value->value), false, true));
+                        $validators = $validation->getValidators($validators);
+                    }
+                    
+                    $parameter = $this->beautify($attribute->nodeName);
+                    
+                    $this->addParameter($parameter, $validation->getValidation($validators));
+                    
+                    $this->mapping = [$attribute->nodeName => $parameter];
                 }
             }
 
             $this->mapping = [\strtolower($this->label) => $this->label];
 
             if ($this->node->hasChildNodes() && $this->node->childNodes->length === 1 && $this->node->firstChild->nodeType === \XML_TEXT_NODE) {
-                $parameter = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);
-                $this->addParameter($this->label, $parameter->getValidation($parameter->getValidators()));
+                $validation = new \Component\Validation\Parameter($this->node->firstChild->nodeValue, false, true);
+                $this->addParameter($this->label, $validation->getValidation());
             }
 
             $this->remove("node");
