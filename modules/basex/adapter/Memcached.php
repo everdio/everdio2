@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\BaseX\Model {
+namespace Modules\BaseX\Adapter {
 
     use \Component\Validation,
         \Component\Validator;
 
-    final class Memcached extends \Modules\BaseX\Model {
+    final class Memcached extends \Modules\BaseX\Adapter {
 
         public function __construct() {
             parent::__construct([

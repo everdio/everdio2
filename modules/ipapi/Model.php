@@ -2,38 +2,24 @@
 
 namespace Modules\IpApi {
 
-    use \Component\Validation,
-        \Component\Validator;
+    use \Component\Validator,
+        \Component\Validation;
 
-    class Model extends \Component\Core\Adapter\Model {
+    class Model extends \Modules\Node\Model\Content {
 
-        use \Modules\IpApi;
-
-        public function __construct(array $_parameters = []) {
+        use \Modules\Node\Xml\Content;
+        
+        public function __construct() {
             parent::__construct([
-                "url" => new Validation(false, [new Validator\IsString\IsUrl]),
+                "api" => new Validation(false, [new Validator\IsString]),
                 "ip" => new Validation(false, [new Validator\IsString])
-            ] + $_parameters);
+            ]);
 
-            $this->use = "\Modules\IpApi";
+            $this->use = "\Modules\IpApi\Api";
         }
-
-        public function setup(): void {
-            $dom = $this->getDOMDocument();
-            foreach ((new \DOMXPath($dom))->query("//*") as $node) {
-                $model = new \Modules\IpApi\Api\Model;
-                $model->content = $dom->saveXML();
-                $model->adapter = $this->adapter;
-                $model->node = $node;
-                $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->setup();
-                
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
-            }
-        }
-
+        
         public function __destruct() {
-            unset($this->ip);
+            $this->remove("content");
             
             parent::__destruct();
         }

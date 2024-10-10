@@ -10,16 +10,20 @@ namespace Modules\Node {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "adapter" => new Validation(false, [new Validator\IsArray])
-                ] + $_parameters);
+                    ] + $_parameters);
         }
-        
-        public function generate(array $parameters = [], string $query = "//*") {
+
+        public function generate(array $parameters = [], string $query = "//*", array $models = []): array {
             foreach ($this->query($query) as $node) {
                 $model = new $this->model;
                 $model->store($parameters);
                 $model->node = $node;
                 $model->setup();
-            }            
+
+                $models[] = $model;
+            }
+
+            return (array) $models;
         }
     }
 

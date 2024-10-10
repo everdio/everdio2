@@ -2,48 +2,28 @@
 
 namespace Modules\OpenWeather {
 
-    use \Component\Validation,
-        \Component\Validator;
+    use \Component\Validator,
+        \Component\Validation;
 
-    class Model extends \Component\Core\Adapter\Model {
+    class Model extends \Modules\Node\Model\Content {
+        
+        use \Modules\Node\Xml\Content;
 
-        use \Modules\OpenWeather;
-
-        public function __construct(array $_parameters = []) {
+        public function __construct() {
             parent::__construct([
-                "url" => new Validation(false, [new Validator\IsString\IsUrl]),
-                "appid" => new Validation(false, [new Validator\IsString]),
                 "lang" => new Validation(false, [new Validator\IsString]),
-                "units" => new Validation("metric", [new Validator\IsString\InArray(["standard", "metric", "imperial"])]),
-                "mode" => new Validation("xml", [new Validator\IsString\InArray(["xml", "json"])]),
                 "lat" => new Validation(false, [new Validator\IsFloat]),
-                "lon" => new Validation(false, [new Validator\IsFloat])
-            ] + $_parameters);
-
-            $this->use = "\Modules\OpenWeather";
+                "lon" => new Validation(false, [new Validator\IsFloat]),
+                "api" => new Validation(false, [new Validator\IsString]),
+            ]);
+            $this->use = "\Modules\OpenWeather\Api";
         }
-
-        public function setup(): void {
-            $dom = $this->getDOMDocument();
-            foreach ((new \DOMXPath($dom))->query("//*") as $node) {
-                $model = new \Modules\OpenWeather\Api\Model;
-                $model->content = $dom->saveXML();
-                $model->adapter = $this->adapter;
-                $model->node = $node;
-                $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->setup();
-                
-                $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
-            }
-        }
-
+        
         public function __destruct() {
-            unset($this->lon);
-            unset($this->lat);
-            unset($this->lang);
-
+            $this->remove("content");
+            
             parent::__destruct();
-        }
+        }    
     }
 
 }

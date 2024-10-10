@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\IpApi\Model {
+namespace Modules\IpApi\Adapter {
 
     use \Component\Validation,
         \Component\Validator;
 
-    class Memcached extends \Modules\IpApi\Model {
+    class Memcached extends \Modules\IpApi\Adapter {
 
         public function __construct() {
             parent::__construct([
