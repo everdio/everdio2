@@ -10,9 +10,7 @@ namespace Component {
 
         protected $handle;
 
-        public function __construct(private string $_call) {
-            $this->_call = $_call;
-        }
+        public function __construct(private string $_call) {}
 
         final public function __invoke() {
             return $this->handle;

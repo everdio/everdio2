@@ -141,7 +141,11 @@ namespace Component {
         }
 
         final public function unique(array $parameters = [], string $salt = "", string $algo = "sha256"): string {
-            return (string) \hash($algo, $this->querystring($parameters) . $salt);
+            if (\in_array($algo, \hash_algos())) {
+                return (string) \hash($algo, $this->querystring($parameters) . $salt);
+            }
+            
+            throw new \InvalidArgumentException(\sprintf("invalid hash algorithms %s", $algo));
         }
 
         final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}"): string {
