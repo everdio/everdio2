@@ -14,7 +14,7 @@ namespace Component {
             }
         }
         
-        public function __get(string $parameter): null|bool|int|float|string|array|object {
+        public function __get(string $parameter): mixed {
             if ($this->exists($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();

@@ -10,7 +10,9 @@ namespace Component {
 
         protected $handle;
 
-        public function __construct(private string $_call) {}
+        public function __construct(private string $_call) {
+            
+        }
 
         final public function __invoke() {
             return $this->handle;
@@ -20,7 +22,7 @@ namespace Component {
             return (string) $this->_call;
         }
 
-        final public function __call($name, $arguments) {
+        final public function __call($name, $arguments): mixed {
             if (\function_exists(\sprintf($this->_call, $name))) {
                 if (isset($this->handle)) {
                     \array_unshift($arguments, $this->handle);

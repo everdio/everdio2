@@ -10,23 +10,22 @@ namespace Component {
 
         const NORMAL = "normal";
         const STRICT = "strict";
-        
-        protected $value = false;
 
+        protected $value = false;
         private $_validated = [], $_validators = [], $_types;
 
         public function __construct($value = false, array $validators = [], public string $validate = self::NORMAL) {
             $this->value = $this->hydrate($value);
-            
+
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
                     $key = \get_class($validator);
-                    
+
                     $this->_validators[$key] = $validator;
                     $this->_types[$key] = \strtolower($validator::TYPE);
                 }
             }
-            
+
             $this->validate = \strtolower($validate);
         }
 
@@ -74,11 +73,11 @@ namespace Component {
             return (bool) (\sizeof($this->_validated) && (($this->validate === self::NORMAL && \in_array(true, $this->_validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->_validated))));
         }
 
-        public function execute() {
+        public function execute(): mixed {
             if ($this->isValid()) {
                 return $this->value;
             }
-            
+
             throw new \ValueError(\sprintf("%s must be of type %s, %s given (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
@@ -89,7 +88,7 @@ namespace Component {
 
             return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
         }
-        
+
         public function __call(string $name, array $arguments): mixed {
             if (!\method_exists($this, $name)) {
                 foreach ($this->_validators as $validator) {
@@ -97,7 +96,7 @@ namespace Component {
                         return \call_user_func_array([$validator, $name], $arguments);
                     }
                 }
-                
+
                 throw new \InvalidArgumentException(\sprintf("unknown function name %s for validator(s): %s", $name, \implode(", ", $this->_validators)));
             }
         }

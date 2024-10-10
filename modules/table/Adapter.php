@@ -14,7 +14,7 @@ namespace Modules\Table {
                     ] + $_parameters);
         }
 
-        abstract public function generate(array $parameters = []);
+        abstract public function generate(array $parameters = []): void;
     }
 
 }

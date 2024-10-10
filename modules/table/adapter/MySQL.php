@@ -6,6 +6,7 @@ namespace Modules\Table\Adapter {
         Component\Validator;
 
     final class MySQL extends \Modules\Table\Adapter {
+
         use \Modules\Table\MySQL;
 
         public function __construct(array $_parameters = []) {
@@ -16,10 +17,10 @@ namespace Modules\Table\Adapter {
                     ] + $_parameters);
         }
 
-        public function generate(array $parameters = []) {
+        public function generate(array $parameters = []): void {
             $stm = $this->prepare(\sprintf("SHOW TABLES FROM`%s`", $this->database));
             $stm->execute();
-            
+
             foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
                 $model = new \Modules\Table\Model\MySQL;
                 $model->store($parameters);

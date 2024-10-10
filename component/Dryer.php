@@ -28,7 +28,7 @@ namespace Component {
             }
         }
 
-        public function hydrate($data):mixed {
+        public function hydrate($data): mixed {
             if (\is_string($data)) {
                 if (\is_numeric($data)) {
                     if (\floatval($data) != \intval($data)) {
@@ -37,8 +37,8 @@ namespace Component {
                         return (int) $data;
                     }
                 }
-                
-                return (string) $data;   
+
+                return (string) $data;
             } elseif (\is_integer($data)) {
                 if (\floatval($data) != \intval($data)) {
                     return (float) $data;
@@ -49,7 +49,7 @@ namespace Component {
                 foreach ($data as $key => $value) {
                     $data[$key] = $this->hydrate($value);
                 }
-                
+
                 return (array) $data;
             } else {
                 return $data;

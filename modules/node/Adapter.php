@@ -13,17 +13,13 @@ namespace Modules\Node {
                     ] + $_parameters);
         }
 
-        public function generate(array $parameters = [], string $query = "//*", array $models = []): array {
+        public function generate(array $parameters = [], string $query = "//*"): void {
             foreach ($this->query($query) as $node) {
                 $model = new $this->model;
                 $model->store($parameters);
                 $model->node = $node;
                 $model->setup();
-
-                $models[] = $model;
             }
-
-            return (array) $models;
         }
     }
 
