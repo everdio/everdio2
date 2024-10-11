@@ -13,7 +13,7 @@ namespace Modules\Table\Model {
             parent::__construct([
                 "table" => new Validation($table, array(new Validator\IsString))
                     ] + $_parameters);
-            
+
             foreach (\array_keys($_parameters) as $parameter) {
                 $this->mapping = [$parameter => $parameter];
             }
@@ -26,14 +26,13 @@ namespace Modules\Table\Model {
         }
 
         final public function create(array $create = []): void {
-            
             foreach ($this->mapping as $parameter) {
                 $validation = $this->getParameter($parameter);
-                
+
                 $length = ($validation->has(["length"]) ? $validation->getLen() : 0);
-                
+
                 $nullable = ($validation->has(["empty"]) ? false : "NOT NULL");
-                
+
                 if ($validation->has(["string"])) {
                     $type = "VARCHAR";
                     if ($length > 0 && $length <= 255) {
@@ -41,22 +40,21 @@ namespace Modules\Table\Model {
                     } elseif ($length > 255) {
                         $type = "TEXT";
                     }
-                    
                 } elseif ($validation->has(["integer"])) {
                     $type = "INTEGER";
                 }
-                
+
                 if ($length) {
                     $create[] = \sprintf("%s %s (%s) %s", $parameter, $type, $length, $nullable);
                 } else {
                     $create[] = \sprintf("%s %s %s", $parameter, $type, $nullable);
                 }
             }
-            
+
             if (isset($this->primary)) {
                 $create[] = \sprintf("PRIMARY KEY (%s)", \implode(", ", $this->primary));
             }
-            
+
             if (isset($this->keys)) {
                 foreach ($this->keys as $key => $foreign) {
                     if (isset($this->parents) && $this->exists($key)) {
@@ -66,7 +64,7 @@ namespace Modules\Table\Model {
                     }
                 }
             }
-            
+
             try {
                 $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
             } catch (\PDOException $ex) {
