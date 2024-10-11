@@ -54,20 +54,24 @@ namespace Modules\Table\Model {
             }
             
             if (isset($this->primary)) {
-                $create[] = \sprintf("PRIMARY KEY (%s)", \implode($this->primary));
+                $create[] = \sprintf("PRIMARY KEY (%s)", \implode(", ", $this->primary));
             }
             
             if (isset($this->keys)) {
-                foreach ($this->keys as $key) {
-                    if (isset($this->parents)) {
+                foreach ($this->keys as $key => $foreign) {
+                    if (isset($this->parents) && $this->exists($key)) {
                         if (\array_key_exists($key, $this->parents)) {
-                            $create[] = \sprintf("FOREIGN KEY (%s) REFERENCES %s (%s)", $key, (new $this->parents[$key])->table, $this->keys[$key]);
+                            $create[] = \sprintf("FOREIGN KEY (%s) REFERENCES %s (%s)", $key, (new $this->parents[$key])->table, $foreign);
                         }
                     }
                 }
             }
             
-            $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
+            try {
+                $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
+            } catch (\PDOException $ex) {
+                throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $this->dehydrate($this->errorInfo())));
+            }
         }
     }
 
