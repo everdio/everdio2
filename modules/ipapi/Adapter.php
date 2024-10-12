@@ -13,7 +13,7 @@ namespace Modules\IpApi {
             parent::__construct([
                 "url" => new Validation(false, [new Validator\IsString\IsUrl]),
                 "ip" => new Validation(false, [new Validator\IsString])
-            ] + $_parameters);
+                    ] + $_parameters);
 
             $this->use = "\Modules\IpApi";
         }
@@ -27,15 +27,14 @@ namespace Modules\IpApi {
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->setup();
-                
+
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
             }
         }
 
-        public function __destruct() {
+        public function create(): void {
             unset($this->ip);
-            
-            parent::__destruct();
+            parent::create();
         }
     }
 

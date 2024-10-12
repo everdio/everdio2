@@ -6,7 +6,7 @@ namespace Modules\OpenWeather {
         \Component\Validation;
 
     class Model extends \Modules\Node\Model\Content {
-        
+
         use \Modules\Node\Xml\Content;
 
         public function __construct() {
@@ -18,12 +18,11 @@ namespace Modules\OpenWeather {
             ]);
             $this->use = "\Modules\OpenWeather\Api";
         }
-        
-        public function __destruct() {
+
+        public function create(): void {
             $this->remove("content");
-            
-            parent::__destruct();
-        }    
+            parent::create();
+        }
     }
 
 }

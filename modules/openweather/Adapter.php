@@ -18,7 +18,7 @@ namespace Modules\OpenWeather {
                 "mode" => new Validation("xml", [new Validator\IsString\InArray(["xml", "json"])]),
                 "lat" => new Validation(false, [new Validator\IsFloat]),
                 "lon" => new Validation(false, [new Validator\IsFloat])
-            ] + $_parameters);
+                    ] + $_parameters);
 
             $this->use = "\Modules\OpenWeather";
         }
@@ -31,18 +31,18 @@ namespace Modules\OpenWeather {
                 $model->adapter = $this->adapter;
                 $model->node = $node;
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
-                $model->setup();
-                
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                $model->setup();
+                $model->create();
             }
         }
 
-        public function __destruct() {
+        public function create(): void {
             unset($this->lon);
             unset($this->lat);
             unset($this->lang);
 
-            parent::__destruct();
+            parent::create();
         }
     }
 

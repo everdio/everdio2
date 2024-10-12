@@ -6,10 +6,10 @@ namespace Component\Core {
 
     trait Model {
 
-        public function __destruct() {
-            
+        public function create(): void {
+
             $file = (new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)))))->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php";
-            
+
             if (!\file_exists($file) || $this->overwrite) {
                 $this->parameters = $this->__dry();
 

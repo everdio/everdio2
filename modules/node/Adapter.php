@@ -19,6 +19,7 @@ namespace Modules\Node {
                 $model->store($parameters);
                 $model->node = $node;
                 $model->setup();
+                $model->create();
             }
         }
     }

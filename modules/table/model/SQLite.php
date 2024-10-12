@@ -52,7 +52,7 @@ namespace Modules\Table\Model {
             }
 
             if (isset($this->primary)) {
-                $create[] = \sprintf("PRIMARY KEY (%s)", \implode(", ", $this->primary));
+                $create[] = \sprintf("PRIMARY KEY %s(%s)", (\sizeof($this->primary) === 1 ? "KEY AUTOINCREMENT" : false), \implode(", ", $this->primary));
             }
 
             if (isset($this->keys)) {
@@ -70,6 +70,8 @@ namespace Modules\Table\Model {
             } catch (\PDOException $ex) {
                 throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $this->dehydrate($this->errorInfo())));
             }
+            
+            parent::create();
         }
     }
 

@@ -36,12 +36,14 @@ namespace Modules\BaseX {
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->node = $node;
                 $model->setup();
-
+                
                 if (isset($model->mapping)) {
                     $model->primary = \array_intersect_key($this->keys, $model->mapping);
                 }
                 
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                
+                $model->create();
             }
         }
 

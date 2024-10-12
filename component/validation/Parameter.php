@@ -52,6 +52,10 @@ namespace Component\Validation {
             
             return new Validation(($this->_default ? $this->value : false), \array_unique($this->getValidators($validators)), $validate);
         }
+        
+        final public function __dry(array $validators = []): string {
+            return (string) $this->getValidation($validators)->__dry();
+        }
     }
 
 }

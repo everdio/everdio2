@@ -13,7 +13,7 @@ namespace Modules\Table {
                         $values[$parameter] = \sprintf("%s.`%s`=%s ", $table->resource, $table->getField($parameter), "NULL");
                     } elseif ($validation->has([Validator\IsInteger::TYPE])) {
                         $values[$parameter] = \sprintf("%s.`%s`=%s ", $table->resource, $table->getField($parameter), $table->{$parameter});
-                    } elseif ($validation->has([Validator\IsDefault::TYPE, Validator\IsString::TYPE, Validator\IsString\IsNumeric::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
+                    } elseif ($validation->has([Validator\IsDefault::TYPE, Validator\IsString::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
                         $values[$parameter] = \sprintf("%s.`%s`='%s'", $table->resource, $table->getField($parameter), $this->sanitize($table->{$parameter}));
                     } elseif ($validation->has([Validator\IsArray::TYPE])) {
                         $values[$parameter] = \sprintf("%s.`%s`='%s'", $table->resource, $table->getField($parameter), \implode(",", $table->{$parameter}));

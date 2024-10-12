@@ -64,11 +64,10 @@ namespace Modules\Node {
             $this->mapping = [\strtolower($this->label) => $this->label];
         }
         
-        public function __destruct() {
+        public function create(): void {
             $this->remove("node");
-            
-            parent::__destruct();
-        }        
+            parent::create();
+        }
     }
 
 }

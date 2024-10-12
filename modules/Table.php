@@ -14,7 +14,7 @@ namespace Modules {
                     throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query));
                 }
 
-                throw new \RuntimeException($ex->getMessage());
+                throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $query));
             }
         }
 
