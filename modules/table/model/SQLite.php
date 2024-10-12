@@ -41,7 +41,7 @@ namespace Modules\Table\Model {
                         $type = "TEXT";
                     }
                 } elseif ($validation->has(["integer"])) {
-                    $type = "INTEGER";
+                    $type = (\sizeof($this->primary) === 1 && \in_array($parameter, $this->primary) ? "INTEGER AUTO INCREMENT" : "INTEGER");
                 }
 
                 if ($length) {
@@ -52,7 +52,7 @@ namespace Modules\Table\Model {
             }
 
             if (isset($this->primary)) {
-                $create[] = \sprintf("PRIMARY KEY %s(%s)", (\sizeof($this->primary) === 1 ? "KEY AUTOINCREMENT" : false), \implode(", ", $this->primary));
+                $create[] = \sprintf("PRIMARY KEY (%s)", \implode(", ", $this->primary));
             }
 
             if (isset($this->keys)) {
