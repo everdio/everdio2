@@ -19,7 +19,7 @@ namespace Modules {
         }
 
         final public function __set(string $parameter, $value) {
-            if (!empty($value) && (!\is_array($value) && $this->getParameter($parameter)->has([\Component\Validator\IsArray::TYPE]))) {
+            if (!empty($value) && (!\is_array($value) && $this->getParameter($parameter)->hasTypes([\Component\Validator\IsArray::TYPE]))) {
                 $value = \explode(",", $value);
             }
 
@@ -33,7 +33,7 @@ namespace Modules {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
-                    
+
                     $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
@@ -44,6 +44,7 @@ namespace Modules {
 
         public function find(array $validations = [], string $query = NULL): self {
             $find = new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));
+            echo PHP_EOL . $find->execute() . PHP_EOL;
             $this->store($this->desanitize((array) $this->statement($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC)));
             return (object) $this;
         }
@@ -54,7 +55,7 @@ namespace Modules {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
                     $parents[] = $parent;
-                    
+
                     $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
@@ -62,7 +63,7 @@ namespace Modules {
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
             }
-            
+
             if (\sizeof($orderby)) {
                 foreach ($orderby as $order => $parameters) {
                     $validations[] = new Table\OrderBy($this, [$order => $parameters]);

@@ -56,7 +56,7 @@ namespace Modules\Table\Model {
                         $parameter = new Validation\Parameter(\date("Y-m-d H:i:s"), false, ($row["IS_NULLABLE"] === "YES" ? false : true));
                         break;
                     default:
-                        throw new \LogicException(\sprintf("unknown column type: %s (`%s`.`%s`)", $row["DATA_TYPE"], $this->resource, $row["COLUMN_NAME"]));
+                        throw new \LogicException(\sprintf("unknown column type: %s (%s.%s)", $row["DATA_TYPE"], $this->resource, $row["COLUMN_NAME"]));
                 }
 
                 $this->addParameter($this->beautify($row["COLUMN_NAME"]), $parameter->getValidation());

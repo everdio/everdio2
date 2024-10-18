@@ -22,39 +22,45 @@ namespace Modules\Table\Model {
         final public function setup(): void {
             $this->label = $this->beautify($this->table);
             $this->class = $this->beautify($this->table);
-            $this->resource = \sprintf("`%s`", $this->table);
+            $this->resource = \sprintf("%s", $this->table);
         }
 
         final public function create(array $create = []): void {
             foreach ($this->mapping as $parameter) {
                 $validation = $this->getParameter($parameter);
 
-                $length = ($validation->has(["length"]) ? $validation->getLen() : 0);
+                $length = ($validation->hasTypes([Validator\Len::TYPE]) ? $validation->getLen() : 0);
 
-                $nullable = ($validation->has(["empty"]) ? false : "NOT NULL");
+                $nullable = ($validation->hasTypes([Validator\IsBool::TYPE]) || (isset($this->primary) && \in_array($parameter, $this->primary)) ? false : "NOT NULL");
 
-                if ($validation->has(["string"])) {
+                if ($validation->hasTypes([Validator\IsString::TYPE])) {
                     $type = "VARCHAR";
                     if ($length > 0 && $length <= 255) {
                         $type = "VARCHAR";
                     } elseif ($length > 255) {
                         $type = "TEXT";
                     }
-                } elseif ($validation->has(["integer"])) {
-                    $type = (\sizeof($this->primary) === 1 && \in_array($parameter, $this->primary) ? "INTEGER AUTO INCREMENT" : "INTEGER");
+                } elseif ($validation->hasTypes([Validator\IsInteger::TYPE])) {
+                    $type = "INTEGER";
+                } elseif ($validation->Has([Validation\IsArray::TYPE])) {
+                    
                 }
-
-                if ($length) {
-                    $create[] = \sprintf("%s %s (%s) %s", $parameter, $type, $length, $nullable);
+                
+                if (isset($this->primary) && \in_array($parameter, $this->primary)) {
+                    if (\sizeof($this->primary) === 1) {
+                        $create[] = \sprintf("%s %s PRIMARY KEY AUTOINCREMENT", $parameter, $type);
+                    } else {
+                        $create[] = \sprintf("%s %s PRIMARY KEY", $parameter, $type);   
+                    }
                 } else {
-                    $create[] = \sprintf("%s %s %s", $parameter, $type, $nullable);
+                    if ($length) {
+                        $create[] = \sprintf("%s %s (%s) %s", $parameter, $type, $length, $nullable);
+                    } else {
+                        $create[] = \sprintf("%s %s %s", $parameter, $type, $nullable);
+                    }
                 }
             }
-
-            if (isset($this->primary)) {
-                $create[] = \sprintf("PRIMARY KEY (%s)", \implode(", ", $this->primary));
-            }
-
+            
             if (isset($this->keys)) {
                 foreach ($this->keys as $key => $foreign) {
                     if (isset($this->parents) && $this->exists($key)) {
@@ -64,7 +70,7 @@ namespace Modules\Table\Model {
                     }
                 }
             }
-
+            
             try {
                 $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
             } catch (\PDOException $ex) {

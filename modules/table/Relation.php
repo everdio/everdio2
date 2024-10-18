@@ -24,11 +24,11 @@ namespace Modules\Table {
         private function _join(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "and", array $operators = []) {
             foreach ($keys as $thatKey => $thisKey) {
                 if ($thatMapper->exists($thatKey) && $thisMapper->exists($thisKey)) {
-                    $operators[] = sprintf("%s.`%s`=%s.`%s`", $thatMapper->resource, $thatMapper->getField($thatKey), $thisMapper->resource, $thisMapper->getField($thisKey));
+                    $operators[] = sprintf("%s.%s = %s.%s", $thatMapper->resource, $thatMapper->getField($thatKey), $thisMapper->resource, $thisMapper->getField($thisKey));
                 }
             }
 
-            return (string) \sprintf("%s%sON%s%s", \strtoupper($join), $thatMapper->resource, \implode(\strtoupper($operator), $operators), (($filter = new Filter([$thatMapper], \strtoupper($operator)))->isValid() ? \strtoupper($operator) . $filter->execute() : false));
+            return (string) \sprintf("%s %s ON %s %s", \strtoupper($join), $thatMapper->resource, \implode(\strtoupper($operator), $operators), (($filter = new Filter([$thatMapper], \strtoupper($operator)))->isValid() ? \strtoupper($operator) . $filter->execute() : false));
         }
     }
 

@@ -8,8 +8,8 @@ namespace Modules\Table {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $values = NULL) {
             foreach ($mapper->parameters($mapper->mapping) as $parameter => $validation) {
-                if (isset($mapper->{$parameter}) && !$validation->has([IsString\IsDatetime::TYPE, IsString\IsDatetime\Timestamp::TYPE])) {
-                    $values[$parameter] = \sprintf("%s.`%s`", $mapper->resource, $mapper->getField($parameter));
+                if (isset($mapper->{$parameter}) && !$validation->hasTypes([IsString\IsDatetime::TYPE, IsString\IsDatetime\Timestamp::TYPE])) {
+                    $values[$parameter] = $mapper->getField($parameter);
                 }
             }
 

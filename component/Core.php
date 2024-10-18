@@ -28,7 +28,7 @@ namespace Component {
 
         public function __set(string $parameter, $value) {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->setValue((\is_array($value) && \is_array($this->_parameters[$parameter]->getValue()) ? \array_merge($this->_parameters[$parameter]->getValue(), $value) : $value));
+                return (bool) $this->_parameters[$parameter]->set((\is_array($value) && \is_array($this->_parameters[$parameter]->get()) ? \array_merge($this->_parameters[$parameter]->get(), $value) : $value));
             }
 
             throw new \InvalidArgumentException(\sprintf("invalid parameter %s::%s", \get_class($this), $parameter));
@@ -52,7 +52,7 @@ namespace Component {
 
         public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->setValue(false);
+                return (bool) $this->_parameters[$parameter]->set(false);
             }
 
             //throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));

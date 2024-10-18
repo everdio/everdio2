@@ -8,21 +8,21 @@ namespace Modules\Table {
 
         public function __construct(\Component\Core $table, array $values = []) {
             foreach ($table->parameters($table->mapping) as $parameter => $validation) {
-                if (isset($table->{$parameter}) && !$validation->has([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
-                    if ($validation->has([Validator\IsEmpty::TYPE]) && empty($table->{$parameter}) && $table->{$parameter} !== 0) {
+                if (isset($table->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
+                    if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($table->{$parameter}) && $table->{$parameter} !== 0) {
                         $values[$parameter] = "NULL";
-                    } elseif ($validation->has([Validator\IsInteger::TYPE, Validator\IsNumeric::TYPE])) {
+                    } elseif ($validation->hasTypes([Validator\IsInteger::TYPE, Validator\IsNumeric::TYPE])) {
                         $values[$parameter] = $table->{$parameter};
-                    } elseif ($validation->has([Validator\IsArray::TYPE])) {
+                    } elseif ($validation->hasTypes([Validator\IsArray::TYPE])) {
                         $values[$parameter] = \sprintf("'%s'", \implode(",", $table->{$parameter}));
-                    } elseif ($validation->has([Validator\IsNumeric::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
+                    } elseif ($validation->hasTypes([Validator\IsNumeric::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
                         $values[$parameter] = \sprintf("'%s'", $this->sanitize($table->{$parameter}));
                     }
                 }
             }
 
 
-            parent::__construct(\implode(",", $values), array(new Validator\IsDefault));
+            parent::__construct(\implode(", ", $values), array(new Validator\IsDefault));
         }
     }
 

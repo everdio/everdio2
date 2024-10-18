@@ -13,7 +13,7 @@ namespace Component {
                 return (string) \sprintf("\"%s\"", \addcslashes($data, "\""));
             } elseif (\is_array($data)) {
                 foreach ($data as $key => $value) {
-                    $array[] = (\is_integer($key) ? false : \sprintf("%s => ", $this->dehydrate($key))) . $this->dehydrate($value);
+                    $array[] = (\is_integer($key) ? false : $this->dehydrate($key) . " => ") . $this->dehydrate($value);
                 }
 
                 return (string) \sprintf("[%s]", \implode(", ", $array));

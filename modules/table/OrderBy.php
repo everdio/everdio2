@@ -7,11 +7,11 @@ namespace Modules\Table {
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $orderby, array $values = []) {
             foreach ($orderby as $order => $parameters) {
                 foreach ($mapper->inter($parameters) as $parameter) {
-                    $values[] = \sprintf("%s.`%s` %s", $mapper->resource, $mapper->getField($parameter), \strtoupper($order));
+                    $values[] = \sprintf("%s.%s %s", $mapper->resource, $mapper->getField($parameter), \strtoupper($order));
                 }
             }
 
-            parent::__construct(\sprintf("ORDER BY%s", \implode(",", $values)), [new \Component\Validator\IsString\Contains(["DESC", "ASC"])], self::STRICT);
+            parent::__construct(\sprintf("ORDER BY %s", \implode(", ", $values)), [new \Component\Validator\IsString\Contains(["DESC", "ASC"])], self::STRICT);
         }
     }
 

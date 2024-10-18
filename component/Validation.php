@@ -15,7 +15,7 @@ namespace Component {
         private $_validated = [], $_validators = [], $_types;
 
         public function __construct($value = false, array $validators = [], public string $validate = self::NORMAL) {
-            $this->value = $this->hydrate($value);
+            $this->set($value);
 
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
@@ -44,21 +44,21 @@ namespace Component {
 
             throw new \LogicException(\sprintf("unknown validator %s", $validator));
         }
-
-        public function has(array $types): bool {
-            return (bool) \sizeof(\array_intersect($this->_types, $types));
-        }
-
-        public function match(array $types): bool {
-            return (bool) (\sizeof(\array_intersect($this->_types, $types)) === \sizeof($this->_types));
-        }
-
-        public function setValue($value): void {
+        
+        public function set($value): void {
             $this->value = $this->hydrate($value);
         }
 
-        public function getValue() {
+        public function get() {
             return $this->value;
+        }        
+
+        public function hasTypes(array $types, bool $match = false): bool {
+            return (bool) ($match ? (\sizeof(\array_intersect($this->_types, $types)) === \sizeof($this->_types)) : \sizeof(\array_intersect($this->_types, $types)));
+        }
+        
+        public function getTypes(): array {
+            return (array) $this->_types;
         }
 
         public function validated(bool $validation = true): array {

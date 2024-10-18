@@ -13,7 +13,7 @@ namespace Modules\Table {
                 }
             }
 
-            parent::__construct(\sprintf("FROM%s", \implode(",", $from)), [new Validator\IsString]);
+            parent::__construct(\sprintf("FROM\n\t%s", \implode(",\n\t", $from)), [new Validator\IsString]);
         }
     }
 
