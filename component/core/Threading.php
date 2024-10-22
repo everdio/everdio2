@@ -31,7 +31,7 @@ namespace Component\Core {
             $model->callback = $callback;
             $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
-            unset($model);
+            $model->create();
 
             if (\str_contains(($check = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {

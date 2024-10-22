@@ -15,7 +15,7 @@ namespace Modules\Table {
                         $values[$parameter] = $table->{$parameter};
                     } elseif ($validation->hasTypes([Validator\IsArray::TYPE])) {
                         $values[$parameter] = \sprintf("'%s'", \implode(",", $table->{$parameter}));
-                    } elseif ($validation->hasTypes([Validator\IsNumeric::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
+                    } elseif ($validation->hasTypes([Validator\IsNumeric::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDatetime\IsDate::TYPE])) {
                         $values[$parameter] = \sprintf("'%s'", $this->sanitize($table->{$parameter}));
                     }
                 }

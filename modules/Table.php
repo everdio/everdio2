@@ -38,14 +38,14 @@ namespace Modules {
                 }
             }
 
-            $find = new Table\Find(\array_merge([new Table\Count(\implode(", ", \array_flip(\array_intersect($this->primary, $this->mapping)))), new Table\From([$this]), new Table\Filter([$this])], $validations));
-            return (int) $this->query($find->execute() . $query)->fetchColumn();
+            return (int) $this->query((new Table\Find(\array_merge([new Table\Count(\implode(", ", \array_flip(\array_intersect($this->primary, $this->mapping)))), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query)->fetchColumn();
         }
 
         public function find(array $validations = [], string $query = NULL): self {
-            $find = new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations));
-            echo PHP_EOL . $find->execute() . PHP_EOL;
-            $this->store($this->desanitize((array) $this->statement($find->execute() . $query)->fetch(\PDO::FETCH_ASSOC)));
+            if (($row = $this->statement((new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query)->fetch(\PDO::FETCH_ASSOC))) {
+                $this->store($this->desanitize($row));
+            }
+
             return (object) $this;
         }
 
@@ -76,8 +76,7 @@ namespace Modules {
                 }
             }
 
-            $find = new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations));
-            return (array) $this->statement($find->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations)))->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
@@ -88,8 +87,8 @@ namespace Modules {
         }
 
         public function save(): self {
-            $save = new Table\Save($this);
-            if ($this->statement($save->execute())) {
+            if ($this->statement((new Table\Insert($this))->execute())) {
+                $this->statement((new Table\Update($this, [(new Table\Filter([$this]))->execute()]))->execute())->execute();
                 $this->find();
             }
 
@@ -107,6 +106,7 @@ namespace Modules {
 
                 $this->reset($this->mapping);
             }
+            
             return (object) $this;
         }
     }

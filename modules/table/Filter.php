@@ -2,14 +2,13 @@
 
 namespace Modules\Table {
 
-    use \Component\Validator,
-        \Component\Core\Adapter\Mapper;
+    use \Component\Validator;
 
     final class Filter extends \Component\Validation {
 
         public function __construct(array $mappers, string $operator = "and", string $expression = "=", array $operators = []) {
             foreach ($mappers as $mapper) {
-                if ($mapper instanceof Mapper && isset($mapper->mapping)) {
+                if ($mapper instanceof \Component\Core\Adapter\Mapper && isset($mapper->mapping)) {
                     if (\sizeof($mapper->restore($mapper->primary)) === \sizeof($mapper->primary)) {
                         foreach ($mapper->restore($mapper->primary) as $parameter => $value) {
                             $operators[] = \sprintf("%s %s %s ", (new Column($mapper, $parameter))->execute(), $expression, $value);
@@ -21,7 +20,7 @@ namespace Modules\Table {
 
                                 if ($mapper->getParameter($parameter)->hasTypes([Validator\IsInteger::TYPE, Validator\IsNumeric::TYPE])) {
                                     $operators[] = \sprintf("%s %s %s ", $column, $expression, $value);
-                                } elseif ($mapper->getParameter($parameter)->hasTypes([Validator\IsString::TYPE, Validator\IsString\IsDateTime::TYPE])) {
+                                } elseif ($mapper->getParameter($parameter)->hasTypes([Validator\IsString::TYPE, Validator\IsString\IsDatetime::TYPE])) {
                                     $operators[] = \sprintf("%s %s '%s'", $column, $expression, $this->sanitize($value));
                                 } elseif ($mapper->getParameter($parameter)->hasTypes([Validator\IsArray::TYPE])) {
                                     $sets = [];

@@ -21,8 +21,7 @@ try {
     
     echo $controller->callback("{{callback}}");
 } catch (\Exception | \Error $ex) {
-    $error = new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a");
-    $error->write(\sprintf("%s: %s\n\n%s\n", \get_class($ex), \ucfirst($ex->getMessage()), $ex->getTraceAsString()));
+    (new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . \basename(__FILE__, ".php") . ".err", "a"))->write(\sprintf("%s: %s\n\n%s\n", \get_class($ex), \ucfirst($ex->getMessage()), $ex->getTraceAsString()));
 }
 
 exit;

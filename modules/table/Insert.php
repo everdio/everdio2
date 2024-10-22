@@ -12,8 +12,8 @@ namespace Modules\Table {
                     $values[$parameter] = $mapper->getField($parameter);
                 }
             }
-
-            parent::__construct(\implode(",", $values), array(new IsString));
+            
+            parent::__construct(\sprintf("INSERT OR IGNORE INTO\n\t%s (%s)\nVALUES\n\t(%s)", $mapper->resource, \implode(", ", $values), (new Values($mapper))->execute()), [new \Component\Validator\IsString]);
         }
     }
 

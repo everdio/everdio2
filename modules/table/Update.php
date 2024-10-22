@@ -6,22 +6,22 @@ namespace Modules\Table {
 
     final class Update extends \Component\Validation {
 
-        public function __construct(\Component\Core $table, array $values = []) {
-            foreach ($table->parameters($table->mapping) as $parameter => $validation) {
-                if (isset($table->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
-                    if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($table->{$parameter}) && $table->{$parameter} !== 0) {
-                        $values[$parameter] = \sprintf("%s.%s=%s ", $table->resource, $table->getField($parameter), "NULL");
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $operators = [], array $values = []) {
+            foreach ($mapper->parameters($mapper->mapping) as $parameter => $validation) {
+                if (isset($mapper->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
+                    if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($mapper->{$parameter}) && $mapper->{$parameter} !== 0) {
+                        $values[$parameter] = \sprintf("%s = %s", $mapper->getField($parameter), "NULL");
                     } elseif ($validation->hasTypes([Validator\IsInteger::TYPE])) {
-                        $values[$parameter] = \sprintf("%s.%s=%s ", $table->resource, $table->getField($parameter), $table->{$parameter});
-                    } elseif ($validation->hasTypes([Validator\IsDefault::TYPE, Validator\IsString::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDateTime\IsDate::TYPE])) {
-                        $values[$parameter] = \sprintf("%s.%s='%s'", $table->resource, $table->getField($parameter), $this->sanitize($table->{$parameter}));
+                        $values[$parameter] = \sprintf("%s = %s", $mapper->getField($parameter), $mapper->{$parameter});
+                    } elseif ($validation->hasTypes([Validator\IsDefault::TYPE, Validator\IsString::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDatetime\IsDate::TYPE])) {
+                        $values[$parameter] = \sprintf("%s = '%s'", $mapper->getField($parameter), $this->sanitize($mapper->{$parameter}));
                     } elseif ($validation->hasTypes([Validator\IsArray::TYPE])) {
-                        $values[$parameter] = \sprintf("%s.%s='%s'", $table->resource, $table->getField($parameter), \implode(",", $table->{$parameter}));
+                        $values[$parameter] = \sprintf("%s = '%s'", $mapper->getField($parameter), \implode(",", $mapper->{$parameter}));
                     }
                 }
             }
 
-            parent::__construct(\implode(", ", $values), array(new Validator\IsString));
+            parent::__construct(\sprintf("UPDATE\n\t%s\nSET\n\t%s\n%s", $mapper->resource, \implode(", ", $values), (new Operators($operators))->execute()), [new Validator\IsString]);
         }
     }
 

@@ -17,13 +17,13 @@ namespace Component\Core {
                 "parameters" => new Validation(false, [new Validator\IsString])]);
         }
 
-        public function __destruct() {
-            $this->parameters = $this->__dry();
+        public function create() {
+            if (!\file_exists(($file = (new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread)))) {
+                $this->parameters = $this->__dry();
 
-            $fopen = new \Component\Caller\File\Fopen((new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread), "w+");
-            $fopen->write($this->replace(\file_get_contents($this->model), ["autoloader", "class", "parameters", "callback"]));
+                (new \Component\Caller\File\Fopen($file, "w+"))->write($this->replace(\file_get_contents($this->model), ["autoloader", "class", "parameters", "callback"]));
+            }
         }
     }
 
 }
-
