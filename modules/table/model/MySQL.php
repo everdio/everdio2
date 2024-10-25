@@ -13,8 +13,7 @@ namespace Modules\Table\Model {
             parent::__construct([
                 "username" => new Validation(false, array(new Validator\IsString)),
                 "password" => new Validation(false, array(new Validator\IsString)),
-                "database" => new Validation(false, array(new Validator\IsString)),
-                "table" => new Validation(false, array(new Validator\IsString))
+                "database" => new Validation(false, array(new Validator\IsString))
                     ] + $_parameters);            
         }
 

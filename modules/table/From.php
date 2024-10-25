@@ -8,12 +8,12 @@ namespace Modules\Table {
 
         public function __construct(array $mappers, array $from = []) {
             foreach ($mappers as $mapper) {
-                if ($mapper instanceof \Component\Core) {
+                if ($mapper instanceof \Component\Core\Adapter\Mapper) {
                     $from[] = $mapper->resource;
                 }
             }
-
-            parent::__construct(\sprintf("FROM\n\t%s", \implode(",\n\t", $from)), [new Validator\IsString]);
+            
+            parent::__construct(\sprintf("FROM %s", \implode(", ", $from)), [new Validator\IsString]);
         }
     }
 

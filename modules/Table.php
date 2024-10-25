@@ -6,6 +6,7 @@ namespace Modules {
 
         final public function statement(string $query, $stm = NULL): \PDOStatement {
             try {
+                echo $query . \PHP_EOL;
                 if (($stm = $this->prepare($query)) && $stm->execute()) {
                     return (object) $stm;
                 }
@@ -88,26 +89,23 @@ namespace Modules {
 
         public function save(): self {
             if ($this->statement((new Table\Insert($this))->execute())) {
-                $this->statement((new Table\Update($this, [(new Table\Filter([$this]))->execute()]))->execute())->execute();
+                $this->statement(\sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute();
                 $this->find();
+                
+                if (!\array_search(false, $this->validations(\array_diff($this->mapping, $this->primary)))) {
+                    return (object) $this;
+                }
             }
-
-            return (object) $this;
+            
+            throw new \LogicException(\sprintf("Saving failed: %s" , $this->dehydrate($this->validations(\array_diff($this->mapping, $this->primary)))));
         }
 
         public function delete(): self {
-            if (\sizeof($this->restore($this->mapping))) {
-                $filter = new Table\Filter([$this]);
-                try {
-                    $this->query(\sprintf("DELETE FROM%sWHERE%s", $this->resource, $filter->execute()));
-                } catch (\ErrorException | \Exception $ex) {
-                    throw new \LogicException(\sprintf("%s while deleting %s with %s", $ex->getMessage(), $this->resource, $filter->execute()));
-                }
-
-                $this->reset($this->mapping);
+            if (\sizeof($this->restore($this->primary))) {
+                $this->statement(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()));
             }
             
-            return (object) $this;
+            return (object) $this->reset($this->mapping);
         }
     }
 

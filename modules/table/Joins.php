@@ -12,7 +12,7 @@ namespace Modules\Table {
                 }
             }
             
-            parent::__construct(\implode(false, $joins), [new Validator\NotEmpty]);
+            parent::__construct(\trim(\implode(" ", $joins)), [new Validator\NotEmpty]);
         }
     }
 

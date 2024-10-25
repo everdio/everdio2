@@ -43,7 +43,7 @@ namespace Modules\BaseX {
                 
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 
-                $model->create();
+                $model->deploy();
             }
         }
 

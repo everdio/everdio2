@@ -12,7 +12,6 @@ namespace Modules\Table {
                     }
                 }
             }
-            
             parent::__construct(\implode(", ", $columns), [new \Component\Validator\IsString]);
         }
     }

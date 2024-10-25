@@ -13,7 +13,7 @@ namespace Modules\Table {
                 }
             }
             
-            parent::__construct(\sprintf("INSERT OR IGNORE INTO\n\t%s (%s)\nVALUES\n\t(%s)", $mapper->resource, \implode(", ", $values), (new Values($mapper))->execute()), [new \Component\Validator\IsString]);
+            parent::__construct(\sprintf("INSERT OR IGNORE INTO %s (%s) VALUES (%s)", $mapper->resource, \implode(", ", $values), (new Values($mapper))->execute()), [new \Component\Validator\IsString]);
         }
     }
 

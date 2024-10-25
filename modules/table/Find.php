@@ -24,8 +24,8 @@ namespace Modules\Table {
                     }
                 }
             }
-
-            parent::__construct(\trim(\sprintf("SELECT\n\t%s\n%s %s\n%s\n%s\n%s", \implode(", ", $select), $from, \implode(false, \array_reverse($joins)), (new Operators($operators, $operator))->execute(), $groupby, $orderby, $query)), [new \Component\Validator\IsString\Contains(["SELECT", "FROM"])]);
+            
+            parent::__construct(\trim(\sprintf("SELECT %s", \implode(" ", \array_filter([\implode(", ", $select), $from, \implode(" ", \array_reverse($joins)), (new Operators($operators, $operator))->execute(), $groupby, $orderby, $query])))), [new \Component\Validator\IsString\Contains(["FROM"])]);
         }
     }
 

@@ -17,7 +17,7 @@ namespace Component\Core {
                 "parameters" => new Validation(false, [new Validator\IsString])]);
         }
 
-        public function create() {
+        final public function deploy() {
             if (!\file_exists(($file = (new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread)))) {
                 $this->parameters = $this->__dry();
 

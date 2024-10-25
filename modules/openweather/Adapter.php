@@ -33,7 +33,7 @@ namespace Modules\OpenWeather {
                 $model->namespace = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->setup();
-                $model->create();
+                $model->deploy();
             }
         }
 

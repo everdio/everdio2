@@ -78,7 +78,7 @@ namespace Component {
                 return $this->value;
             }
 
-            throw new \ValueError(\sprintf("value `%s` must be of type %s, %s given (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
+            throw new \ValueError(\sprintf("value %s must be of type %s, %s given (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
         public function __dry(array $validators = []): string {
@@ -89,15 +89,11 @@ namespace Component {
             return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
         }
 
-        public function __call(string $name, array $arguments): mixed {
-            if (!\method_exists($this, $name)) {
-                foreach ($this->_validators as $validator) {
-                    if (\method_exists($validator, $name)) {
-                        return \call_user_func_array([$validator, $name], $arguments);
-                    }
+        public function __call(string $name, array $arguments) {
+            foreach ($this->_validators as $validator) {
+                if (\method_exists($validator, $name)) {
+                    return \call_user_func_array([$validator, $name], $arguments);
                 }
-
-                throw new \InvalidArgumentException(\sprintf("unknown function name %s for validator(s): %s", $name, \implode(", ", $this->_validators)));
             }
         }
     }

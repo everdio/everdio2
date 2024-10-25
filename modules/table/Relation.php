@@ -18,7 +18,7 @@ namespace Modules\Table {
                 }
             }
 
-            parent::__construct(\implode(\PHP_EOL, $relations), [new Validator\IsEmpty, new Validator\IsString\Contains(["JOIN"])]);
+            parent::__construct(\trim(\implode(" ", $relations)), [new Validator\IsEmpty, new Validator\IsString\Contains(["JOIN"])]);
         }
 
         private function _join(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "and", array $operators = []) {
