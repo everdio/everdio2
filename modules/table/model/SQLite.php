@@ -19,7 +19,7 @@ namespace Modules\Table\Model {
 
                     $length = ($validation->hasTypes([Validator\Len::TYPE]) ? $validation->getLen() : 0);
 
-                    $nullable = ($validation->hasTypes([Validator\IsBool::TYPE]) || (isset($this->primary) && \in_array($parameter, $this->primary)) ? false : "NOT NULL");
+                    $nullable = ($validation->hasTypes([Validator\IsBool::TYPE]) ? false : "NOT NULL");
 
                     if ($validation->hasTypes([Validator\IsString::TYPE])) {
                         $type = "VARCHAR";
@@ -37,9 +37,9 @@ namespace Modules\Table\Model {
                     }
 
                     if ($length) {
-                        $create[] = \sprintf("%s %s (%s) %s", $column, $type, $length, $nullable);
+                        $create[] = \sprintf("\"%s\" %s (%s) %s", $column, $type, $length, $nullable);
                     } else {
-                        $create[] = \sprintf("%s %s %s", $column, $type, $nullable);
+                        $create[] = \sprintf("\"%s\" %s %s", $column, $type, $nullable);
                     }
                 }
             }
@@ -52,14 +52,14 @@ namespace Modules\Table\Model {
                 foreach ($this->keys as $key => $foreign) {
                     if (isset($this->parents) && $this->exists($key)) {
                         if (\array_key_exists($key, $this->parents)) {
-                            $create[] = \sprintf("FOREIGN KEY (%s) REFERENCES %s (%s)", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), (new $this->parents[$key])->table, (new $this->parents[$key])->getField($foreign));
+                            $create[] = \sprintf("FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\")", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), (new $this->parents[$key])->table, (new $this->parents[$key])->getField($foreign));
                         }
                     }
                 }
             }
 
             try {
-                $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS %s (%s)", $this->table, \implode(", ", $create)));
+                $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (%s)", $this->table, \implode(", ", $create)));
             } catch (\PDOException $ex) {
                 throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $this->dehydrate($this->errorInfo())));
             }

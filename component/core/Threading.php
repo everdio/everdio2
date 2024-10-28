@@ -9,8 +9,7 @@ namespace Component\Core {
          */
 
         final public function load(): float {
-            $fopen = new \Component\Caller\File\Fopen("/proc/loadavg");
-            return (float) $this->hydrate($fopen->gets(5));
+            return (float) $this->hydrate((new \Component\Caller\File\Fopen("/proc/loadavg"))->gets(5));
         }
 
         /*
@@ -33,7 +32,7 @@ namespace Component\Core {
             $model->class = \get_class($this);
             $model->deploy();
 
-            if (\str_contains(($check = \exec("php -l " . $thread)), "No syntax errors detected")) {
+            if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
                     $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
@@ -42,9 +41,7 @@ namespace Component\Core {
 
                 return (string) $thread;
             } else {
-                \unlink($thread);
-                
-                throw new \ParseError($check);
+                throw new \ParseError($error);
             }
         }
 
