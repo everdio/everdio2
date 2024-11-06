@@ -102,9 +102,7 @@ namespace Component\Core {
             if (isset($controller->path)) {
                 try {
                     return $controller->dispatch($this->basename);
-                } catch (\InvalidArgumentException | \UnexpectedValueException $ex) {
-                    throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
-                } catch (\ValueError | \ErrorException $ex) {
+                } catch (\InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
                     throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }

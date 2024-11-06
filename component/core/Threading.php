@@ -40,9 +40,9 @@ namespace Component\Core {
                 $this->threads->{$thread} = \exec(\sprintf("sleep %s; timeout %s nice -n %s php -f %s > %s & echo $!", $sleep, $timeout, $this->niceness($this->load()), $thread, $output));
 
                 return (string) $thread;
-            } else {
-                throw new \ParseError($error);
             }
+            
+            throw new \ParseError($error);
         }
 
         final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
