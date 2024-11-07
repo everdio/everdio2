@@ -16,10 +16,12 @@ namespace Modules\Table\Model {
             foreach ($this->mapping as $column => $parameter) {
                 if ($this->exists($parameter)) {
                     $validation = $this->getParameter($parameter);
-
+                    
                     $length = ($validation->hasTypes([Validator\Len::TYPE]) ? $validation->getLen() : 0);
 
                     $nullable = ($validation->hasTypes([Validator\IsBool::TYPE]) ? false : "NOT NULL");
+                    
+                    $default = (($value = $validation->get()) ? \sprintf("DEFAULT %s", $this->dehydrate($value)) : false);
 
                     if ($validation->hasTypes([Validator\IsString::TYPE])) {
                         $type = "VARCHAR";
@@ -37,9 +39,9 @@ namespace Modules\Table\Model {
                     }
 
                     if ($length) {
-                        $create[] = \sprintf("\"%s\" %s (%s) %s", $column, $type, $length, $nullable);
+                        $create[] = \sprintf("\"%s\" %s (%s) %s %s", $column, $type, $length, $nullable, $default);
                     } else {
-                        $create[] = \sprintf("\"%s\" %s %s", $column, $type, $nullable);
+                        $create[] = \sprintf("\"%s\" %s %s %s", $column, $type, $nullable, $default);
                     }
                 }
             }
@@ -59,7 +61,7 @@ namespace Modules\Table\Model {
             }
 
             try {
-                $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (%s)", $this->table, \implode(", ", $create)));
+                $this->exec(\sprintf("CREATE TABLE IF NOT EXISTS \"%s\" (%s)", $this->table, \implode(", ", \array_map("trim", $create))));
             } catch (\PDOException $ex) {
                 throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $this->dehydrate($this->errorInfo())));
             }
