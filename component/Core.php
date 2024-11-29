@@ -148,7 +148,7 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("invalid hash algorithms %s::%s", \get_class($this), $algo));
         }
 
-        final public function replace(string $content, array $parameters = [], int $instances = 99, string $replace = "{{%s}}"): string {
+        final public function replace(string $content, array $parameters = [], string $replace = "{{%s}}", int $instances = 99): string {
             foreach ($this->restore($parameters) as $parameter => $value) {
                 if (\is_float($value) || \is_numeric($value) || \is_string($value)) {
                     $content = \implode($value, \explode(\sprintf($replace, $parameter), $content, $instances));

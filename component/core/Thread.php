@@ -19,6 +19,7 @@ namespace Component\Core {
 
         final public function deploy() {
             if (!\file_exists(($file = (new \Component\Path(\dirname($this->thread)))->getPath() . \DIRECTORY_SEPARATOR . \basename($this->thread)))) {
+
                 $this->parameters = $this->__dry();
 
                 (new \Component\Caller\File\Fopen($file, "w+"))->write($this->replace(\file_get_contents($this->model), ["autoloader", "class", "parameters", "callback"]));

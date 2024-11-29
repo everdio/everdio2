@@ -17,7 +17,11 @@ namespace Modules\Table\Model {
                     ] + $_parameters);            
         }
 
-        final public function setup(): void {
+        final public function setup(): void {                        
+            $model->label = $this->beautify($this->table);
+            $model->class = $this->beautify($this->table);            
+            $model->resource = \sprintf("%s.%s", $this->database, $this->table);
+            
             $columns = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`COLUMNS`WHERE`information_schema`.`COLUMNS`.`TABLE_SCHEMA`='%s'AND`information_schema`.`COLUMNS`.`TABLE_NAME`='%s' ORDER BY `ORDINAL_POSITION` ASC", $this->database, $this->table));
             $columns->execute();
             foreach ($columns->fetchAll(\PDO::FETCH_ASSOC) as $row) {

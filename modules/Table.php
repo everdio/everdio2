@@ -6,7 +6,6 @@ namespace Modules {
 
         final public function statement(string $query, $stm = NULL): \PDOStatement {
             try {
-                echo $query . \PHP_EOL;
                 if (($stm = $this->prepare($query)) && $stm->execute()) {
                     return (object) $stm;
                 }
@@ -97,7 +96,7 @@ namespace Modules {
                 }
             }
             
-            throw new \LogicException(\sprintf("Saving failed: %s" , $this->dehydrate($this->validations(\array_diff($this->mapping, $this->primary)))));
+            throw new \LogicException(\sprintf("failed: %s" , $this->dehydrate($this->validations(\array_diff($this->mapping, $this->primary)))));
         }
 
         public function delete(): self {
