@@ -7,7 +7,7 @@ namespace Modules\Table {
     final class Values extends \Component\Validation {
 
         public function __construct(\Component\Core $table, array $values = []) {
-            foreach ($table->parameters($table->mapping) as $parameter => $validation) {
+            foreach ($table->export($table->mapping) as $parameter => $validation) {
                 if (isset($table->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
                     if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($table->{$parameter}) && $table->{$parameter} !== 0) {
                         $values[$parameter] = "NULL";

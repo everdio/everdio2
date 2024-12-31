@@ -14,6 +14,18 @@ namespace Component {
             }
         }
         
+        public function __isset(string $parameter): bool {
+            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
+        }   
+        
+        public function __unset(string $parameter) {
+            if ($this->exists($parameter)) {
+                return (bool) $this->_parameters[$parameter]->set(false);
+            }
+
+            //throw new \InvalidArgumentException(\sprintf("invalid parameter %s::%s", \get_class($this), $parameter));
+        }        
+        
         public function __get(string $parameter): mixed {
             if ($this->exists($parameter)) {
                 try {
@@ -23,7 +35,7 @@ namespace Component {
                 }
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
+            throw new \InvalidArgumentException(\sprintf("invalid parameter %s::%s", \get_class($this), $parameter));
         }
 
         public function __set(string $parameter, $value) {
@@ -44,18 +56,6 @@ namespace Component {
             }
 
             throw new \InvalidArgumentException(\sprintf("invalid parameter %s::%s", \get_class($this), $parameter));
-        }
-
-        public function __isset(string $parameter): bool {
-            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
-        }
-
-        public function __unset(string $parameter) {
-            if ($this->exists($parameter)) {
-                return (bool) $this->_parameters[$parameter]->set(false);
-            }
-
-            //throw new \InvalidArgumentException(\sprintf("invalid parameter %s", $parameter));
         }
 
         final public function exists(string $parameter): bool {
@@ -82,9 +82,17 @@ namespace Component {
             }
         }
 
-        final public function parameters(array $parameters = []): array {
+        final public function export(array $parameters = []): array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }
+        
+        final public function import(array $parameters): void {
+            foreach ($parameters as $parameter => $validation) {
+                if ($validation instanceof \Component\Validation) {
+                    $this->addParameter($parameter, $validation, true);
+                }
+            }
+        }        
 
         final public function inter(array $parameters): array {
             return (array) \array_diff(\array_keys($this->_parameters), $this->diff($parameters));
@@ -116,12 +124,6 @@ namespace Component {
             }
 
             return (array) $values;
-        }
-        
-        public function destroy(array $parameters = []) : void {
-            foreach ($parameters as $parameter) {
-                $this->remove($parameter);
-            }
         }
 
         public function querystring(array $parameters = []): string {
@@ -156,14 +158,6 @@ namespace Component {
             }
 
             return (string) $content;
-        }
-
-        final public function import(array $parameters): void {
-            foreach ($parameters as $parameter => $validation) {
-                if ($validation instanceof \Component\Validation) {
-                    $this->addParameter($parameter, $validation, true);
-                }
-            }
         }
         
         public function __clone() {

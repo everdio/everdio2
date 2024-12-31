@@ -7,7 +7,7 @@ namespace Modules\Table {
     final class Insert extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $values = NULL) {
-            foreach ($mapper->parameters($mapper->mapping) as $parameter => $validation) {
+            foreach ($mapper->export($mapper->mapping) as $parameter => $validation) {
                 if (isset($mapper->{$parameter}) && !$validation->hasTypes([IsString\IsDatetime::TYPE, IsString\IsDatetime\Timestamp::TYPE])) {
                     $values[$parameter] = $mapper->getField($parameter);
                 }

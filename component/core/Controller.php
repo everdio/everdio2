@@ -10,7 +10,7 @@ namespace Component\Core {
         use Threading;
 
         public function __construct(array $_parameters = []) {
-            parent::__construct([
+            parent::__construct(\array_merge([
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
@@ -21,7 +21,7 @@ namespace Component\Core {
                 "threads" => new Validation(new Parameters, [new Validator\IsObject]),
                 "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
-                    ] + $_parameters);
+                    ], $_parameters));
 
             $this->reserved = $this->diff();
         }
@@ -94,7 +94,7 @@ namespace Component\Core {
 
         final public function execute(string $path, array $request = []) {
             $controller = new $this;
-            $controller->import($this->parameters($this->reserved));
+            $controller->import($this->export($this->reserved));
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             $controller->basename = \basename($path);
@@ -110,7 +110,7 @@ namespace Component\Core {
 
         public function __clone() {
             $controller = parent::__clone();
-            $controller->import($this->parameters($this->reserved));
+            $controller->import($this->export($this->reserved));
             return (object) $controller;
         }
     }

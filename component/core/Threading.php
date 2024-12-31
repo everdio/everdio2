@@ -25,8 +25,7 @@ namespace Component\Core {
          */
         
         final public function thread(string $callback, bool $queue = false, int|float $sleep = 0, int $timeout = 300, string $output = "/dev/null") {
-            $model = new Thread;
-            $model->import($this->parameters($this->diff(["autoloader", "model", "threads", "pool"])));
+            $model = new Thread($this->export($this->diff(["autoloader", "model", "threads", "pool"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
