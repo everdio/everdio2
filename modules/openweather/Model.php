@@ -19,9 +19,9 @@ namespace Modules\OpenWeather {
             $this->use = "\Modules\OpenWeather\Api";
         }
 
-        public function create(): void {
+        public function deploy(): void {
             $this->remove("content");
-            parent::create();
+            parent::deploy();
         }
     }
 

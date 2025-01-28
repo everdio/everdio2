@@ -17,10 +17,10 @@ namespace Modules\BaseX {
             $this->use = "\Modules\BaseX\Api";
         }
 
-        public function create(): void {
+        public function deploy(): void {
             $this->remove("content");
 
-            parent::create();
+            parent::deploy();
         }
     }
 

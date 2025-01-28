@@ -6,7 +6,7 @@ namespace Component\Core {
 
     trait Model {
 
-        final public function deploy(): void {
+        public function deploy(): void {
             if (!\file_exists(($file = (new \Component\Path(\strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)))))->getPath() . \DIRECTORY_SEPARATOR . $this->class . ".php")) || $this->overwrite) {
                 
                 $this->parameters = $this->__dry();

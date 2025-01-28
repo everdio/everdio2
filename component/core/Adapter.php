@@ -5,7 +5,7 @@ namespace Component\Core {
     abstract class Adapter extends \Component\Core {
         
         use Threading;
-
+        
         static private $_adapters = [];
 
         /*
