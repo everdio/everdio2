@@ -37,12 +37,12 @@ namespace Modules\OpenWeather {
             }
         }
 
-        public function create(): void {
+        public function deploy(): void {
             unset($this->lon);
             unset($this->lat);
             unset($this->lang);
 
-            parent::create();
+            parent::deploy();
         }
     }
 

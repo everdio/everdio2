@@ -18,8 +18,6 @@ namespace Component\Core {
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
-                "threads" => new Validation(new Parameters, [new Validator\IsObject]),
-                "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                     ], $_parameters));
 

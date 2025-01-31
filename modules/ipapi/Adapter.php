@@ -29,12 +29,14 @@ namespace Modules\IpApi {
                 $model->setup();
 
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
+                
+                $model->deploy();
             }
         }
 
-        public function create(): void {
+        public function deploy(): void {
             unset($this->ip);
-            parent::create();
+            parent::deploy();
         }
     }
 
