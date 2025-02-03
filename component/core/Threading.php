@@ -4,22 +4,55 @@ namespace Component\Core {
 
     trait Threading {
 
-        private $_threads = [], $_pool = [];
+        private $_threads = [], $_pool = [], $_servers = [];
 
-        /*
-         * fetching load from linux systems
-         */
+        private function build(string $callback): string {
+            $model = new Thread($this->export($this->diff(["autoloader", "model"])));
+            $model->callback = $callback;
+            $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
+            $model->class = \get_class($this);
+            $model->deploy();
 
-        final public function load(): float {
-            return (float) $this->hydrate((new \Component\Caller\File\Fopen("/proc/loadavg"))->gets(5));
+            return (string) $thread;            
         }
+        
+        private function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null") {
+            if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
+                if ($queue) {
+                    $this->_pool[$thread] = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                }                
+                
+                return  (string) \sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output);
+            }
 
-        /*
-         * calculating nicesses based on current load and cpu's
-         */
+            throw new \ParseError($error);            
+        }
+        
+        final public function server(string $host, string $username, string $password):bool{
+            $ssh = new \Component\Caller\Ssh2($host);
+            if ($ssh->password($username, $password)) {
+                $this->_servers[$host] = $ssh;
+            }
+            
+            throw new \InvalidArgumentException(\sprintf("unable to connect to %s", $host));
+        }
+        
+        final public function local(string $callback, bool $queue = false, int $timeout = 300, string $output = "/dev/null") {
+            $thread = $this->build($callback);
+           
+            $this->_threads[$thread] = \exec($this->command($thread, $queue, $timeout, $output));
+            
+            return (string) $thread;
+        }
+        
+        final public function remote(string $host, string $callback, bool $queue = false, int $timeout = 300, string $output = "/dev/null") {
+            if (isset($this->_servers[$host])) {
+                $thread = $this->build($callback);
 
-        final public function niceness(float $load): int {
-            return (int) \min(\max(-19, \round((($load / $this->hydrate(\exec("nproc"))) * 100) * (39 / 100) - 19)), 19);
+                $this->_threads[$thread] = $this->_servers[$host]->exec($this->command($thread, $queue, $timeout, $output));
+
+                return (string) $thread;                
+            }
         }
 
         /*
@@ -38,7 +71,7 @@ namespace Component\Core {
                     $this->_pool[$thread] = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
-                $this->_threads[$thread] = \exec(\sprintf("timeout %s nice -n %s php -f %s > %s & echo $!", $timeout, $this->niceness($this->load()), $thread, $output));
+                $this->_threads[$thread] = \exec(\sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output));
 
                 return (string) $thread;
             }
@@ -46,7 +79,7 @@ namespace Component\Core {
             throw new \ParseError($error);
         }
 
-        final public function queue(array $threads, array $response = [], int $usleep = 10000): array {
+        final public function queue(array $threads, array $response = [], int $usleep = 1000): array {
             if (\sizeof($threads)) {
                 $pool = \array_intersect_key($this->_pool, \array_flip($threads));
 
@@ -88,8 +121,6 @@ namespace Component\Core {
                     \unlink($this->_pool[$thread]);
                 }
             }
-
-            exit;
         }
     }
 

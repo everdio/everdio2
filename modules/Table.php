@@ -87,14 +87,7 @@ namespace Modules {
         }
 
         public function save(): self {
-            
-            echo PHP_EOL;
-            echo PHP_EOL;
-            echo $this->statement(\sprintf("%s ON DUPLICATE KEY %s", (new Table\Insert($this))->execute(), (new Table\Update($this))->execute()));
-            echo PHP_EOL;
-            echo PHP_EOL;
-            die();
-            
+  
             if ($this->statement((new Table\Insert($this))->execute())) {
                 $this->statement(\sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute();
                 $this->find();
