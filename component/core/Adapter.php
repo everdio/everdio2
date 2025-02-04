@@ -3,11 +3,11 @@
 namespace Component\Core {
 
     abstract class Adapter extends \Component\Core {
-                
+
         static private $_adapters = [];
 
         use Threading;
-        
+
         /*
          * returns the mapper adapter object
          */
