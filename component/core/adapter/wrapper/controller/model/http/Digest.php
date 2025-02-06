@@ -1,11 +1,11 @@
 <?php
 
-namespace Component\Core\Controller\Model\Http {
+namespace Component\Core\Adapter\Wrapper\Controller\Model\Http {
 
     use \Component\Validation,
         \Component\Validator;
 
-    abstract class Digest extends \Component\Core\Controller\Model\Http {
+    abstract class Digest extends \Component\Core\Adapter\Wrapper\Controller\Model\Http {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([

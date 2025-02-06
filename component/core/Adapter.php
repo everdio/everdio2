@@ -4,9 +4,9 @@ namespace Component\Core {
 
     abstract class Adapter extends \Component\Core {
 
-        static private $_adapters = [];
-
         use Threading;
+
+        static private $_adapters = [];
 
         /*
          * returns the mapper adapter object

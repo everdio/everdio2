@@ -9,11 +9,14 @@ namespace Modules {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
+                "id" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "key" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "ttl" => new Validation(false, [new Validator\IsInteger]),
                 "data" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "code" => new Validation(false, [new Validator\IsInteger])
                     ] + $_parameters);
+            
+            $this->adapter = ["id"];
         }
 
         final protected function __init(): object {

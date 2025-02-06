@@ -11,7 +11,7 @@ declare(ticks = 1);
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$controller = new \Component\Core\Controller\Model\Cli;
+$controller = new \Component\Core\Adapter\Wrapper\Controller\Model\Cli;
 
 try {
     $controller->server = $_SERVER;
@@ -24,6 +24,8 @@ try {
     \pcntl_signal(\SIGTERM, [$controller, "terminate"]);
 
     $controller->setup();
+
+
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception | \Error $ex) {
     echo \sprintf("\n%s catched %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));

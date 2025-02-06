@@ -1,14 +1,14 @@
 <?php
 
-namespace Component\Core\Controller\Model {
+namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
     use \Component\Validation,
         \Component\Validator\IsArray,
         \Component\Validator\IsString;
 
-    abstract class Http extends \Component\Core\Controller\Model {
+    abstract class Http extends \Component\Core\Adapter\Wrapper\Controller\Model {
 
-        use \Component\Core\Controller\Model\Auto;
+        use Auto;
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
@@ -22,30 +22,16 @@ namespace Component\Core\Controller\Model {
         }
 
         /*
-         * checks if html file exists based on path
-         */
-
-        final public function hasHtml(string $path): bool {
-            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
-        }
-
-        /*
-         * if html file exists, get contents
-         */
-
-        final public function getHtml(string $path) {
-            if ($this->hasHtml($path)) {
-                return (string) \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
-            }
-        }
-
-        /*
          * dispatching a html (template) file if exists and adding to parent dispatch (controller)
          * if debug is set (true) output is not compressed
          */
 
         public function dispatch(string $path): string {
-            $output = (string) parent::dispatch($path) . $this->getHtml($path);
+            $output = (string) parent::dispatch($path);
+
+            if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {
+                $output .= \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
+            }
 
             if (isset($this->request->{$this->debug})) {
                 return (string) $output;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Component\Core\Controller\Model {
+namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
     trait Auto {
 

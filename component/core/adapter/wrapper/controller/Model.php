@@ -1,13 +1,12 @@
 <?php
 
-namespace Component\Core\Controller {
+namespace Component\Core\Adapter\Wrapper\Controller {
 
     use \Component\Validation,
         \Component\Validator,
-        \Component\Core\Parameters,
-        \Component\Caller\File\Fopen;
+        \Component\Core\Parameters;
 
-    abstract class Model extends \Component\Core\Controller {
+    abstract class Model extends \Component\Core\Adapter\Wrapper\Controller {
         /*
          * A required setup function to process the basic server input for the controller
          */
@@ -15,30 +14,15 @@ namespace Component\Core\Controller {
         abstract public function setup(): void;
 
         /*
-         * dispatching the Model if exists
-         */
-
-        public function dispatch(string $path): string|null|int {
-            return parent::dispatch($this->getModel($path, false));
-        }
-
-        /*
-         * checks if model ini file exists
-         */
-
-        final protected function hasModel(string $path): bool {
-            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini");
-        }
-
-        /*
          * parsing ini contents and set as Parameters container(s)
          */
 
         final public function getModel(string $path, bool $reset = true): string {
-            if ($this->hasModel($path)) {
+            if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini")) {
+
                 try {
                     $parameters = (array) \parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED);
-                    
+
                     foreach (\array_diff_key($parameters, \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
@@ -57,12 +41,20 @@ namespace Component\Core\Controller {
         }
 
         /*
+         * dispatching the Model if exists
+         */
+
+        public function dispatch(string $path): string|null|int {
+            return parent::dispatch($this->getModel($path, false));
+        }
+
+        /*
          * creating and (re)storing an ini file, directory should exist
          */
 
         public function save(string $path, array $parameters): void {
             if (\sizeof(($sections = $this->restore(\array_diff($this->inter($parameters), $this->reserved))))) {
-                $ini = new Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
+                $ini = new \Component\Caller\File\Fopen\Ini((new \Component\Path(\dirname($this->path . \DIRECTORY_SEPARATOR . $path)))->getPath() . \DIRECTORY_SEPARATOR . \basename($path), "w");
                 foreach ($sections as $section => $parameters) {
                     if ($parameters instanceof Parameters) {
                         $ini->write($parameters->restore(), $section);

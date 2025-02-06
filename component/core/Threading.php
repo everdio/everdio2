@@ -4,9 +4,9 @@ namespace Component\Core {
 
     trait Threading {
 
-        private $_pids = [], $_pool = [], $_servers = [];
+        private $_pids = [], $_pool = [];
 
-        private function build(string $callback): string {
+        protected function build(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
@@ -16,15 +16,13 @@ namespace Component\Core {
             return (string) $thread;
         }
         
-        private function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null") {
+        protected function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null"): string {
             if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
                     $this->_pool[$thread] = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
-                $this->_pids[$thread] = \exec(\sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output));
-                
-                return (string) $thread;
+                return (string) \sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output);
             }         
             
             throw new \ParseError($error);
@@ -33,11 +31,18 @@ namespace Component\Core {
         /*
          * callback executed as seperate thread at local machine
          */
-        final public function thread(string $callback, bool $queue = false, int $timeout = 300) {
-            return (string) $this->command($this->build($callback), $queue, $timeout);
+        public function thread(string $callback, bool $queue = false, int $timeout = 300) {
+            $thread = $this->build($callback);
+            
+            $this->_pids[$thread] = \exec($this->command($thread, $queue, $timeout));
+            
+            return (string) $thread;
         }
         
-        final public function queue(array $threads, array $response = [], int $usleep = 1000): array {
+        /*
+         * returning all output per thread from the pool as soon as they are all ready
+         */
+        public function queue(array $threads, array $response = [], int $usleep = 1000): array {
             if (\sizeof($threads)) {
                 $pool = \array_intersect_key($this->_pool, \array_flip($threads));
 
@@ -60,21 +65,27 @@ namespace Component\Core {
 
             return (array) \array_filter($response);
         }
+        
+        /*
+         * retrieves a single thread from the queue;
+         */
 
         final public function retrieve(string $thread) {
             if (isset($this->_pool[$thread])) {
                 return \current($this->queue([$thread]));
             }
         }
+        
+        /*
+         * terminates any known pids if they are still running and any known output
+         */
 
         final public function terminate($signal) {
             foreach ($this->_pids as $thread => $pid) {
-                //kill the process (php)
                 if (\posix_getpgid($pid)) {
                     \posix_kill($pid, $signal);
                 }
 
-                //destroy the output (out)
                 if (isset($this->_pool[$thread]) && \is_file($this->_pool[$thread])) {
                     \unlink($this->_pool[$thread]);
                 }

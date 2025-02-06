@@ -1,16 +1,15 @@
 <?php
 
-namespace Component\Core {
+namespace Component\Core\Adapter\Wrapper {
 
     use \Component\Validation,
         \Component\Validator;
 
-    abstract class Controller extends \Component\Core {
-
-        use Threading;
+    abstract class Controller extends \Component\Core\Adapter\Wrapper {
 
         public function __construct(array $_parameters = []) {
             parent::__construct(\array_merge([
+                "host" => new Validation(false, [new Validator\IsString]),
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
@@ -19,41 +18,22 @@ namespace Component\Core {
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
-                    ], $_parameters));
+                            ], $_parameters));
 
+            $this->adapter = ["host"];
             $this->reserved = $this->diff();
+        }
+
+        final protected function __init(): object {
+            return (object) new \Component\Caller\Ssh2($this->host);
         }
 
         /*
          * dispatching the Cojtroller if exists!
          */
 
-        public function dispatch(string $path): string|null|int {
-            return $this->getController($path);
-        }
-
-        /*
-         * process timer using the server global request_time_float
-         */
-
-        final public function timing(): float {
-            return (float) (\microtime(true) - $this->time);
-        }
-
-        /*
-         * checks if controller php file exists
-         */
-
-        final public function hasController(string $path): bool {
-            return (bool) \is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php");
-        }
-
-        /*
-         * including php file and catching it's output for returning
-         */
-
-        final public function getController(string $path) {
-            if ($this->hasController($path)) {
+        public function dispatch(string $path) {
+            if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
                 \ob_start();
 
                 require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
@@ -105,6 +85,7 @@ namespace Component\Core {
                 }
             }
         }
+
 
         public function __clone() {
             $controller = parent::__clone();

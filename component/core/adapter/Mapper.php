@@ -23,10 +23,6 @@ namespace Component\Core\Adapter {
 
             throw new \InvalidArgumentException($parameter);
         }
-
-        final public function __dry(): string {
-            return (string) \sprintf("new \%s(%s)", (string) $this, $this->dehydrate($this->restore($this->mapping)));
-        }
     }
 
 }

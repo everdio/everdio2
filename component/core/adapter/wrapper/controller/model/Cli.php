@@ -1,12 +1,12 @@
 <?php
 
-namespace Component\Core\Controller\Model {
+namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
     use \Component\Validation,
         \Component\Validator;
 
-    class Cli extends \Component\Core\Controller\Model {
-        use \Component\Core\Controller\Model\Auto;
+    class Cli extends \Component\Core\Adapter\Wrapper\Controller\Model {
+        use Auto;
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
