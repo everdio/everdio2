@@ -18,7 +18,6 @@ try {
     $controller->debug = "_debug";
     $controller->path = __DIR__;
     $controller->storage = "/home/evertdf/tmp";
-    $controller->auth_password("evertdf", "Geheim42!");
 
     \pcntl_async_signals(true);
     \pcntl_signal(\SIGINT, [$controller, "terminate"]);
