@@ -1,5 +1,5 @@
 <?php
-if ($this instanceof Component\Core\Controller\Model\Cli) {
+if ($this instanceof Component\Core\Adapter\Wrapper\Controller\Model\Cli) {
     $file = new \Component\Caller\File\Fopen(__DIR__ . \DIRECTORY_SEPARATOR . $this->request->basex->command, "r");
 
     $curl = new \Component\Caller\Curl;

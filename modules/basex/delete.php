@@ -1,6 +1,6 @@
 <?php
 
-if ($this instanceof Component\Core\Controller\Model\Cli) {
+if ($this instanceof Component\Core\Adapter\Wrapper\Controller\Model\Cli) {
     
     $curl = new \Component\Caller\Curl;
     $curl->setopt_array([

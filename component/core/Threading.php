@@ -4,7 +4,7 @@ namespace Component\Core {
 
     trait Threading {
 
-        private $_pids = [], $_pool = [];
+        protected $_pids = [], $_pool = [];
 
         protected function build(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
@@ -42,7 +42,7 @@ namespace Component\Core {
         /*
          * returning all output per thread from the pool as soon as they are all ready
          */
-        public function queue(array $threads, array $response = [], int $usleep = 1000): array {
+        public function queue(array $threads, array $response = [], int $usleep = 10000): array {
             if (\sizeof($threads)) {
                 $pool = \array_intersect_key($this->_pool, \array_flip($threads));
 

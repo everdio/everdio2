@@ -9,7 +9,6 @@ namespace Component\Core\Adapter\Wrapper {
 
         public function __construct(array $_parameters = []) {
             parent::__construct(\array_merge([
-                "host" => new Validation(false, [new Validator\IsString]),
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
@@ -25,9 +24,9 @@ namespace Component\Core\Adapter\Wrapper {
         }
 
         final protected function __init(): object {
-            return (object) new \Component\Caller\Ssh2($this->host);
+            return (object) new \Component\Caller\Ssh2("localhost");
         }
-
+        
         /*
          * dispatching the Cojtroller if exists!
          */
