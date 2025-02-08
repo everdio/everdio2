@@ -11,7 +11,7 @@ namespace Modules {
             parent::__construct([
                 "url" => new Validation("https://api.openai.com/v1/chat/completions", [new Validator\IsString\IsUrl]),
                 "key" => new Validation(false, [new Validator\IsString]),
-                "adapter" => new Validation(["openai"], [new Validator\IsArray]),
+                "adapter" => new Validation(["url"], [new Validator\IsArray]),
                 "model" => new Validation(false, [new Validator\IsString]),
                 "max_tokens" => new Validation(false, [new Validator\IsInteger]),
                 "temperature" => new Validation(0.5, [new Validator\IsFloat]),

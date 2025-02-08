@@ -15,7 +15,6 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 "server" => new Validation(false, [new IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR", "REQUEST_TIME_FLOAT"])], Validation::NORMAL),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
-                "host" => new Validation(false, [new IsString]),
                 "remote" => new Validation(false, [new IsString]),
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),
                     ] + $_parameters);
@@ -51,8 +50,9 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
             $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
-            $this->host = $this->server["HTTP_HOST"];
+            $this->hostname = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
+            $this->ip = $this->server["SERVER_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
         }

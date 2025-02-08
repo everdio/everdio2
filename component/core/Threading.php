@@ -63,7 +63,7 @@ namespace Component\Core {
                 while (\sizeof($pool)) {
                     foreach ($pool as $thread => $output) {
                         if (($content = $this->check($thread, $output))) {
-                            $response[\array_search($thread, $threads)] = $output;
+                            $response[\array_search($thread, $threads)] = $content;
                             unset($pool[$thread]);
                         }
 

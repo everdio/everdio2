@@ -82,7 +82,9 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
                 $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
-            } else {
+                $this->hostname = \gethostname();
+                $this->ip = \gethostbyname(\gethostname());
+           } else {
                 throw new \RuntimeException("Arguments required, nothing to execute");
             }
         }

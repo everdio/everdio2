@@ -13,10 +13,7 @@ namespace Modules\Table\Adapter {
             foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
                 $model = new \Modules\Table\Model\SQLite;
                 $model->store($parameters);
-                $model->label = $this->beautify($table);
-                $model->class = $this->beautify($table);
-                $model->table = $table;
-                $model->resource = \sprintf("%s.%s", $this->database, $table);
+                $model->table = $table; 
                 $model->setup();
             }
         }

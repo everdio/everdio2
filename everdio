@@ -18,14 +18,14 @@ try {
     $controller->debug = "_debug";
     $controller->path = __DIR__;
     $controller->storage = "/home/evertdf/tmp";
-    $controller->auth_password("evertdf", "Geheim42!");
 
     \pcntl_async_signals(true);
     \pcntl_signal(\SIGINT, [$controller, "terminate"]);
     \pcntl_signal(\SIGTERM, [$controller, "terminate"]);
 
     $controller->setup();
-
+    $controller->auth_password("evertdf", "Geheim42!");
+    
     echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
 } catch (\Exception | \Error $ex) {
     echo \sprintf("\n%s catched %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));
