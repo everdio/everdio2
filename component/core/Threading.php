@@ -6,7 +6,7 @@ namespace Component\Core {
 
         protected $_pids = [], $_pool = [];
 
-        protected function build(string $callback): string {
+        final protected function build(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
             $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
@@ -16,7 +16,7 @@ namespace Component\Core {
             return (string) $thread;
         }
         
-        protected function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null"): string {
+        final protected function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null"): string {
             if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
                     $this->_pool[$thread] = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
@@ -26,6 +26,19 @@ namespace Component\Core {
             }         
             
             throw new \ParseError($error);
+        }
+        
+        final protected function check(string $thread, string $output) {
+            if (!\file_exists($thread) && \is_file($output)) {
+                $content = \file_get_contents($output);
+
+                \unlink($output);
+
+                unset($this->_pool[$thread]);
+                unset($this->_pids[$thread]);
+                
+                return $content;
+            }
         }
 
         /*
@@ -39,6 +52,7 @@ namespace Component\Core {
             return (string) $thread;
         }
         
+        
         /*
          * returning all output per thread from the pool as soon as they are all ready
          */
@@ -48,14 +62,9 @@ namespace Component\Core {
 
                 while (\sizeof($pool)) {
                     foreach ($pool as $thread => $output) {
-                        if (!\file_exists($thread) && \is_file($output)) {
-                            $response[\array_search($thread, $threads)] = \file_get_contents($output);
-
-                            \unlink($output);
-
+                        if (($content = $this->check($thread, $output))) {
+                            $response[\array_search($thread, $threads)] = $output;
                             unset($pool[$thread]);
-                            unset($this->_pool[$thread]);
-                            unset($this->_pids[$thread]);
                         }
 
                         \usleep($usleep);
