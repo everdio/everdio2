@@ -20,6 +20,7 @@ namespace Component\Core\Adapter\Wrapper {
                 "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
+            
             $this->adapter = ["ip, hostname"];
             $this->reserved = $this->diff();
         }
