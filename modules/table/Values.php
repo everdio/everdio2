@@ -6,23 +6,12 @@ namespace Modules\Table {
 
     final class Values extends \Component\Validation {
 
-        public function __construct(\Component\Core $table, array $values = []) {
-            foreach ($table->export($table->mapping) as $parameter => $validation) {
-                if (isset($table->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
-                    if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($table->{$parameter}) && $table->{$parameter} !== 0) {
-                        $values[$parameter] = "NULL";
-                    } elseif ($validation->hasTypes([Validator\IsInteger::TYPE, Validator\IsNumeric::TYPE])) {
-                        $values[$parameter] = $table->{$parameter};
-                    } elseif ($validation->hasTypes([Validator\IsArray::TYPE])) {
-                        $values[$parameter] = \sprintf("'%s'", \implode(",", $table->{$parameter}));
-                    } elseif ($validation->hasTypes([Validator\IsNumeric::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDatetime\IsDate::TYPE])) {
-                        $values[$parameter] = \sprintf("'%s'", $this->sanitize($table->{$parameter}));
-                    }
-                }
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $values = []) {
+            foreach ($mapper->restore($mapper->mapping) as $parameter => $value) {
+                $values[\sprintf("%s_%s", $mapper->table, $mapper->getField($parameter))] = $value;
             }
 
-
-            parent::__construct(\implode(", ", $values), array(new Validator\IsDefault));
+            parent::__construct($values, [new Validator\IsArray, new Validator\IsEmpty]);
         }
     }
 

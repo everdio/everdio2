@@ -4,9 +4,9 @@ namespace Modules {
 
     trait Table {
 
-        final public function statement(string $query, $stm = NULL): \PDOStatement {
+        final public function statement(string $query, array $values = [], $stm = NULL): \PDOStatement {
             try {
-                if (($stm = $this->prepare($query)) && $stm->execute()) {
+                if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
                 }
             } catch (\ErrorException | \Exception $ex) {
@@ -42,20 +42,27 @@ namespace Modules {
         }
 
         public function find(array $validations = [], string $query = NULL): self {
-            if (($row = $this->statement((new Table\Find(array_merge([new Table\Tables([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query)->fetch(\PDO::FETCH_ASSOC))) {
+            $values = (new Table\Values($this))->execute();
+
+            foreach ($validations as $validation) {
+                if ($validation instanceof Table\Values) {
+                    $values = \array_merge($values, $validation->execute());
+                }
+            }            
+            
+            if (($row = $this->statement((new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $values)->fetch(\PDO::FETCH_ASSOC))) {
                 $this->store($this->desanitize($row));
             }
 
             return (object) $this;
         }
 
-        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, string $query = NULL, array $parents = []): array {
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, ?string $query = NULL): array {
             if (isset($this->parents)) {
                 foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
-                    $parents[] = $parent;
-
+                    
                     $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
@@ -75,8 +82,16 @@ namespace Modules {
                     $validations[] = new Table\OrderBy($this, ["desc" => $this->keys]);
                 }
             }
+            
+            $values = (new Table\Values($this))->execute();
+            
+            foreach ($validations as $validation) {
+                if ($validation instanceof Table\Values) {
+                    $values = \array_merge($values, $validation->execute());
+                }
+            }
 
-            return (array) $this->statement((new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this]), new Table\GroupBy($this)], $validations)))->execute() . $query)->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $values)->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
@@ -87,22 +102,16 @@ namespace Modules {
         }
 
         public function save(): self {
-  
-            if ($this->statement((new Table\Insert($this))->execute())) {
-                $this->statement(\sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute();
-                $this->find();
-                
-                if (!\array_search(false, $this->validations(\array_diff($this->mapping, $this->primary)))) {
-                    return (object) $this;
-                }
-            }
-            
-            throw new \LogicException(\sprintf("failed: %s" , $this->dehydrate($this->validations(\array_diff($this->mapping, $this->primary)))));
+            if ($this->prepare((new Table\Insert($this))->execute())->execute((new Table\Values($this))->execute())) {
+                $this->prepare(\sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->eexecute());
+            } 
+   
+            return (object) $this;
         }
 
         public function delete(): self {
-            if (\sizeof($this->restore($this->primary))) {
-                $this->statement(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()));
+            if (\sizeof($this->restore($this->mapping))) {
+                $this->prepare(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->execute());
             }
             
             return (object) $this->reset($this->mapping);

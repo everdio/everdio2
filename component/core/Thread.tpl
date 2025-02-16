@@ -1,13 +1,13 @@
 <?php
 declare(ticks = 1);
 
-function shutdown() {
+function terminate() {
     if (\is_file(__FILE__)) {
         \unlink(__FILE__);
     }
 }
 
-\register_shutdown_function("shutdown");
+\register_shutdown_function("terminate");
 
 include_once("{{autoloader}}");
 

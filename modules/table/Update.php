@@ -6,22 +6,12 @@ namespace Modules\Table {
 
     final class Update extends \Component\Validation {
 
-        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $values = []) {
-            foreach ($mapper->export($mapper->mapping) as $parameter => $validation) {
-                if (isset($mapper->{$parameter}) && !$validation->hasTypes([Validator\IsString\IsDatetime::TYPE, Validator\IsString\IsDatetime\Timestamp::TYPE])) {
-                    if ($validation->hasTypes([Validator\IsEmpty::TYPE]) && empty($mapper->{$parameter}) && $mapper->{$parameter} !== 0) {
-                        $values[$parameter] = \sprintf("%s = %s", $mapper->getField($parameter), "NULL");
-                    } elseif ($validation->hasTypes([Validator\IsInteger::TYPE])) {
-                        $values[$parameter] = \sprintf("%s = %s", $mapper->getField($parameter), $mapper->{$parameter});
-                    } elseif ($validation->hasTypes([Validator\IsDefault::TYPE, Validator\IsString::TYPE, Validator\IsString::TYPE, Validator\IsString\IsDatetime\IsDate::TYPE])) {
-                        $values[$parameter] = \sprintf("%s = '%s'", $mapper->getField($parameter), $this->sanitize($mapper->{$parameter}));
-                    } elseif ($validation->hasTypes([Validator\IsArray::TYPE])) {
-                        $values[$parameter] = \sprintf("%s = '%s'", $mapper->getField($parameter), \implode(",", $mapper->{$parameter}));
-                    }
-                }
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $set = []) {
+            foreach (\array_keys($mapper->restore($mapper->mapping)) as $parameter) {
+                $set[] = \sprintf("%s = :%s_%s", $mapper->getField($parameter), $mapper->table, $mapper->getField($parameter));
             }
 
-            parent::__construct(\sprintf("UPDATE %s SET %s", $mapper->resource, \implode(", ", $values)), [new Validator\IsString]);
+            parent::__construct(\sprintf("UPDATE OR IGNORE %s SET %s", $mapper->resource, \implode(", ", $set)), [new Validator\IsString]);
         }
     }
 

@@ -22,7 +22,7 @@ namespace Modules\Table\Model {
                     $nullable = ($validation->hasTypes([Validator\IsBool::TYPE]) ? false : "NOT NULL");
                     
                     $default = (($value = $validation->get()) ? \sprintf("DEFAULT %s", $this->dehydrate($value)) : false);
-
+                                        
                     if ($validation->hasTypes([Validator\IsString::TYPE])) {
                         $type = "VARCHAR";
                         if ($length > 0 && $length <= 255) {
@@ -33,16 +33,18 @@ namespace Modules\Table\Model {
                     } elseif ($validation->hasTypes([Validator\IsInteger::TYPE])) {
                         $type = "INTEGER";
                     } elseif ($validation->hasTypes([Validator\IsFloat::TYPE])) {
-                        $type = "REAL";
+                        $type = "DECIMAL";
                     } else {
-                        throw new \InvalidArgumentException(\sprintf("Invalid column type for %s %s", $this->resource, $column));
+                        throw new \InvalidArgumentException(\sprintf("invalid column type for %s %s", $this->resource, $column));
                     }
-
-                    if ($length) {
+                        
+                    if ($type === "DECIMAL") {
+                        $create[] = \sprintf("\"%s\" %s(10,5) %s %s", $column, $type, $nullable, $default);
+                    } elseif ($length) {
                         $create[] = \sprintf("\"%s\" %s (%s) %s %s", $column, $type, $length, $nullable, $default);
                     } else {
                         $create[] = \sprintf("\"%s\" %s %s %s", $column, $type, $nullable, $default);
-                    }
+                    }                    
                 }
             }
 

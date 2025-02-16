@@ -22,7 +22,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         final public function remote(string $callback, bool $queue = false, int $timeout = 300) {
 
             $thread = $this->build($callback);
-            $this->scp_send($thread, $thread, 664);
+            $this->scp_send($thread, $this->storage . \DIRECTORY_SEPARATOR . \basename($thread), 664);
             $this->_pids[$thread] = $this->exec($this->command($thread, $queue, $timeout));
 
             return (string) $thread;
@@ -79,11 +79,11 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                         $this->request->store(\array_merge_recursive($request, $this->request->restore()));
                     }
                 }
-
+           
                 $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
                 $this->hostname = \gethostname();
-                $this->ip = \gethostbyname(\gethostname());
+                $this->ip = \gethostbyname($this->hostname);
            } else {
                 throw new \RuntimeException("Arguments required, nothing to execute");
             }

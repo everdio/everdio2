@@ -8,7 +8,8 @@ namespace Component\Validation {
     class Parameter extends \Component\Validation {
 
         public function __construct($value = false, private bool $_default = false, private bool $_mandatory = true, private $_length = NULL, array $options = []) {
-            parent::__construct($value, [new Validator\IsArray,
+            parent::__construct($value, [
+                new Validator\IsArray,
                 new Validator\IsFloat,
                 new Validator\IsResource,
                 new Validator\IsObject,
@@ -48,11 +49,11 @@ namespace Component\Validation {
         final public function getValidation(array $validators = [], string $validate = self::NORMAL): Validation {
             if ($this->_length && $this->_mandatory) {
                 $validate = self::STRICT;
-            }           
-            
+            }
+
             return new Validation(($this->_default ? $this->value : false), \array_unique($this->getValidators($validators)), $validate);
         }
-        
+
         final public function __dry(array $validators = []): string {
             return (string) $this->getValidation($validators)->__dry();
         }

@@ -9,7 +9,7 @@ namespace Component\Core {
         final protected function build(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
-            $model->thread = $thread = $this->storage . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
+            $model->thread = $thread = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             $model->deploy();
 

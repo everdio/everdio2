@@ -17,7 +17,7 @@ namespace Component\Core\Adapter\Wrapper {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
+                "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
             
