@@ -32,7 +32,7 @@ namespace Modules\Table\Model {
                         }
                     } elseif ($validation->hasTypes([Validator\IsInteger::TYPE])) {
                         $type = "INTEGER";
-                    } elseif ($validation->hasTypes([Validator\IsFloat::TYPE])) {
+                    } elseif ($validation->hasTypes([Validator\IsNumeric::TYPE])) {
                         $type = "DECIMAL";
                     } else {
                         throw new \InvalidArgumentException(\sprintf("invalid column type for %s %s", $this->resource, $column));

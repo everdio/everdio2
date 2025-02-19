@@ -90,11 +90,15 @@ namespace Component {
         }
 
         public function __call(string $name, array $arguments) {
-            foreach ($this->_validators as $validator) {
-                if (\method_exists($validator, $name)) {
-                    return \call_user_func_array([$validator, $name], $arguments);
+            if (!\method_exists($this, $name)) {
+                foreach ($this->_validators as $validator) {
+                    if (\method_exists($validator, $name)) {
+                        return \call_user_func_array([$validator, $name], $arguments);
+                    }
                 }
             }
+            
+            throw new \BadFunctionCallException(\sprintf("unknown method %s::%s with arguments %s", \get_class($this), $name, $this->dehydrate($arguments)));
         }
     }
 

@@ -62,12 +62,6 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                 }
             }
         }
-
-        public function __clone() {
-            $controller = parent::__clone();
-            $controller->getModel($controller->basename);
-            return (object) $controller;
-        }
     }
 
 }

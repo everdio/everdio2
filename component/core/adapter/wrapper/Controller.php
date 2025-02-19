@@ -72,26 +72,18 @@ namespace Component\Core\Adapter\Wrapper {
          */
 
         final public function execute(string $path, array $request = []) {
-            $controller = new $this;
-            $controller->import($this->export($this->reserved));
+            $controller = \unserialize(\serialize($this));
             $controller->request->store($request);
             $controller->path = \realpath($this->path . \DIRECTORY_SEPARATOR . \dirname($path));
             $controller->basename = \basename($path);
 
-            if (isset($controller->path)) {
+            if (isset($controller->path) && isset($controller->basename)) {
                 try {
-                    return $controller->dispatch($this->basename);
+                    return $controller->dispatch($controller->basename);
                 } catch (\InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
                     throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }
-        }
-
-
-        public function __clone() {
-            $controller = parent::__clone();
-            $controller->import($this->export($this->reserved));
-            return (object) $controller;
         }
     }
 

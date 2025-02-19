@@ -11,7 +11,7 @@ namespace Modules\Table {
                 $set[] = \sprintf("%s = :%s_%s", $mapper->getField($parameter), $mapper->table, $mapper->getField($parameter));
             }
 
-            parent::__construct(\sprintf("UPDATE OR IGNORE %s SET %s", $mapper->resource, \implode(", ", $set)), [new Validator\IsString]);
+            parent::__construct(\sprintf("UPDATE %s SET %s", $mapper->resource, \implode(", ", $set)), [new Validator\IsString]);
         }
     }
 

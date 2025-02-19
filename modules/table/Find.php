@@ -4,7 +4,7 @@ namespace Modules\Table {
 
     final class Find extends \Component\Validation {
 
-        public function __construct(array $validations = [], string $operator = "AND", array $select = [], string $from = NULL, array $joins = [], array $operators = [], string $orderby = NULL, string $groupby = NULL, string $query = NULL) {
+        public function __construct(array $validations = [], string $operator = "AND", array $select = [], ?string $from = NULL, array $joins = [], array $operators = [], ?string $orderby = NULL, ?string $groupby = NULL) {
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {
                     if ($validation instanceof Select || $validation instanceof Count) {
@@ -19,13 +19,11 @@ namespace Modules\Table {
                         $groupby = $validation->execute();                              
                     } elseif ($validation instanceof OrderBy) {
                         $orderby = $validation->execute();                  
-                    } else {
-                        $query .= $validation->execute();
                     }
                 }
-            }
+            }            
             
-            parent::__construct(\trim(\sprintf("SELECT %s", \implode(" ", \array_filter([\implode(", ", $select), $from, \implode(" ", \array_reverse($joins)), (new Operators($operators, $operator))->execute(), $groupby, $orderby, $query])))), [new \Component\Validator\IsString\Contains(["FROM"])]);
+            parent::__construct(\trim(\sprintf("SELECT %s", \implode(" ", \array_filter([\implode(", ", $select), $from, \implode(" ", \array_reverse($joins)), (new Operators($operators, $operator))->execute(), $groupby, $orderby])))), [new \Component\Validator\IsString\Contains(["FROM"])]);
         }
     }
 

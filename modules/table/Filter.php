@@ -15,7 +15,7 @@ namespace Modules\Table {
                 }
             }
 
-            parent::__construct(\trim(\implode(\sprintf(" %s ", \strtoupper($operator)), $operators)), [new \Component\Validator\IsString]);
+            parent::__construct(\implode(\sprintf(" %s ", \strtoupper($operator)), $operators), [new \Component\Validator\IsString]);
         }
     }
 

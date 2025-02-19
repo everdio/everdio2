@@ -88,9 +88,7 @@ namespace Component {
         
         final public function import(array $parameters): void {
             foreach ($parameters as $parameter => $validation) {
-                if ($validation instanceof \Component\Validation) {
-                    $this->addParameter($parameter, $validation, true);
-                }
+                $this->addParameter($parameter, $validation, true);
             }
         }        
 
@@ -160,10 +158,6 @@ namespace Component {
             return (string) $content;
         }
         
-        public function __clone() {
-            return (object) new $this;
-        }
-
         public function __dry(): string {
             return (string) $this->dehydrate($this->_parameters);
         }        

@@ -10,7 +10,6 @@ namespace Component\Validation {
         public function __construct($value = false, private bool $_default = false, private bool $_mandatory = true, private $_length = NULL, array $options = []) {
             parent::__construct($value, [
                 new Validator\IsArray,
-                new Validator\IsFloat,
                 new Validator\IsResource,
                 new Validator\IsObject,
                 new Validator\IsInteger,

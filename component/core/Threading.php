@@ -15,7 +15,7 @@ namespace Component\Core {
 
             return (string) $thread;
         }
-        
+
         final protected function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null"): string {
             if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
@@ -23,11 +23,11 @@ namespace Component\Core {
                 }
 
                 return (string) \sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output);
-            }         
-            
+            }
+
             throw new \ParseError($error);
         }
-        
+
         final protected function check(string $thread, string $output) {
             if (!\file_exists($thread) && \is_file($output)) {
                 $content = \file_get_contents($output);
@@ -36,7 +36,7 @@ namespace Component\Core {
 
                 unset($this->_pool[$thread]);
                 unset($this->_pids[$thread]);
-                
+
                 return $content;
             }
         }
@@ -44,18 +44,19 @@ namespace Component\Core {
         /*
          * callback executed as seperate thread at local machine
          */
+
         public function thread(string $callback, bool $queue = false, int $timeout = 300) {
             $thread = $this->build($callback);
-            
+
             $this->_pids[$thread] = \exec($this->command($thread, $queue, $timeout));
-            
+
             return (string) $thread;
         }
-        
-        
+
         /*
          * returning all output per thread from the pool as soon as they are all ready
          */
+
         public function queue(array $threads, array $response = [], int $usleep = 10000): array {
             if (\sizeof($threads)) {
                 $pool = \array_intersect_key($this->_pool, \array_flip($threads));
@@ -74,7 +75,7 @@ namespace Component\Core {
 
             return (array) \array_filter($response);
         }
-        
+
         /*
          * retrieves a single thread from the queue;
          */
@@ -84,12 +85,12 @@ namespace Component\Core {
                 return \current($this->queue([$thread]));
             }
         }
-        
+
         /*
          * terminates any known pids if they are still running and any known output
          */
 
-        final public function terminate($signal) {
+        final public function terminate($signal): void {
             foreach ($this->_pids as $thread => $pid) {
                 if (\posix_getpgid($pid)) {
                     \posix_kill($pid, $signal);
@@ -99,6 +100,8 @@ namespace Component\Core {
                     \unlink($this->_pool[$thread]);
                 }
             }
+
+            exit;
         }
     }
 
