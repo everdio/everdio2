@@ -2,9 +2,17 @@
 
 namespace Component\Core {
 
+    use \Component\Validation,
+        \Component\Validator;
+
     trait Threading {
 
-        protected $_pids = [], $_pool = [];
+        public function __construct(array $_parameters = []) {
+            parent::__construct([
+                "pool" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                "pids" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
+                    ] + $_parameters);
+        }
 
         final protected function build(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
@@ -19,7 +27,7 @@ namespace Component\Core {
         final protected function command(string $thread, bool $queue = false, int $timeout = 300, string $output = "/dev/null"): string {
             if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
                 if ($queue) {
-                    $this->_pool[$thread] = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                    $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
                 return (string) \sprintf("timeout %s php -f %s > %s & echo $!", $timeout, $thread, $output);
@@ -27,19 +35,7 @@ namespace Component\Core {
 
             throw new \ParseError($error);
         }
-
-        final protected function check(string $thread, string $output) {
-            if (!\file_exists($thread) && \is_file($output)) {
-                $content = \file_get_contents($output);
-
-                \unlink($output);
-
-                unset($this->_pool[$thread]);
-                unset($this->_pids[$thread]);
-
-                return $content;
-            }
-        }
+        
 
         /*
          * callback executed as seperate thread at local machine
@@ -48,9 +44,22 @@ namespace Component\Core {
         public function thread(string $callback, bool $queue = false, int $timeout = 300) {
             $thread = $this->build($callback);
 
-            $this->_pids[$thread] = \exec($this->command($thread, $queue, $timeout));
+            $this->pids->{$thread} = \exec($this->command($thread, $queue, $timeout));
 
             return (string) $thread;
+        }        
+
+        final protected function check(string $thread, string $output) {
+            if (!\file_exists($thread) && \is_file($output)) {
+                $content = \file_get_contents($output);
+
+                \unlink($output);
+
+                unset($this->pool->{$thread});
+                unset($this->pids->{$thread});
+
+                return $content;
+            }
         }
 
         /*
@@ -59,12 +68,13 @@ namespace Component\Core {
 
         public function queue(array $threads, array $response = [], int $usleep = 10000): array {
             if (\sizeof($threads)) {
-                $pool = \array_intersect_key($this->_pool, \array_flip($threads));
+                $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
 
                 while (\sizeof($pool)) {
                     foreach ($pool as $thread => $output) {
                         if (($content = $this->check($thread, $output))) {
                             $response[\array_search($thread, $threads)] = $content;
+
                             unset($pool[$thread]);
                         }
 
@@ -81,7 +91,7 @@ namespace Component\Core {
          */
 
         final public function retrieve(string $thread) {
-            if (isset($this->_pool[$thread])) {
+            if (isset($this->pool->{$thread})) {
                 return \current($this->queue([$thread]));
             }
         }
@@ -91,13 +101,13 @@ namespace Component\Core {
          */
 
         final public function terminate($signal): void {
-            foreach ($this->_pids as $thread => $pid) {
+            foreach ($this->pids->restore() as $thread => $pid) {
                 if (\posix_getpgid($pid)) {
                     \posix_kill($pid, $signal);
                 }
 
-                if (isset($this->_pool[$thread]) && \is_file($this->_pool[$thread])) {
-                    \unlink($this->_pool[$thread]);
+                if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
+                    \unlink($this->pool->{$thread});
                 }
             }
 
