@@ -18,7 +18,7 @@ namespace Component\Core {
          * in order to save resources we store the adapter in a static array
          */
 
-        protected function getAdapter(): object {
+        protected function __restore(): object {
             $key = $this->unique($this->adapter, "adapter", "crc32");
 
             if (!\array_key_exists($key, self::$_adapters)) {
@@ -34,7 +34,7 @@ namespace Component\Core {
 
         public function __call(string $name, array $arguments = []) {
             if (!\method_exists($this, $name)) {
-                return \call_user_func_array([$this->getAdapter(), $name], $arguments);
+                return \call_user_func_array([$this->__restore(), $name], $arguments);
             }
         }
     }

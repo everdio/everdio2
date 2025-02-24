@@ -1,6 +1,6 @@
 <?php
 if ($this instanceof Component\Core\Adapter\Wrapper\Controller\Model\Cli) {
-    $this->echo($this->style(\sprintf("Generating %s .. ", $this->model->namespace), ["cyan"]));
+    $this->echo($this->style(\sprintf("\nGenerating %s\n\n", $this->model->namespace), ["cyan"]));
     
     $models = [];
     
@@ -40,6 +40,8 @@ if ($this instanceof Component\Core\Adapter\Wrapper\Controller\Model\Cli) {
             $model->deploy();
             
             $models[$mapper] = (string) $model;
+            
+            $this->echo($this->style((string) $model . \PHP_EOL, ["white", "bold"]));
         }
     }
 
