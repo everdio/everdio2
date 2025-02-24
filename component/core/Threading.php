@@ -30,7 +30,7 @@ namespace Component\Core {
                     $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
                 }
 
-                return (string) \sprintf("sleep %s; timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output);
+                return (string) \sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output);
             }
 
             throw new \ParseError($error);
@@ -59,7 +59,10 @@ namespace Component\Core {
             
             while (\sizeof($pool)) {
                 foreach ($pool as $php => $out) {
+                    //echo $php . " => " . file_exists($php) . " vs " . $php . " => " . is_file($php) . \PHP_EOL;
+                    
                     if (!\file_exists($php) && \file_exists($out)) {
+                        
                         $response[\array_search($php, $threads)] = \file_get_contents($out);
                         \unlink($out);
 
