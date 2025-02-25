@@ -59,8 +59,6 @@ namespace Component\Core {
             
             while (\sizeof($pool)) {
                 foreach ($pool as $php => $out) {
-                    //echo $php . " => " . file_exists($php) . " vs " . $php . " => " . is_file($php) . \PHP_EOL;
-                    
                     if (!\file_exists($php) && \file_exists($out)) {
                         
                         $response[\array_search($php, $threads)] = \file_get_contents($out);
