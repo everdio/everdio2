@@ -9,7 +9,7 @@ namespace Modules\Node\Adapter {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "content" => new Validation(false, [new Validator\IsString\IsSstring])
+                "content" => new Validation(false, [new Validator\IsString])
                     ] + $_parameters);
 
             $this->adapter = ["content"];
