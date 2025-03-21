@@ -11,6 +11,7 @@ namespace Modules\Node\Model {
             parent::__construct([
                 "url" => new Validation(false, [new Validator\IsString\IsUrl]),
                     ] + $_parameters);
+            $this->adapter = ["url"];
         }
     }
 

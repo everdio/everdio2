@@ -11,6 +11,7 @@ namespace Modules\Node\Model {
             parent::__construct([
                 "document" => new Validation(false, [new Validator\IsString\IsFile]),
                     ] + $_parameters);
+            $this->adapter = ["document"];
         }
     }
 

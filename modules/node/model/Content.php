@@ -11,6 +11,7 @@ namespace Modules\Node\Model {
             parent::__construct([
                 "content" => new Validation(false, [new Validator\IsString]),
                     ] + $_parameters);
+            
         }
     }
 
