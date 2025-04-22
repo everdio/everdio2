@@ -13,21 +13,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "REQUEST_TIME_FLOAT"])])
                     ] + $_parameters);
         }
-        
-        
-        /*
-         * callback executed as seperate thread at remote machine
-         * 
-         */
-        final public function remote(string $callback, bool $queue = false, int $timeout = 300) {
 
-            $thread = $this->build($callback);
-            $this->scp_send($thread, $this->storage . \DIRECTORY_SEPARATOR . \basename($thread), 664);
-            $this->_pids[$thread] = $this->exec($this->command($thread, $queue, $timeout));
-
-            return (string) $thread;
-        }        
-       
         final public function break(int $breaks = 1): void {
             $this->echo(\str_repeat(\PHP_EOL, $breaks));
         }

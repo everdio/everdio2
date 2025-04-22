@@ -40,7 +40,7 @@ namespace Component\Core {
          * callback executed as seperate thread at local machine
          */
 
-        public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300) {
+        final public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300) {
             $thread = $this->build($callback);
 
             $this->pids->{$thread} = \exec($this->command($thread, $queue, $sleep, $timeout));

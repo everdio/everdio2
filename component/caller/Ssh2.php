@@ -20,7 +20,7 @@ namespace Component\Caller {
          */
         final public function exec(string $command) {
             $stream = parent::exec($command);
-            \stream_set_blocking($stream, true);           
+            \stream_set_blocking($stream, true);
             return \stream_get_contents($stream);
         }
 

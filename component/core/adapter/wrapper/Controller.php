@@ -6,13 +6,12 @@ namespace Component\Core\Adapter\Wrapper {
         \Component\Validator;
 
     abstract class Controller extends \Component\Core\Adapter\Wrapper {
-
         public function __construct(array $_parameters = []) {
             parent::__construct(\array_merge([
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
-                "ip" => new Validation(false, [new Validator\IsString, new Validator\Len\Smaller(15)]),
+                "ip" => new Validation(false, [new Validator\IsString, new Validator\Len\Smaller(15)]),                
+                "path" => new Validation(false, [new Validator\IsString\IsDir]),                                                
                 "hostname" => new Validation(false, [new Validator\IsString]),
-                "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
@@ -20,11 +19,11 @@ namespace Component\Core\Adapter\Wrapper {
                 "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
-
-            $this->adapter = ["ip, hostname"];
+            
+            $this->adapter = ["ip, hostname"];            
             $this->reserved = $this->diff();
         }
-
+        
         final protected function __init(): object {
             return (object) new \Component\Caller\Ssh2($this->ip);
         }
