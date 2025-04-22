@@ -19,7 +19,7 @@ namespace Component {
                 return (string) \sprintf("[%s]", \implode(", ", $array));
             } elseif (\is_object($data)) {
                 return (string) (\method_exists($data, __FUNCTION__) ? $data->__dry() : \sprintf("new \%s", \get_class($data)));
-            } elseif ($data === NULL) {
+            } elseif ($data === null) {
                 return (string) "false";
             } elseif (\is_resource($data)) {
                 return (string) \get_resource_type($data);

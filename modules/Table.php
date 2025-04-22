@@ -13,7 +13,7 @@ namespace Modules {
             return (array) $values;
         }
 
-        private function statement(string $query, array $values = [], $stm = NULL): \PDOStatement {
+        private function statement(string $query, array $values = [], $stm = null): \PDOStatement {
             try {
                 if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
@@ -35,7 +35,7 @@ namespace Modules {
             return (bool) parent::__set($parameter, $value);
         }
 
-        public function count(array $validations = [], ?string $query = NULL): int {
+        public function count(array $validations = [], ?string $query = null): int {
             if (isset($this->parents)) {
                 foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
@@ -54,7 +54,7 @@ namespace Modules {
             return (int) $this->statement((new Table\Find(\array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetchColumn();
         }
 
-        public function find(array $validations = [], ?string $query = NULL): self {
+        public function find(array $validations = [], ?string $query = null): self {
             if (($row = $this->statement((new Table\Find(array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetch(\PDO::FETCH_ASSOC))) {
                 $this->store($this->desanitize($row));
             }
@@ -62,7 +62,7 @@ namespace Modules {
             return (object) $this;
         }
 
-        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, ?string $query = NULL): array {
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, ?string $query = null): array {
             if (isset($this->parents)) {
                 foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;

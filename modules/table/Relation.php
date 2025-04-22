@@ -21,7 +21,7 @@ namespace Modules\Table {
             parent::__construct(\trim(\implode(" ", $relations)), [new Validator\IsEmpty, new Validator\IsString\Contains(["JOIN"])]);
         }
 
-        private function join(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "AND", array $operators = [], ?string $filter = NULL) {
+        private function join(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "AND", array $operators = [], ?string $filter = null) {
             foreach ($keys as $thatKey => $thisKey) {
                 if ($thatMapper->exists($thatKey) && $thisMapper->exists($thisKey)) {
                     $operators[] = sprintf("%s.%s = %s.%s", $thatMapper->resource, $thatMapper->getField($thatKey), $thisMapper->resource, $thisMapper->getField($thisKey));

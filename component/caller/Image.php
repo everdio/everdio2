@@ -23,7 +23,7 @@ namespace Component\Caller {
             $this->handle = parent::crop(["y" => (($this->sy() - $height) / 2), "x" => (($this->sx() - $width) / 2), "width" => $width, "height" => $height]);
         }
 
-        public function scale(int $width = NULL, int $height = NULL) {
+        public function scale(int $width = 0, int $height = 0) {
             $this->handle = parent::scale((int) (!$width && $height ? $this->sx() * ($height / $this->sy()) : $width), (int) ($width && !$height ? $this->sy() * ($width / $this->sx()) : $height));
         }
     }

@@ -9,7 +9,7 @@ namespace Component\Caller\File {
             $this->handle = $this->open($file, $mode);
         }
 
-        public function exists(int $ttl = NULL): bool {
+        public function exists(int $ttl = 0): bool {
             return (bool) parent::exists() && ((!$ttl && \filesize($this->file)) || ($ttl && \filesize($this->file) && (\filemtime($this->file) + $ttl) > \time()));
         }
 

@@ -62,7 +62,7 @@ namespace Component {
             return (bool) \array_key_exists($parameter, $this->_parameters);
         }
 
-        final public function addParameter(string $parameter, Validation $validation, ?bool $reset = NULL) {
+        final public function addParameter(string $parameter, Validation $validation, ?bool $reset = null) {
             if (!$this->exists($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }

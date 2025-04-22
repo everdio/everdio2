@@ -7,7 +7,7 @@ namespace Component\Validation {
 
     class Parameter extends \Component\Validation {
 
-        public function __construct($value = false, private bool $_default = false, private bool $_mandatory = true, private $_length = NULL, array $options = []) {
+        public function __construct($value = false, private bool $_default = false, private bool $_mandatory = true, private $_length = null, array $options = []) {
             parent::__construct($value, [
                 new Validator\IsArray,
                 new Validator\IsResource,

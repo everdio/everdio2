@@ -7,7 +7,7 @@ namespace Component\Validator {
         const TYPE = "empty";
 
         public function execute($value): bool {
-            return (bool) $value === NULL || empty($value);
+            return (bool) $value === null || empty($value);
         }
     }
 

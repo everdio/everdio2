@@ -22,7 +22,7 @@ namespace Component\Caller\File\Fopen {
             }
         }
 
-        final public function write(array $array, string $section = NULL) {
+        final public function write(array $array, string|null $section = null) {
             if ($section) {
                 $this->writeSection($section);
             }

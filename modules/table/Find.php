@@ -4,7 +4,7 @@ namespace Modules\Table {
 
     final class Find extends \Component\Validation {
 
-        public function __construct(array $validations = [], string $operator = "AND", array $select = [], ?string $from = NULL, array $joins = [], array $operators = [], ?string $orderby = NULL, ?string $groupby = NULL) {
+        public function __construct(array $validations = [], string $operator = "AND", array $select = [], ?string $from = null, array $joins = [], array $operators = [], ?string $orderby = null, ?string $groupby = null) {
             foreach ($validations as $validation) {
                 if ($validation instanceof \Component\Validation && $validation->isValid()) {
                     if ($validation instanceof Select || $validation instanceof Count) {
