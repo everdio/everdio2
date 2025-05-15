@@ -6,7 +6,7 @@ namespace Modules\Node\Html {
 
         use \Modules\Node;
 
-        protected function __init(): object {
+        protected function addAdapter(): object {
             $curl = new \Component\Caller\Curl\Client;
             $curl->setopt_array([
                 \CURLOPT_URL => $this->url]);

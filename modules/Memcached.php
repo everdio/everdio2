@@ -19,7 +19,7 @@ namespace Modules {
             $this->adapter = ["id"];
         }
 
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             return (object) new \Memcached($this->id);
         }
 

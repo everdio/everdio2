@@ -4,7 +4,7 @@ namespace Modules {
 
     trait IpApi {
 
-        protected function __init(): object {
+        protected function addAdapter(): object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_FOLLOWLOCATION => true,

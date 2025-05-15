@@ -6,7 +6,7 @@ namespace Modules\Table {
 
         use \Modules\Table;
 
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             return (object) new \PDO($this->dsn, $this->username, $this->password, [\PDO::ATTR_PERSISTENT => true]);
         }
     }

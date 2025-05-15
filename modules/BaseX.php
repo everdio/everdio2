@@ -6,7 +6,7 @@ namespace Modules {
 
         static public $_queries = [];
         
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_HTTPAUTH => \CURLAUTH_BASIC,

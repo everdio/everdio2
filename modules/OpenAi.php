@@ -22,7 +22,7 @@ namespace Modules {
             $this->store($values);
         }
 
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             $curl = new \Component\Caller\Curl;
             $curl->setopt_array([
                 \CURLOPT_URL => $this->url,

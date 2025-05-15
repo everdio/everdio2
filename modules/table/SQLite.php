@@ -6,7 +6,7 @@ namespace Modules\Table {
 
         use \Modules\Table;
 
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             $pdo = new \PDO($this->dsn);
             $pdo->exec("PRAGMA foreign_keys = ON;");
             return (object) $pdo;

@@ -24,7 +24,7 @@ namespace Component\Core\Adapter\Wrapper {
             $this->reserved = $this->diff();
         }
         
-        final protected function __init(): object {
+        final protected function addAdapter(): object {
             return (object) new \Component\Caller\Ssh2($this->ip);
         }
 
