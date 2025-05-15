@@ -65,6 +65,18 @@ namespace Component\Core\Adapter\Wrapper {
 
             return (string) $output;
         }
+        
+        final public function remote(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300) {
+            $thread = $this->build($callback);
+            
+            $this->scp_send($thread, $this->storage . \DIRECTORY_SEPARATOR . \basename($thread), 0644);
+            
+            \unlink($thread);
+            
+            //$this->pids->{"ssh2.sftp://" . intval($this->sftp()) . $this->storage . \DIRECTORY_SEPARATOR . \basename($thread)} = $this->exec($this->command($this->storage . \DIRECTORY_SEPARATOR . \basename($thread), $queue, $sleep, $timeout));
+
+            return (string) $thread;            
+        }
 
         /*
          * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches

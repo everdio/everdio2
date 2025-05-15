@@ -16,6 +16,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model\Http {
 
         public function setup(): void {
             parent::setup();
+            
             if (isset($this->authorization)) {
                 $this->key = $this->authorization["HTTP_AUTHORIZATION"];
             }
