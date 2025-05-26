@@ -16,16 +16,11 @@ namespace Component\Core\Adapter\Wrapper {
                 "debug" => new Validation(false, [new Validator\IsString]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
-                "storage" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsDir]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
             
-            $this->adapter = ["ip, hostname"];            
+            $this->adapter = ["ip", "path", "hostname"];            
             $this->reserved = $this->diff();
-        }
-        
-        final protected function addAdapter(): object {
-            return (object) new \Component\Caller\Ssh2($this->ip);
         }
 
         /*
@@ -64,18 +59,6 @@ namespace Component\Core\Adapter\Wrapper {
             }
 
             return (string) $output;
-        }
-        
-        final public function remote(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300) {
-            $thread = $this->build($callback);
-            
-            $this->scp_send($thread, $this->storage . \DIRECTORY_SEPARATOR . \basename($thread), 0644);
-            
-            \unlink($thread);
-            
-            //$this->pids->{"ssh2.sftp://" . intval($this->sftp()) . $this->storage . \DIRECTORY_SEPARATOR . \basename($thread)} = $this->exec($this->command($this->storage . \DIRECTORY_SEPARATOR . \basename($thread), $queue, $sleep, $timeout));
-
-            return (string) $thread;            
         }
 
         /*

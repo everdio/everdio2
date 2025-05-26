@@ -14,38 +14,38 @@ namespace Component\Core {
                     ] + $_parameters);
         }
 
-        final protected function build(string $callback): string {
+        final protected function create(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
             $model->thread = $thread = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             $model->deploy();
-
+            
+            if (!\str_contains(($error = $this->run("php -l " . $thread)), "No syntax errors detected")) {
+                throw new \ParseError(\sprintf("%s while executing %s", $error, $thread));
+            }
+            
             return (string) $thread;
         }
 
-        final protected function command(string $thread, bool $queue = false, int $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
-            if (\str_contains(($error = \exec("php -l " . $thread)), "No syntax errors detected")) {
-                if ($queue) {
-                    $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-                }
-
-                return (string) \sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output);
-            }
-
-            throw new \ParseError($error);
+        protected function run(string $command): mixed {
+            return \exec($command);
         }
 
         /*
          * callback executed as seperate thread at local machine
          */
 
-        final public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300) {
-            $thread = $this->build($callback);
+        public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
+            $thread = $this->create($callback);
+            
+            if ($queue) {
+                $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+            }                
 
-            $this->pids->{$thread} = \exec($this->command($thread, $queue, $sleep, $timeout));
+            $this->pids->{$thread} = $this->run(\sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output));
 
-            return (string) $thread;
+            return $thread;
         }
 
         final public function retrieve(string $thread, array $response = [], int $usleep = 10000) {
@@ -53,20 +53,19 @@ namespace Component\Core {
                 return \current($this->pool([$thread], $response, $usleep));
             }
         }
-        
-        final public function pool(array $threads, array $response = [], int $usleep = 10000): array {
+
+        final public function pool(array $threads, array $response = [], int $usleep = 1000): array {
             $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));
-            
+
             while (\sizeof($pool)) {
                 foreach ($pool as $php => $out) {
                     if (!\file_exists($php) && \file_exists($out)) {
-                        
+
                         $response[\array_search($php, $threads)] = \file_get_contents($out);
                         \unlink($out);
 
                         unset($this->pool->{$php});
                         unset($this->pids->{$php});
-                        
                         unset($pool[$php]);
                     }
                 }

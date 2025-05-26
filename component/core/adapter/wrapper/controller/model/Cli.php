@@ -3,7 +3,8 @@
 namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
     use \Component\Validation,
-        \Component\Validator;
+        \Component\Validator,
+        \Component\Caller;
 
     class Cli extends \Component\Core\Adapter\Wrapper\Controller\Model {
         use Auto;
@@ -12,6 +13,10 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "REQUEST_TIME_FLOAT"])])
                     ] + $_parameters);
+        }
+        
+        final protected function addAdapter(): object {
+            return (object) new Caller\Ssh2($this->ip);
         }
 
         final public function break(int $breaks = 1): void {
@@ -52,14 +57,14 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         }
 
         final public function echo(int|string $content): void {
-            (new \Component\Caller\File\Fopen("php://stdout"))->puts($content);
+            (new Caller\File\Fopen("php://stdout"))->puts($content);
         }
 
-        final public function setup(array $request = [], array $arguments = []): void {
+        final public function setup(string $options = "--", array $request = [], array $arguments = []): void {
             if (isset($this->server) && $this->server["argc"] > 1) {
                 foreach (\array_slice($this->server["argv"], 1) as $parameters) {
-                    if (\strpos($parameters, "--") !== false) {
-                        $arguments[] = \str_replace("--", "", $parameters);
+                    if (\strpos($parameters, $options) !== false) {
+                        $arguments[] = \str_replace($options, "", $parameters);
                     } else {
                         \parse_str($parameters, $request);
                         $this->request->store(\array_merge_recursive($request, $this->request->restore()));

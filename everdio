@@ -15,7 +15,6 @@ try {
     $controller->server = $_SERVER;
     $controller->debug = "_debug";
     $controller->path = __DIR__;
-    $controller->storage = "/home/evertdf/tmp";
     
     \pcntl_async_signals(true);
     \pcntl_signal(\SIGINT, [$controller, "terminate"]);
