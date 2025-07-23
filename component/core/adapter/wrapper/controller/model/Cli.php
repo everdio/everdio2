@@ -75,6 +75,8 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
                 $this->hostname = \gethostname();
                 $this->ip = \gethostbyname($this->hostname);
+                
+                $this->remove("server");                
            } else {
                 throw new \RuntimeException("Arguments required, nothing to execute");
             }

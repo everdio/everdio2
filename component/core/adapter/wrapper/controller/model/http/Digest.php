@@ -9,13 +9,13 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model\Http {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "auth" => new Validation(false, [new Validator\IsArray\Intersect\Key(["PHP_AUTH_DIGEST"])])
+                "authorization" => new Validation(false, [new Validator\IsArray\Intersect\Key(["PHP_AUTH_DIGEST"])])
                     ] + $_parameters);
         }
 
-        final public function getDigest(array $digest = []): array {
-            if (isset($this->auth)) {
-                \preg_match_all('@(\w+)=(?:(?:\'([^\']+)\'|"([^"]+)")|([^\s,]+))@', $this->auth["PHP_AUTH_DIGEST"], $matches, \PREG_SET_ORDER);
+        final public function getDigest(array $digest = [], array $matches = []): array {
+            if (isset($this->authorization)) {
+                \preg_match_all('@(\w+)=(?:(?:\'([^\']+)\'|"([^"]+)")|([^\s,]+))@', $this->authorization["PHP_AUTH_DIGEST"], $matches, \PREG_SET_ORDER);
 
                 foreach ($matches as $match) {
                     $digest[$match[1]] = ($match[2] ? (string) $match[2] : ($match[3] ? (string) $match[3] : (string) $match[4]));
