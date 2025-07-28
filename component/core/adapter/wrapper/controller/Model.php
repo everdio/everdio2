@@ -19,9 +19,8 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
         final public function getModel(string $path, bool $reset = true): string {
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini")) {
-
                 try {
-                    $parameters = (array) \parse_ini_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini", true, \INI_SCANNER_TYPED);
+                    $parameters = (array) \parse_ini_string($this->replace(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".ini"), $this->diff()), true, \INI_SCANNER_TYPED);
 
                     foreach (\array_diff_key($parameters, \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {

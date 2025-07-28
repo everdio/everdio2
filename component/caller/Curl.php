@@ -48,7 +48,7 @@ namespace Component\Caller {
             if (\in_array(($code = $this->getinfo(\CURLINFO_HTTP_CODE)), \range(400, 599), true)) {
                 throw new \RuntimeException(\sprintf("CURL response status code %s", $code));
             }
-            
+
             return (string) \trim($response);
         }
 

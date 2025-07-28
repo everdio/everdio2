@@ -13,7 +13,7 @@ namespace Component\Caller\Curl {
                 \CURLOPT_SSL_VERIFYPEER => false,
                 \CURLOPT_FOLLOWLOCATION => true,
                 \CURLOPT_AUTOREFERER => true,
-                \CURLOPT_VERBOSE => true,
+                //\CURLOPT_VERBOSE => true,
                 \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_TIMEOUT => 9,                
                 \CURLOPT_COOKIESESSION => true,
