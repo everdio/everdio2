@@ -9,23 +9,23 @@
 
 include_once(__DIR__ . \DIRECTORY_SEPARATOR . "everdio.php");
 
-$controller = new \Application\Command;
+$command = new \Application\Command;
 
 try {
-    $controller->server = $_SERVER;
-    $controller->debug = "_debug";
-    $controller->path = __DIR__;
+    $command->server = $_SERVER;
+    $command->debug = "_debug";
+    $command->path = __DIR__;
     
     \pcntl_async_signals(true);
-    \pcntl_signal(\SIGINT, [$controller, "terminate"]);
-    \pcntl_signal(\SIGTERM, [$controller, "terminate"]);
+    \pcntl_signal(\SIGINT, [$command, "terminate"]);
+    \pcntl_signal(\SIGTERM, [$command, "terminate"]);
 
-    $controller->setup();
+    $command->setup();
     
-    echo $controller->execute(\DIRECTORY_SEPARATOR . $controller->arguments);
+    echo $command->execute(\DIRECTORY_SEPARATOR . $command->arguments);
 } catch (\Exception | \Error $ex) {
     echo \sprintf("\n%s catched %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));
-    if (isset($controller->debug) && isset($controller->request->{$controller->debug})) {
+    if (isset($command->debug) && isset($command->request->{$command->debug})) {
         echo \sprintf("\n%s\n", $ex->getTraceAsString());
         if ($ex->getPrevious()) {
             echo \sprintf("\n%s: %s\n\n%s\n", \get_class($ex->getPrevious()), \ucfirst($ex->getPrevious()->getMessage()), $ex->getPrevious()->getTraceAsString());

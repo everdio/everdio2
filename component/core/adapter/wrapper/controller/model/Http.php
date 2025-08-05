@@ -8,8 +8,6 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
     abstract class Http extends \Component\Core\Adapter\Wrapper\Controller\Model {
 
-        use Auto;
-
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR", "REQUEST_TIME_FLOAT"])], Validation::NORMAL),

@@ -7,6 +7,8 @@ namespace Component\Core\Adapter\Wrapper\Controller {
         \Component\Core\Parameters;
 
     abstract class Model extends \Component\Core\Adapter\Wrapper\Controller {
+        use Auto;
+        
         /*
          * A required setup function to process the basic server input for the controller
          */

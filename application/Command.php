@@ -46,7 +46,7 @@ namespace Application {
         }
 
         final public function echo(int|string $content): void {
-            (new Caller\File\Fopen("php://stdout"))->puts($content);
+            (new \Component\Caller\File\Fopen("php://stdout"))->puts($content);
         }
     }
 

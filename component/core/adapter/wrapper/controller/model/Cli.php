@@ -6,8 +6,6 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         \Component\Validator;
 
     abstract class Cli extends \Component\Core\Adapter\Wrapper\Controller\Model {
-        use Auto;
-
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "REQUEST_TIME_FLOAT"])])
