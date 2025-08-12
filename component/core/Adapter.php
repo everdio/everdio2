@@ -1,11 +1,11 @@
 <?php
 
 namespace Component\Core {
-
+    
     abstract class Adapter extends \Component\Core {
-
         use Threading;
-
+        use Unix;
+        
         static private $_adapters = [];
 
         /*

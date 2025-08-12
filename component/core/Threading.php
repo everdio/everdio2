@@ -14,22 +14,22 @@ namespace Component\Core {
                     ] + $_parameters);
         }
 
+        abstract public function cmd(string $command): mixed;
+
+        abstract public function kill($pid, $signal): void;        
+
         final protected function create(string $callback): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
             $model->thread = $thread = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             $model->deploy();
-            
-            if (!\str_contains(($error = $this->run("php -l " . $thread)), "No syntax errors detected")) {
-                throw new \ParseError(\sprintf("%s while executing %s", $error, $thread));
-            }
-            
-            return (string) $thread;
-        }
 
-        protected function run(string $command): mixed {
-            return \exec($command);
+            if (!\str_contains(($output = $this->cmd("php -l " . $thread)), "No syntax errors detected")) {
+                throw new \ParseError(\sprintf("%s while executing %s", $output, $thread));
+            }
+
+            return (string) $thread;
         }
 
         /*
@@ -38,12 +38,12 @@ namespace Component\Core {
 
         public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
             $thread = $this->create($callback);
-            
+
             if ($queue) {
                 $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-            }                
+            }
 
-            $this->pids->{$thread} = $this->run(\sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output));
+            $this->pids->{$thread} = $this->cmd(\sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output));
 
             return $thread;
         }
@@ -82,9 +82,7 @@ namespace Component\Core {
 
         final public function terminate($signal): void {
             foreach ($this->pids->restore() as $thread => $pid) {
-                if (\posix_getpgid($pid)) {
-                    \posix_kill($pid, $signal);
-                }
+                $this->kill($pid, $signal);
 
                 if (isset($this->pool->{$thread}) && \is_file($this->pool->{$thread})) {
                     \unlink($this->pool->{$thread});
