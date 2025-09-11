@@ -7,6 +7,13 @@ namespace Modules\Table\Model {
     final class SQLite extends \Modules\Table\Model {
 
         use \Modules\Table\SQLite;
+        
+        public function __construct(array $_parameters = []) {
+            parent::__construct($_parameters);
+            
+            $this->adapter = ["dsn"];
+            $this->use = "\Modules\Table\SQLite";
+        }                
 
         final public function setup(array $create = []): void {
             $this->label = $this->beautify($this->table);

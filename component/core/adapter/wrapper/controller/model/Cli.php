@@ -25,8 +25,6 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
            
                 $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
                 $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
-                $this->hostname = \gethostname();
-                $this->ip = \gethostbyname($this->hostname);
                 
                 $this->remove("server");                
            } else {

@@ -3,8 +3,7 @@
 namespace Component\Core\Adapter {
 
     use \Component\Validation,
-        \Component\Validator,
-        \Component\Core\Parameters;
+        \Component\Validator;
 
     abstract class Model extends \Component\Core\Adapter {
 
@@ -18,9 +17,6 @@ namespace Component\Core\Adapter {
                 "namespace" => new Validation(false, [new Validator\IsString]),
                 "class" => new Validation(false, [new Validator\IsString]),
                 "use" => new Validation(false, [new Validator\IsString]),
-                "storage" => new Validation(\sys_get_temp_dir(), [new Validator\IsString, new Validator\IsString\IsDir]),
-                "threads" => new Validation(new Parameters, [new Validator\IsObject]),
-                "pool" => new Validation(new Parameters, [new Validator\IsObject]),
                 "parameters" => new Validation(false, [new Validator\IsString])
                     ] + $_parameters);
         }

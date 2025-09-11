@@ -11,6 +11,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR", "REQUEST_TIME_FLOAT"])], Validation::NORMAL),
+                "hostname" => new Validation(false, [new IsString]),                
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
                 "remote" => new Validation(false, [new IsString]),
@@ -50,7 +51,6 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->hostname = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
-            $this->ip = $this->server["SERVER_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
             

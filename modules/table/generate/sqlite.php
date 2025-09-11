@@ -1,7 +1,9 @@
 <?php
-if ($this instanceof Component\Core\Adapter\Wrapper\Controller\Model\Cli) {
-    $this->echo($this->style(\sprintf("\nGenerating %s\n\n", $this->model->namespace), ["cyan"]));
+if ($this instanceof Application\Command) {
+    $path = \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->model->namespace)));
     
+    $this->model->dsn = \sprintf("sqlite:%s/%s.db", (new \Component\Path(\dirname($path)))->getPath(), \basename($path));
+
     $models = [];
     
     foreach ($this->model->tables->restore() as $mapper) {

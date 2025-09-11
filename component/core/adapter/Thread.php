@@ -1,6 +1,6 @@
 <?php
 
-namespace Component\Core {
+namespace Component\Core\Adapter {
 
     use \Component\Validation,
         \Component\Validator;

@@ -11,11 +11,11 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                         if (($finder = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper}))) {
                             foreach ($callbacks as $label => $callback) {
                                 try {
+                                    if (isset($this->request->{$this->debug})) {
+                                        echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, $this->getCallbacks($callback));
+                                    }
+                                    
                                     if (\is_string($label)) {
-                                        if (isset($this->request->{$this->debug})) {
-                                            echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, \str_replace(["{{", "}}"], ["{", "}"], $callback));
-                                        }
-
                                         $this->auto->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value

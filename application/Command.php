@@ -1,8 +1,17 @@
 <?php
 
 namespace Application {
-
+    use \Component\Validation,
+        \Component\Validator;
+    
     final class Command extends \Component\Core\Adapter\Wrapper\Controller\Model\Cli {
+        public function __construct(array $_parameters = []) {
+            parent::__construct([
+                "ip" => new Validation(false, [new Validator\IsString, new Validator\Len\Smaller(15)]),                
+                ] + $_parameters);
+            
+            $this->adapter = ["ip"];                        
+        }        
 
         final protected function addAdapter(): object {
             return (object) new \Component\Caller\Ssh2($this->ip);
@@ -12,7 +21,7 @@ namespace Application {
             $this->echo(\str_repeat(\PHP_EOL, $breaks));
         }
 
-        final public function style(int|string $content, array $styles): string {
+        final public function style($content, array $styles): string {
             return (string) \sprintf("\e[%sm%s\e[0m", \implode(";", \array_flip(\array_intersect(\array_flip([
                         "bold" => 1,
                         "italic" => 3,
@@ -45,7 +54,7 @@ namespace Application {
                         "lightgreybg" => 47]), $styles))), $content);
         }
 
-        final public function echo(int|string $content): void {
+        final public function echo(int|float|string $content): void {
             (new \Component\Caller\File\Fopen("php://stdout"))->puts($content);
         }
     }

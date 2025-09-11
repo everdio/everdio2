@@ -1,12 +1,14 @@
 <?php
 
 namespace Component\Core {
-    
+
     abstract class Adapter extends \Component\Core {
-        use Threading;
-        use Unix;
-        
+
         static private $_adapters = [];
+
+        private function identifier(): string {
+            return (string) $this->unique($this->adapter, "adapter", "crc32");
+        }
 
         /*
          * returns the mapper adapter object
@@ -19,7 +21,7 @@ namespace Component\Core {
          */
 
         protected function getAdapter(): object {
-            $key = $this->unique($this->adapter, "adapter", "crc32");
+            $key = $this->identifier();
 
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->addAdapter();
@@ -29,7 +31,19 @@ namespace Component\Core {
         }
 
         /*
-         * redirects methods via the adapter
+         * unsets the current adapter
+         */
+
+        protected function delAdapter(): void {
+            $key = $this->identifier();
+
+            if (\array_key_exists($key, self::$_adapters)) {
+                unset(self::$_adapters[$key]);
+            }
+        }
+
+        /*
+         * redirects method calls via the adapter
          */
 
         public function __call(string $name, array $arguments = []) {

@@ -1,58 +1,65 @@
 <?php
 
-namespace Component\Core {
-
-    use \Component\Validation,
-        \Component\Validator;
+namespace Component\Core\Adapter {
 
     trait Threading {
+        /*
+         * checks the syntax by executing the php thread in test mode, returns the error or false
+         */
 
-        public function __construct(array $_parameters = []) {
-            parent::__construct([
-                "pool" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                "pids" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                    ] + $_parameters);
-        }
+        abstract public function syntax(string $thread);
 
-        abstract public function cmd(string $command): mixed;
+        /*
+         * kills any threads from pids
+         */
 
-        abstract public function kill($pid, $signal): void;        
+        abstract public function kill($pid, $signal): void;
 
-        final protected function create(string $callback): string {
+        /*
+         * executes the php shell command with some settings, must return the PID
+         */
+
+        abstract public function exec(string $thread, int $sleep = 0, int $timeout = 300, string $output = ""): int;
+
+        /*
+         * creates the PHP thread to be executed and checks the syntax and
+         * callback executed as seperate thread at local machine
+         */
+
+        final public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300, bool|string $output = false): string {
             $model = new Thread($this->export($this->diff(["autoloader", "model"])));
             $model->callback = $callback;
             $model->thread = $thread = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . $model->unique($model->diff(), \microtime() . \rand(), "crc32") . ".php";
             $model->class = \get_class($this);
             $model->deploy();
 
-            if (!\str_contains(($output = $this->cmd("php -l " . $thread)), "No syntax errors detected")) {
-                throw new \ParseError(\sprintf("%s while executing %s", $output, $thread));
+            if (!($error = $this->syntax($thread))) {
+
+                if ($queue) {
+                    $output = $this->pool->{$thread} = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
+                }
+
+                $this->pids->{$thread} = $this->exec($thread, $sleep, $timeout, $output);
+
+                return $thread;
             }
 
-            return (string) $thread;
+            throw new \ParseError(\sprintf("%s while checking %s", $error, $thread));
         }
 
         /*
-         * callback executed as seperate thread at local machine
+         * retrieves a single response from the pool
          */
-
-        public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300, string $output = "/dev/null"): string {
-            $thread = $this->create($callback);
-
-            if ($queue) {
-                $this->pool->{$thread} = $output = \dirname($thread) . \DIRECTORY_SEPARATOR . \basename($thread, ".php") . ".out";
-            }
-
-            $this->pids->{$thread} = $this->cmd(\sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output));
-
-            return $thread;
-        }
 
         final public function retrieve(string $thread, array $response = [], int $usleep = 10000) {
             if (isset($this->pool->{$thread})) {
                 return \current($this->pool([$thread], $response, $usleep));
             }
         }
+
+        /*
+         * retrieves an array of responses based on an array of threads
+         */
 
         final public function pool(array $threads, array $response = [], int $usleep = 1000): array {
             $pool = \array_intersect_key($this->pool->restore(), \array_flip($threads));

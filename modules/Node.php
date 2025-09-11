@@ -73,17 +73,25 @@ namespace Modules {
         }
 
         public function delete(): self {
-            if (isset($this->index) && isset($this->parent)) {
-                if ($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0)) {
-                    $this->query($this->parent)->item(0)->removeChild($this->query($this->parent . \DIRECTORY_SEPARATOR . $this->index)->item(0));
+            foreach ($this->query($this->prepare([new Node\Via($this)])) as $node){     
+                $node->parentNode->removeChild($node);
+            }            
+            unset ($this->index);
+            
+            /*
+            if (isset($this->index) && isset($this->parent)) {   
+                if (($node = $this->query($this->prepare())->item(0))) {   
+                    $node->parentNode->removeChild($node);
                 }
                 unset($this->index);
-            } elseif (isset($this->mapping)) {
-                foreach ($this->findAll() as $row) {
-                    $mapper = new self($row);
-                    $mapper->delete();
+            } else {
+                foreach ($this->query($this->prepare([new Node\Via($this)])) as $node){     
+                    $node->parentNode->removeChild($node);
                 }
             }
+             * 
+             */
+            
             return (object) $this;
         }
     }

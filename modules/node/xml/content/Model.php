@@ -10,6 +10,11 @@ namespace Modules\Node\Xml\Content {
             parent::__construct($_parameters);
             $this->use = "\Modules\Node\Xml\Content";
         }            
+        
+        public function setup(): void {
+            unset ($this->content);
+            parent::setup();
+        }
     }
 
 }

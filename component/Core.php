@@ -13,19 +13,19 @@ namespace Component {
                 $this->addParameter($parameter, $validation, true);
             }
         }
-        
+
         public function __isset(string $parameter): bool {
             return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
-        }   
-        
+        }
+
         public function __unset(string $parameter) {
             if ($this->exists($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set(false);
             }
 
             //throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
-        }        
-        
+        }
+
         public function __get(string $parameter): mixed {
             if ($this->exists($parameter)) {
                 try {
@@ -85,12 +85,12 @@ namespace Component {
         final public function export(array $parameters = []): array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }
-        
+
         final public function import(array $parameters): void {
             foreach ($parameters as $parameter => $validation) {
                 $this->addParameter($parameter, $validation, true);
             }
-        }        
+        }
 
         final public function inter(array $parameters): array {
             return (array) \array_diff(\array_keys($this->_parameters), $this->diff($parameters));
@@ -144,7 +144,7 @@ namespace Component {
             if (\in_array($algo, \hash_algos())) {
                 return (string) \hash($algo, $this->querystring($parameters) . $salt);
             }
-            
+
             throw new \InvalidArgumentException(\sprintf("invalid hash algorithms %s->%s", \get_class($this), $algo));
         }
 
@@ -157,10 +157,17 @@ namespace Component {
 
             return (string) $content;
         }
-        
+
+        /*
+          public function __clone() {
+          return (object) \unserialize(\serialize($this));
+          }
+         * 
+         */
+
         public function __dry(): string {
             return (string) $this->dehydrate($this->_parameters);
-        }        
+        }
     }
 
 }

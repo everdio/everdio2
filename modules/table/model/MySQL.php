@@ -14,7 +14,10 @@ namespace Modules\Table\Model {
                 "username" => new Validation(false, array(new Validator\IsString)),
                 "password" => new Validation(false, array(new Validator\IsString)),
                 "database" => new Validation(false, array(new Validator\IsString))
-                    ] + $_parameters);            
+                    ] + $_parameters);           
+
+            $this->adapter = ["dsn", "username", "database"];        
+            $this->use = "\Modules\Table\MySQL";
         }
 
         final public function setup(): void {                        
