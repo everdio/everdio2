@@ -35,11 +35,11 @@ namespace Component\Core\Adapter\Wrapper {
         }
 
         /*
-         * processing callbacks from output {{string}}
+         * processing callbacks from $value {{string}}
          */
 
-        final public function getCallbacks(string $output, array $matches = []): string {
-            if (\is_string($output) && \preg_match_all("!\{\{(.+?)\}\}!", $output, $matches, \PREG_PATTERN_ORDER)) {
+        final public function getCallbacks(string $value, array $matches = []): string {
+            if (\is_string($value) && \preg_match_all("!\{\{(.+?)\}\}!", $value, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     try {
                         if (!\is_string(($data = $this->callback($match)))) {
@@ -51,11 +51,11 @@ namespace Component\Core\Adapter\Wrapper {
                         throw new \RuntimeException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
                     }
 
-                    $output = \str_replace($matches[0][$key], $data, $output);
+                    $value = \str_replace($matches[0][$key], $data, $value);
                 }
             }
 
-            return (string) $output;
+            return (string) $value;
         }
 
         /*

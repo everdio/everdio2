@@ -9,25 +9,21 @@ namespace Component {
             Finder;
 
         public function __construct(private array $_parameters = []) {
-            foreach ($_parameters as $parameter => $validation) {
-                $this->addParameter($parameter, $validation, true);
-            }
+            //nothing here
         }
 
         public function __isset(string $parameter): bool {
-            return (bool) ($this->exists($parameter) && $this->_parameters[$parameter]->isValid());
+            return (bool) ($this->hasParameter($parameter) && $this->_parameters[$parameter]->isValid());
         }
 
         public function __unset(string $parameter) {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set(false);
             }
-
-            //throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
         }
 
         public function __get(string $parameter): mixed {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 try {
                     return $this->_parameters[$parameter]->execute();
                 } catch (\ValueError $ex) {
@@ -39,7 +35,7 @@ namespace Component {
         }
 
         public function __set(string $parameter, $value) {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set((\is_array($value) && \is_array($this->_parameters[$parameter]->get()) ? \array_merge($this->_parameters[$parameter]->get(), $value) : $value));
             }
 
@@ -51,25 +47,29 @@ namespace Component {
         }
 
         public function __invoke(string $parameter): Validation {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 return (object) $this->getParameter($parameter);
             }
 
             throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
         }
-
+        
         final public function exists(string $parameter): bool {
-            return (bool) \array_key_exists($parameter, $this->_parameters);
+            return (bool) $this->hasParameter($parameter);
+        }
+
+        final public function hasParameter(string $parameter): bool {
+            return (bool) (\array_key_exists($parameter, $this->_parameters) && $this->_parameters[$parameter] instanceof Validation);
         }
 
         final public function addParameter(string $parameter, Validation $validation, ?bool $reset = null) {
-            if (!$this->exists($parameter) || $reset) {
+            if (!$this->hasParameter($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
         }
 
         final public function getParameter(string $parameter): Validation {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 return (object) $this->_parameters[$parameter];
             }
 
@@ -77,7 +77,7 @@ namespace Component {
         }
 
         final public function remove(string $parameter): void {
-            if ($this->exists($parameter)) {
+            if ($this->hasParameter($parameter)) {
                 unset($this->_parameters[$parameter]);
             }
         }
@@ -106,7 +106,7 @@ namespace Component {
 
         public function store(array $values): self {
             foreach ($values as $parameter => $value) {
-                if ($this->exists($parameter)) {
+                if ($this->hasParameter($parameter)) {
                     $this->{$parameter} = $value;
                 }
             }

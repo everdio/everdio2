@@ -65,7 +65,7 @@ namespace Modules {
         }
 
         public function save(string|int|null $cdata = null): self {
-            if (!$cdata && $this->exists($this->label) && isset($this->{$this->label})) {
+            if (!$cdata && $this->hasParameter($this->label) && isset($this->{$this->label})) {
                 $cdata = $this->{$this->label};
             }
 
