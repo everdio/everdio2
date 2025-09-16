@@ -29,7 +29,7 @@ namespace Component {
                 return \call_user_func_array(\sprintf($this->_call, $name), $arguments);
             }
 
-            throw new \BadFunctionCallException(\sprintf("unknown function call %s with arguments %s", \sprintf($this->_call, $name), $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException(\sprintf("UNKNOWN_FUNCTION_CALL %s (%s)", \sprintf($this->_call, $name), $this->dehydrate($arguments)));
         }
 
         public function __dry(): string {

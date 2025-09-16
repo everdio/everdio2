@@ -39,14 +39,14 @@ namespace Component\Caller {
         public function execute() {            
             if (($response = $this->exec()) === false) {
                 if (!$this->errno()) {
-                    throw new \ErrorException("CURL empty response");
+                    throw new \ErrorException("CURL_EMPTY_RESPONSE");
                 } else {
-                    throw new \LogicException(\sprintf("CURL error: %s", $this->error()));
+                    throw new \LogicException(\sprintf("CURL_ERROR: %s", $this->error()));
                 }
             }
             
             if (\in_array(($code = $this->getinfo(\CURLINFO_HTTP_CODE)), \range(400, 599), true)) {
-                throw new \RuntimeException(\sprintf("CURL response status code %s", $code));
+                throw new \RuntimeException(\sprintf("CURL_STATUS_CODE %s", $code));
             }
 
             return (string) \trim($response);

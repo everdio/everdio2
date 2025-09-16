@@ -27,11 +27,11 @@ namespace Component {
                 try {
                     return $this->_parameters[$parameter]->execute();
                 } catch (\ValueError $ex) {
-                    throw new \UnexpectedValueException(\sprintf("invalid value for parameter %s->%s: %s", \get_class($this), $parameter, $ex->getMessage()), 0, $ex);
+                    throw new \UnexpectedValueException(\sprintf("INVALID_VALUE_FOR_PARAMETER %s->%s: %s", \get_class($this), $parameter, $ex->getMessage()), 0, $ex);
                 }
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
+            throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
         public function __set(string $parameter, $value) {
@@ -39,7 +39,7 @@ namespace Component {
                 return (bool) $this->_parameters[$parameter]->set((\is_array($value) && \is_array($this->_parameters[$parameter]->get()) ? \array_merge($this->_parameters[$parameter]->get(), $value) : $value));
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
+            throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
         public function __toString(): string {
@@ -51,11 +51,7 @@ namespace Component {
                 return (object) $this->getParameter($parameter);
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
-        }
-        
-        final public function exists(string $parameter): bool {
-            return (bool) $this->hasParameter($parameter);
+            throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
         final public function hasParameter(string $parameter): bool {
@@ -73,7 +69,7 @@ namespace Component {
                 return (object) $this->_parameters[$parameter];
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid parameter %s->%s", \get_class($this), $parameter));
+            throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
         final public function remove(string $parameter): void {
@@ -145,7 +141,7 @@ namespace Component {
                 return (string) \hash($algo, $this->querystring($parameters) . $salt);
             }
 
-            throw new \InvalidArgumentException(\sprintf("invalid hash algorithms %s->%s", \get_class($this), $algo));
+            throw new \InvalidArgumentException(\sprintf("INVALID_HASH_ALGORITHM %s->%s", \get_class($this), $algo));
         }
 
         final public function replace(string $content, array $parameters = [], string $replace = "{{%s}}", int $instances = 99): string {

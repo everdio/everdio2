@@ -21,7 +21,7 @@ namespace Modules\Table\Model {
             $this->resource = \sprintf("%s", $this->table);
 
             foreach ($this->mapping as $column => $parameter) {
-                if ($this->exists($parameter)) {
+                if ($this->hasParameter($parameter)) {
                     $validation = $this->getParameter($parameter);
                     
                     $length = ($validation->hasTypes([Validator\Len::TYPE]) ? $validation->getLen() : 0);
@@ -61,7 +61,7 @@ namespace Modules\Table\Model {
 
             if (isset($this->keys)) {
                 foreach ($this->keys as $key => $foreign) {
-                    if (isset($this->parents) && $this->exists($key)) {
+                    if (isset($this->parents) && $this->hasParameter($key)) {
                         if (\array_key_exists($key, $this->parents)) {
                             $create[] = \sprintf("FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\")", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), (new $this->parents[$key])->table, (new $this->parents[$key])->getField($foreign));
                         }

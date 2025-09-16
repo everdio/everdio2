@@ -16,11 +16,7 @@ namespace Component\Core\Adapter {
             }
         }
 
-        final public function exec(string $thread, int $sleep = 0, int $timeout = 300, bool|string $output = false): int {
-            if (!$output) {
-                 $output = "/dev/null";
-            }
-            
+        final public function exec(string $thread, int $sleep = 0, int $timeout = 300, string $output =  "/dev/null"): int {
             return (int) \exec(\sprintf("sleep %s && timeout %s php -f %s > %s & echo $!", $sleep, $timeout, $thread, $output));
         }
 

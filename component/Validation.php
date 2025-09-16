@@ -41,7 +41,7 @@ namespace Component {
                 return (object) $this->_validators[$validator];
             }
 
-            throw new \LogicException(\sprintf("unknown validator %s", $validator));
+            throw new \LogicException(\sprintf("UNKNOWN_VALIDATOR %s", $validator));
         }
         
         public function set($value): void {
@@ -77,7 +77,7 @@ namespace Component {
                 return $this->value;
             }
 
-            throw new \ValueError(\sprintf("value %s must be of type %s, %s given (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
+            throw new \ValueError(\sprintf("%s VALUE_MUST_BE_TYPE %s (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
         public function __dry(array $validators = []): string {
@@ -97,7 +97,7 @@ namespace Component {
                 }
             }
             
-            throw new \BadFunctionCallException(\sprintf("unknown method %s::%s with arguments %s", \get_class($this), $name, $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException(\sprintf("UNKOWN_METHOD %s::%s (%s)", \get_class($this), $name, $this->dehydrate($arguments)));
         }
     }
 

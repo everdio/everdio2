@@ -23,7 +23,7 @@ namespace Modules\Table {
 
         private function join(Mapper $thatMapper, Mapper $thisMapper, array $keys, string $join = "join", string $operator = "AND", array $operators = [], ?string $filter = null) {
             foreach ($keys as $thatKey => $thisKey) {
-                if ($thatMapper->exists($thatKey) && $thisMapper->exists($thisKey)) {
+                if ($thatMapper->hasParameter($thatKey) && $thisMapper->hasParameter($thisKey)) {
                     $operators[] = sprintf("%s.%s = %s.%s", $thatMapper->resource, $thatMapper->getField($thatKey), $thisMapper->resource, $thisMapper->getField($thisKey));
                 }
             }

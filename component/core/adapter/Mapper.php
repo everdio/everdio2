@@ -4,6 +4,9 @@ namespace Component\Core\Adapter {
 
     abstract class Mapper extends \Component\Core\Adapter {
 
+        use Threading;
+        use Unix;
+
         final public function reset(array $parameters = []): self {
             if (isset($this->mapping)) {
                 $parameters = \array_merge($parameters, $this->mapping);
@@ -17,7 +20,7 @@ namespace Component\Core\Adapter {
         }
 
         final public function getField(string $parameter): string {
-            if (isset($this->mapping) && $this->exists($parameter)) {
+            if (isset($this->mapping) && $this->hasParameter($parameter)) {
                 return (string) \array_search($parameter, $this->mapping);
             }
 

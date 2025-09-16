@@ -21,7 +21,7 @@ namespace Component\Core\Adapter\Wrapper {
         }
 
         /*
-         * dispatching the Cojtroller if exists!
+         * dispatching the Controller if exists!
          */
 
         public function dispatch(string $path) {
@@ -46,9 +46,9 @@ namespace Component\Core\Adapter\Wrapper {
                             $data = \str_replace("false", "", $this->dehydrate($data));
                         }
                     } catch (\BadMethodCallException $ex) {
-                        throw new \RuntimeException(\sprintf("bad method call %s in %s", $ex->getMessage(), $match));
+                        throw new \RuntimeException(\sprintf("BAD_METHOD_CALL %s (%s)", $ex->getMessage(), $match));
                     } catch (\BadFunctionCallException $ex) {
-                        throw new \RuntimeException(\sprintf("bad function call %s in %s", $ex->getMessage(), $match));
+                        throw new \RuntimeException(\sprintf("BAD_FUNCTION_CALL %s (%s)", $ex->getMessage(), $match));
                     }
 
                     $value = \str_replace($matches[0][$key], $data, $value);
@@ -72,7 +72,7 @@ namespace Component\Core\Adapter\Wrapper {
                 try {
                     return $controller->dispatch($controller->basename);
                 } catch (\InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("%s: %s in %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("ERROR %s %s %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }
         }

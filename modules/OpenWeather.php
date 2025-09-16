@@ -18,7 +18,7 @@ namespace Modules {
                 $this->setopt(\CURLOPT_URL, \sprintf("%s?%s", $this->url, \urldecode($this->querystring(["appid", "lang", "units", "lat", "lon", "mode"]))));
                 return (string) $this->execute();
             } catch (\ErrorException $ex) {
-                throw new \LogicException("OpenWeather " . $this->url . ": " . $ex->getMessage());
+                throw new \LogicException("OPENWEATHER " . $this->url . ": " . $ex->getMessage());
             }
         }
 

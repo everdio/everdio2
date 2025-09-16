@@ -28,7 +28,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 
                 $this->remove("server");                
            } else {
-                throw new \RuntimeException("Arguments required, nothing to execute");
+                throw new \RuntimeException("ARGUMENTS_REQUIRED");
             }
         }
     }

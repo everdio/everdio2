@@ -34,7 +34,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                         }
                     }
                 } catch (\ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("invalid ini file %s: %s", $this->path . \DIRECTORY_SEPARATOR . $path . ".ini", $ex->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("INVALID_INI_FILE %s (%s)", $this->path . \DIRECTORY_SEPARATOR . $path . ".ini", $ex->getMessage()), 0, $ex);
                 }
             }
 
