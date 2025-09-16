@@ -45,7 +45,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
                                 } catch (\Exception $ex) {
-                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $parameter, $mapper, $label, \str_replace(["{{", "}}"], ["{", "}"], $callback), $ex->getMessage()), 0, $ex);
+                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $parameter, $mapper, $label, $callback, $ex->getMessage()));
                                 }
                             }
                         }
