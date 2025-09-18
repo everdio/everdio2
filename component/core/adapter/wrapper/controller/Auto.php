@@ -5,47 +5,47 @@ namespace Component\Core\Adapter\Wrapper\Controller {
     trait Auto {
 
         public function auto(string $parameter): void {
-            if (isset($this->library) && isset($this->auto) && isset($this->{$parameter})) {
-                foreach ($this->{$parameter}->restore() as $mapper => $callbacks) {
-                    if (isset($this->library->{$mapper})) {
-                        if (($finder = ($this->library->{$mapper} === \get_class($this) ? $this : new $this->library->{$mapper}))) {
-                            foreach ($callbacks as $label => $callback) {
+            if (isset($this->{$parameter})) {
+                foreach ($this->{$parameter}->restore() as $alias => $callbacks) {
+                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \array_map("\ucfirst", \explode("_", $alias))))) {                        
+                        if (($finder = ($this->library->{$alias} === \get_class($this) ? $this : new $this->library->{$alias}))) {
+                            foreach ($callbacks as $label => $callback) {                                
                                 try {
                                     if (isset($this->request->{$this->debug})) {
-                                        echo \sprintf("<!-- %s/%s/%s/%s -->\n", $parameter, $mapper, $label, $this->getCallbacks($callback));
+                                        echo \sprintf("<!-- [%s]%s[%s] = %s -->\n", $parameter, $alias, $label, $this->getCallbacks($callback));
                                     }
                                     
                                     if (\is_string($label)) {
-                                        $this->auto->store([$mapper => [$label => $finder->callback($this->getCallbacks($callback))]]);
+                                        $this->auto->store([$alias => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
-                                        if ((isset($this->continue->{$mapper}->{$label}) && $this->continue->{$mapper}->{$label} != $this->auto->{$mapper}->{$label}) || (isset($this->break->{$mapper}->{$label}) && $this->break->{$mapper}->{$label} == $this->auto->{$mapper}->{$label})) {
-                                            unset($this->auto->{$mapper}->{$label});
+                                        if ((isset($this->continue->{$alias}->{$label}) && $this->continue->{$alias}->{$label} != $this->auto->{$alias}->{$label}) || (isset($this->break->{$alias}->{$label}) && $this->break->{$alias}->{$label} == $this->auto->{$alias}->{$label})) {
+                                            unset($this->auto->{$alias}->{$label});
                                             return;
                                         }
 
                                         //is or isnot on callback value
                                         //[is] or [isnot]
-                                        if ((isset($this->is->{$mapper}->{$label}) && isset($this->auto->{$mapper}->{$label}) && $this->callback($this->is->{$mapper}->{$label}) != $this->auto->{$mapper}->{$label}) || (isset($this->isnot->{$mapper}->{$label}) && isset($this->auto->{$mapper}->{$label}) && $this->callback($this->isnot->{$mapper}->{$label}) == $this->auto->{$mapper}->{$label})) {
-                                            unset($this->auto->{$mapper}->{$label});
+                                        if ((isset($this->is->{$alias}->{$label}) && isset($this->auto->{$alias}->{$label}) && $this->callback($this->is->{$alias}->{$label}) != $this->auto->{$alias}->{$label}) || (isset($this->isnot->{$alias}->{$label}) && isset($this->auto->{$alias}->{$label}) && $this->callback($this->isnot->{$alias}->{$label}) == $this->auto->{$alias}->{$label})) {
+                                            unset($this->auto->{$alias}->{$label});
                                             return;
                                         }
 
                                         //foreach loop
                                         //[foreach]
-                                        if (isset($this->foreach->{$mapper}->{$label}) && (isset($this->auto->{$mapper}->{$label}) && $this->auto->{$mapper}->{$label} instanceof \Component\Core\Parameters)) {
-                                            foreach ($this->auto->{$mapper}->{$label}->restore() as $key => $foreach) {
-                                                $this->auto->store([$mapper => ["key" => $key, $label => $foreach]]);
-                                                $this->callback($this->foreach->{$mapper}->{$label});
-                                                unset($this->auto->{$mapper}->{$label});
+                                        if (isset($this->foreach->{$alias}->{$label}) && (isset($this->auto->{$alias}->{$label}) && $this->auto->{$alias}->{$label} instanceof \Component\Core\Parameters)) {
+                                            foreach ($this->auto->{$alias}->{$label}->restore() as $key => $foreach) {
+                                                $this->auto->store([$alias => ["key" => $key, $label => $foreach]]);
+                                                $this->callback($this->foreach->{$alias}->{$label});
+                                                unset($this->auto->{$alias}->{$label});
                                             }
                                         }
                                     } else {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
                                 } catch (\Exception $ex) {
-                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $parameter, $mapper, $label, $callback, $ex->getMessage()));
+                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $parameter, $alias, $label, $callback, $ex->getMessage()));
                                 }
                             }
                         }

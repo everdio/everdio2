@@ -12,7 +12,6 @@ namespace Modules\Node\Model {
                 "id" => new Validation(false, [new Validator\IsString, new Validator\IsNumeric]),
                 "content" => new Validation(false, [new Validator\IsString]),
                     ] + $_parameters);
-            $this->adapter = ["id"];
         }
     }
 

@@ -13,7 +13,7 @@ $command = new \Application\Command;
 
 try {
     $command->server = $_SERVER;
-    $command->debug = "_debug";
+    $command->debug = "debug";
     $command->path = __DIR__;
     
     \pcntl_async_signals(true);
