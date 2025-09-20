@@ -19,7 +19,7 @@ namespace Component\Core\Adapter {
          * executes the php shell command with some settings, must return the PID
          */
 
-        abstract public function exec(string $thread, int $sleep = 0, int $timeout = 300, string $output = ""): int;
+        abstract public function exec(string $thread, int $sleep = 0, int $timeout = 300, bool|string $output = false): int;
 
         /*
          * creates the PHP thread to be executed and checks the syntax and

@@ -4,17 +4,17 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
     trait Auto {
 
-        public function auto(string $parameter): void {
-            if (isset($this->{$parameter})) {
-                foreach ($this->{$parameter}->restore() as $alias => $callbacks) {
-                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \array_map("\ucfirst", \explode("_", $alias))))) {                        
+        final public function auto(string $section): void {
+            if (isset($this->{$section})) {
+                foreach ($this->{$section}->restore() as $alias => $callbacks) {
+                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \array_map("\ucfirst", \explode("_", $alias))))) {
                         if (($finder = ($this->library->{$alias} === \get_class($this) ? $this : new $this->library->{$alias}))) {
-                            foreach ($callbacks as $label => $callback) {                                
+                            foreach ($callbacks as $label => $callback) {
                                 try {
                                     if (isset($this->request->{$this->debug})) {
-                                        echo \sprintf("<!-- [%s]%s[%s] = %s -->\n", $parameter, $alias, $label, $this->getCallbacks($callback));
+                                        echo \sprintf("<!-- [%s]%s[%s] = %s -->\n", $section, $alias, $label, $this->getCallbacks($callback));
                                     }
-                                    
+
                                     if (\is_string($label)) {
                                         $this->auto->store([$alias => [$label => $finder->callback($this->getCallbacks($callback))]]);
 
@@ -45,13 +45,18 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                         $finder->callback($this->getCallbacks($callback));
                                     }
                                 } catch (\Exception $ex) {
-                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $parameter, $alias, $label, $callback, $ex->getMessage()));
+                                    throw new \RuntimeException(\sprintf("%s/%s/%s/%s %s", $section, $alias, $label, $callback, $ex->getMessage()));
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+
+        final public function autocute(string $path): void {
+            $this->dispatch(\dirname($path));
+            $this->auto(\basename($path));
         }
     }
 

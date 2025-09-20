@@ -4,16 +4,16 @@ namespace Component {
 
     trait Helpers {
 
-        public function reName($string, $replace = " "): string {
+        public function reName($string, string $replace = " "): string {
             return (string) \Transliterator::createFromRules(\sprintf(":: Any-Latin; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC; :: [:Punctuation:] [:Separator:] > '%s'", $replace))->transliterate(\strip_tags(\nl2br(\html_entity_decode(\trim(\str_replace(["\""], false, $string)), \ENT_QUOTES | \ENT_HTML5))));
         }
 
-        public function slugify($string, $replace = "-"): string {
+        public function slugify($string, string $replace = "-"): string {
             return (string) \trim(\preg_replace("/\W+/", $replace, \trim(\strtolower(\str_replace("_", $replace, $this->reName($string, $replace))), $replace)), $replace);
         }
 
-        public function beautify(string $string): string {
-            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode("-", \strtolower($this->slugify($string))))));
+        public function beautify(string $string, string $replace = "-" ): string {
+            return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode($replace, \strtolower($this->slugify($string))))));
         }
 
         public function minify(string $content) : string {

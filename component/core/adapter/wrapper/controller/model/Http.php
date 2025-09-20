@@ -35,6 +35,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 return (string) $output;
             }
 
+            //best working compression preg_replace ever!
             return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
         }
 
