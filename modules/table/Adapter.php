@@ -11,6 +11,8 @@ namespace Modules\Table {
             parent::__construct([
                 "dsn" => new Validation(false, [new Validator\IsString]),
                     ] + $_parameters);
+            
+            $this->adapter = ["dsn"];
         }
     }
 

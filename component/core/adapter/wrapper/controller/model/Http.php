@@ -11,12 +11,16 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new IsArray\Intersect\Key(["HTTP_HOST", "REQUEST_METHOD", "QUERY_STRING", "REQUEST_SCHEME", "REQUEST_URI", "REMOTE_ADDR", "REQUEST_TIME_FLOAT"])], Validation::NORMAL),
-                "hostname" => new Validation(false, [new IsString]),                
+                "hostname" => new Validation(false, [new IsString]),
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
                 "remote" => new Validation(false, [new IsString]),
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),
                     ] + $_parameters);
+        }
+
+        final public function minify(string $value): string {
+            return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $value));
         }
 
         /*
@@ -35,8 +39,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 return (string) $output;
             }
 
-            //best working compression preg_replace ever!
-            return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $output));
+            return (string) $this->minify($output);
         }
 
         /*
@@ -54,7 +57,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
             $this->remote = $this->server["REMOTE_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
             $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
-            
+
             $this->remove("server");
         }
     }

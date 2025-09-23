@@ -22,9 +22,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
         final public function getModel(string $path, bool $reset = true): string {
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".ini")) {
                 try {
-                    $parameters = (array) \parse_ini_string($this->replace(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".ini"), $this->diff()), true, \INI_SCANNER_TYPED);
-
-                    foreach (\array_diff_key($parameters, \array_flip($this->reserved)) as $parameter => $value) {
+                    foreach (\array_diff_key(\parse_ini_string($this->replace(\file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".ini"), $this->diff()), true, \INI_SCANNER_TYPED), \array_flip($this->reserved)) as $parameter => $value) {
                         if (\is_array($value)) {
                             $this->addParameter($parameter, new Validation(new Parameters, [new Validator\IsObject]), $reset);
                             $this->{$parameter}->store($value);
