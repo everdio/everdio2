@@ -13,19 +13,19 @@ namespace Component\Core\Adapter {
                 "namespace" => new Validation(false, [new Validator\IsString])
                     ] + $_parameters);
         }
-        
+
         abstract protected function models(array $models = []): array;
-        
+
         public function deploy(array $models = []): array {
-            foreach ($this->models() as $model) {
+            foreach ($this->models($models) as $key => $model) {
                 if ($model instanceof Model) {
                     $model->deploy();
-                    $models[] = (string) $model;
+                    $models[$key] = (string) $model;
                 }
             }
-            
+
             return (array) $models;
-        }        
+        }
     }
 
 }

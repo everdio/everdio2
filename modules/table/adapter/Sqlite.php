@@ -20,6 +20,7 @@ namespace Modules\Table\Adapter {
             $path = \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)));
             $dsn = \sprintf("sqlite:%s/%s.db", (new \Component\Path(\dirname($path)))->getPath(), \basename($path));
 
+            /*
             foreach ($this->database as $mapper) {
                 $parameters = [];
 
@@ -59,6 +60,8 @@ namespace Modules\Table\Adapter {
                     $models[] = $model;
                 }                
             }
+             * 
+             */
             return (array) $models;            
         }        
     }

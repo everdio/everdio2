@@ -15,11 +15,11 @@ namespace Modules\Table\Model {
             $this->use = "\Modules\Table\SQLite";
         }                
 
-        final public function setup(array $create = []): void {
+        final public function setup(array $models = [], array $create = []): void {
             $this->label = $this->beautify($this->table);
             $this->class = $this->beautify($this->table);
             $this->resource = \sprintf("%s", $this->table);
-
+            
             foreach ($this->mapping as $column => $parameter) {
                 if ($this->hasParameter($parameter)) {
                     $validation = $this->getParameter($parameter);
@@ -63,7 +63,7 @@ namespace Modules\Table\Model {
                 foreach ($this->keys as $key => $foreign) {
                     if (isset($this->parents) && $this->hasParameter($key)) {
                         if (\array_key_exists($key, $this->parents)) {
-                            $create[] = \sprintf("FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\")", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), (new $this->parents[$key])->table, (new $this->parents[$key])->getField($foreign));
+                            $create[] = \sprintf("FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\")", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), $models[$key]->table, \array_search($foreign, $models[$key]->mapping));
                         }
                     }
                 }

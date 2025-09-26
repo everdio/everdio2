@@ -5,9 +5,9 @@ namespace Modules\Table\Adapter {
     use Component\Validation,
         Component\Validator;
 
-    final class Mysql extends \Modules\Table\Adapter {
+    final class MySQL extends \Modules\Table\Adapter {
 
-        use \Modules\Table\Mysql;
+        use \Modules\Table\MySQL;
 
         public function __construct(array $_parameters = []) {
             parent::__construct([

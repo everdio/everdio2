@@ -1,60 +1,53 @@
 <?php
 
 namespace Modules\Table\Adapter {
+    final class SQLite extends \Modules\Table\Adapter {
 
-    final class Sqlite extends \Modules\Table\Adapter {
+        use \Modules\Table\SQLite;
 
-        use \Modules\Table\Sqlite;
-
-        public function __construct(array $_parameters = []) {
-            parent::__construct([
-                "model" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
-                    ] + $_parameters);
-        }
-
-        final public function models(array $models = []): array {
-            $path = \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->model->namespace)));
+        final public function models(array $tables = [], array $models = []): array {
+            $path = \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)));
             $dsn = \sprintf("sqlite:%s/%s.db", (new \Component\Path(\dirname($path)))->getPath(), \basename($path));
 
-            foreach ($this->model->tables->restore() as $mapper) {
+            foreach ($tables as $key => $table) {
                 $parameters = [];
-
-                if (isset($this->{$mapper}) && isset($this->{$mapper}->mapping)) {
-                    foreach ($this->{$mapper}->mapping->restore() as $column => $parameter) {
-                        if (isset($this->{$mapper}->{$parameter})) {
-                            $parameters[$parameter] = (new \Component\Validation\Parameter($this->{$mapper}->{$parameter}->value, $this->{$mapper}->{$parameter}->default, $this->{$mapper}->{$parameter}->mandatory, $this->{$mapper}->{$parameter}->length, \explode(",", $this->{$mapper}->{$parameter}->options)))->getValidation();
+   
+                if (\array_key_exists("mapping", $table)) {
+                    foreach ($table["mapping"] as $parameter) {                        
+                        if (\array_key_exists($parameter, $table)) {
+                            $parameters[$parameter] = (new \Component\Validation\Parameter($table[$parameter]["value"], $table[$parameter]["default"], $table[$parameter]["mandatory"], $table[$parameter]["length"], \explode(",", $table[$parameter]["options"])))->getValidation();
                         }
                     }
 
                     $model = new \Modules\Table\Model\SQLite($parameters);
                     $model->dsn = $dsn;
-                    $model->namespace = $this->model->namespace;
-                    $model->table = $this->{$mapper}->table;
-
-                    if (isset($this->{$mapper}->primary)) {
-                        $model->primary = $this->{$mapper}->primary->restore();
+                    $model->namespace = $this->namespace;
+                    $model->table = $table["table"];
+                    
+                    if (\array_key_exists("primary", $table)) {
+                        $model->primary = $table["primary"];
                     }
 
-                    if (isset($this->{$mapper}->keys)) {
-                        $model->keys = $this->{$mapper}->keys->restore();
+                    if (\array_key_exists("keys", $table)) {
+                        $model->keys = $table["keys"];
                     }
 
-                    $model->mapping = $this->{$mapper}->mapping->restore();
+                    $model->mapping = $table["mapping"];
 
-                    if (isset($this->{$mapper}->parents)) {
-                        foreach ($this->{$mapper}->parents->restore() as $key => $parent) {
+                    if (\array_key_exists("parents", $table)) {
+                        foreach ($table["parents"] as $key => $parent) {
                             if (\array_key_exists($parent, $models)) {
-                                $model->parents = [$key => $models[$parent]];
+                                $model->parents = [$key => (string) $models[$parent]];
                             }
                         }
                     }
-
-                    $model->setup();
-                    $model->deploy();
-
-                    $models[$mapper] = (string) $model;
-                }                
+                    
+                    $model->setup($models);
+                    
+                    $models[$key] = $model;
+                }
             }
+            
             return (array) $models;            
         }        
     }

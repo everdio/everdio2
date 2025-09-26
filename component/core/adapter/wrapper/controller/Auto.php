@@ -11,7 +11,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                 }
 
                 foreach ($this->{$section}->restore() as $alias => $callbacks) {
-                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \array_map("\ucfirst", \explode("_", $alias))))) {
+                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \explode("_", $alias)))) {
                         if (($finder = ($this->library->{$alias} === \get_class($this) ? $this : new $this->library->{$alias}))) {
                             foreach ($callbacks as $id => $callback) {
                                 try {
