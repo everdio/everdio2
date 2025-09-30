@@ -11,8 +11,8 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                 }
 
                 foreach ($this->{$section}->restore() as $alias => $callbacks) {
-                    if (isset($this->library->{$alias}) || ($this->library->{$alias} = \implode("\\", \explode("_", $alias)))) {
-                        if (($finder = ($this->library->{$alias} === \get_class($this) ? $this : new $this->library->{$alias}))) {
+                    if (isset($this->aliases->{$alias}) || ($this->aliases->{$alias} = \implode("\\", \explode("_", $alias)))) {
+                        if (($finder = ($this->aliases->{$alias} === \get_class($this) ? $this : new $this->aliases->{$alias}))) {
                             foreach ($callbacks as $id => $callback) {
                                 try {
                                     if (isset($this->request->{$this->debug})) {
@@ -24,7 +24,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
-                                        if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->auto->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->auto->{$alias}->{$id})) {
+                                        if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->auto->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->auto->{$alias}->{$id})) {                                            
                                             unset($this->auto->{$alias}->{$id});
                                             return;
                                         }
@@ -42,7 +42,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                             foreach ($this->auto->{$alias}->{$id}->restore() as $key => $foreach) {
                                                 $this->auto->store([$alias => ["key" => $key, $id => $foreach]]);
                                                 $this->callback($this->foreach->{$alias}->{$id});
-                                                unset($this->auto->{$alias}->{$id});
+                                                //unset($this->auto->{$alias}->{$id});
                                             }
                                         }
                                     } else {
