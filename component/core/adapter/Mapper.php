@@ -26,6 +26,24 @@ namespace Component\Core\Adapter {
 
             throw new \InvalidArgumentException($parameter);
         }
+
+        final public function getPrimary(): array {
+            if (isset($this->primary)) {
+                return (array) $this->restore($this->primary);
+            }
+        }
+
+        final public function getKeys(): array {
+            if (isset($this->keys)) {
+                return (array) $this->restore($this->keys);
+            }
+        }
+
+        final public function getMapping(): array {
+            if (isset($this->mapping)) {
+                return (array) $this->restore($this->mapping);
+            }
+        }
     }
 
 }

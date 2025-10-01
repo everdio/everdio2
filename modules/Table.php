@@ -15,6 +15,7 @@ namespace Modules {
 
         private function statement(string $query, array $values = [], $stm = null): \PDOStatement {
             try {
+                
                 if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
                 }

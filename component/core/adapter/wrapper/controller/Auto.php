@@ -42,7 +42,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                             foreach ($this->auto->{$alias}->{$id}->restore() as $key => $foreach) {
                                                 $this->auto->store([$alias => ["key" => $key, $id => $foreach]]);
                                                 $this->callback($this->foreach->{$alias}->{$id});
-                                                //unset($this->auto->{$alias}->{$id});
+                                                unset($this->auto->{$alias}->{$id});
                                             }
                                         }
                                     } else {

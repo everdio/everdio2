@@ -9,7 +9,7 @@ namespace Component {
                 return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : $this->{$part}) : $this->callback($part, $arguments));
             }
         }
-
+        
         final public function callback(string $url, array $arguments = []) {
             $function = \parse_url($url, \PHP_URL_HOST);
 
@@ -18,7 +18,7 @@ namespace Component {
             }
             
             $arguments = $this->hydrate(\array_values($arguments));
-
+            
             //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        
             if (($method = \strstr($url, ":", true))) {
                 try {
