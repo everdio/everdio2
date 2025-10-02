@@ -10,6 +10,7 @@ namespace Modules {
                     $values = \array_merge($values, $validation->execute());
                 }
             }
+            
             return (array) $values;
         }
 
@@ -19,12 +20,12 @@ namespace Modules {
                 if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
                 }
-            } catch (\ErrorException | \Exception $ex) {
+            } catch (\PDOException $ex) {
                 if (isset($stm)) {
-                    throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query));
+                    throw new \LogicException(\sprintf("%s: %s %s", $ex->getMessage(), $this->dehydrate($stm->errorInfo()), $query), 0, $ex);
                 }
 
-                throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $query));
+                throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $query), 0, $ex);
             }
         }
 
@@ -89,7 +90,7 @@ namespace Modules {
                 }
             }
 
-            return (array) $this->statement((new Table\Find(array_merge([new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(\array_merge([new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
@@ -100,17 +101,26 @@ namespace Modules {
             return (object) $this;
         }
 
-        public function save(): self {
+        public function save(?string $query = null): self {
             if ($this->prepare((new Table\Insert($this))->execute())->execute((new Table\Values($this))->execute())) {
-                $this->prepare(\sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->execute());
+                try {
+                    $this->prepare($query = \sprintf("%s %s", (new Table\Update($this))->execute(), (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->execute());
+                } catch (\PDOException $ex) {
+                    throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $query), 0, $ex);
+                }
             }
             
             return (object) $this;
         }
 
-        public function delete(): self {
+        public function delete(?string $query = null): self {
             if (\sizeof($this->restore($this->mapping))) {
-                $this->prepare(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->execute());
+                try {
+                    $this->prepare($query = \sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this]))->execute()]))->execute()))->execute((new Table\Values($this))->execute());
+                } catch (\PDOException $ex) {
+                    throw new \LogicException(\sprintf("%s: %s", $ex->getMessage(), $query), 0, $ex);
+                }
+                
             }
 
             return (object) $this->reset($this->mapping);
