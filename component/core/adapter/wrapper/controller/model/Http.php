@@ -32,14 +32,16 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
             $output = (string) parent::dispatch($path);
 
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".html")) {
-                $output .= \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
+                try {
+                    $output .= \file_get_contents($this->path . \DIRECTORY_SEPARATOR . $path . ".html");
+                } catch (\Exception $ex) {
+                    if (isset($this->request->{$this->debug})) {
+                        throw $ex;
+                    }
+                }
             }
 
-            if (isset($this->request->{$this->debug})) {
-                return (string) $output;
-            }
-
-            return (string) $this->minify($output);
+            return (string) (isset($this->request->{$this->debug}) ? $output : $this->minify($output));
         }
 
         /*

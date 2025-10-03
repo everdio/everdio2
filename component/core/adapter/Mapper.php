@@ -32,6 +32,12 @@ namespace Component\Core\Adapter {
                 return (array) $this->restore($this->mapping);
             }
         }
+        
+        final public function getIdentifier() : array {
+            if (isset($this->mapping)) {
+                return (array) $this->restore((isset($this->primary) ? (isset($this->keys) ? $this->primary + $this->keys : $this->primary) : $this->mapping));
+            }
+        }
     }
 
 }

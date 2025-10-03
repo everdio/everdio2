@@ -11,7 +11,7 @@ namespace Component {
         const NORMAL = "normal";
         const STRICT = "strict";
 
-        private $_validated = [], $_validators = [], $_types;
+        private $_validated = [], $_validators = [], $_types = [];
 
         public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
             $this->set($value);

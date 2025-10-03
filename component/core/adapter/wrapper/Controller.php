@@ -28,7 +28,14 @@ namespace Component\Core\Adapter\Wrapper {
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
                 \ob_start();
 
-                require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
+                try {
+                    require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
+                } catch (\Exception $ex) {
+                    if (isset($this->request->{$this->debug})) {
+                        throw $ex;
+                    }
+                }
+                
 
                 return \ob_get_clean();
             }

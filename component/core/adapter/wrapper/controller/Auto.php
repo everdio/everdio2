@@ -24,7 +24,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
                                         //continue if static value is controller value or break if static value is not controller value
                                         //[continue] or [break]
-                                        if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->auto->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->auto->{$alias}->{$id})) {                                            
+                                        if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->auto->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->auto->{$alias}->{$id})) {
                                             unset($this->auto->{$alias}->{$id});
                                             return;
                                         }
@@ -40,6 +40,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                         //[foreach]
                                         if (isset($this->foreach->{$alias}->{$id}) && (isset($this->auto->{$alias}->{$id}) && $this->auto->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
                                             foreach ($this->auto->{$alias}->{$id}->restore() as $key => $foreach) {
+                                                unset($this->auto->{$alias}->{$id});
                                                 $this->auto->store([$alias => ["key" => $key, $id => $foreach]]);
                                                 $this->callback($this->foreach->{$alias}->{$id});
                                                 unset($this->auto->{$alias}->{$id});

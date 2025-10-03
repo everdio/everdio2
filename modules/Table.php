@@ -84,9 +84,9 @@ namespace Modules {
                 }
             } else {
                 if (isset($this->primary)) {
-                    $validations[] = new Table\OrderBy($this, ["desc" => $this->primary]);
+                    $validations[] = new Table\OrderBy($this, ["asc" => $this->primary]);
                 } elseif (isset($this->keys)) {
-                    $validations[] = new Table\OrderBy($this, ["desc" => $this->keys]);
+                    $validations[] = new Table\OrderBy($this, ["asc" => $this->keys]);
                 }
             }
 
