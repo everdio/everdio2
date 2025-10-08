@@ -79,7 +79,7 @@ namespace Component {
             return (bool) \array_reduce($needles, fn($a, $n) => $a || \str_contains($haystack, $n), false);
         }
         
-        public function hasAllInString(string $haystack, array $needles): bool{
+        public function matchInString(string $haystack, array $needles): bool{
             return (bool) \array_reduce($needles, fn($a, $n) => $a && \str_contains($haystack, $n), true);
         }        
         

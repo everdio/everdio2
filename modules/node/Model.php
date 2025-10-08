@@ -33,14 +33,13 @@ namespace Modules\Node {
             $parameters = [];
             
             foreach ($this->query(\sprintf("%s/@*", $this->path)) as $attribute) {
-                $parameters[$attribute->nodeName] = [];
-                $parameters[$attribute->nodeName] = (new \Component\Validation\Parameter(\trim($attribute->value), false, true))->getValidators($parameters[$attribute->nodeName]);                
+                $parameters += [$attribute->nodeName => (new \Component\Validation\Parameter(\trim($attribute->value), false, true))->getValidators()];
             }
- 
-            foreach (\array_keys($parameters) as $attribute) {
+            
+            foreach ($parameters as $attribute => $validators) {
                 $parameter = $this->beautify($attribute);
-                
-                $this->addParameter($parameter, (new \Component\Validation\Parameter(false, false, true))->getValidation($parameters[$attribute]));
+
+                $this->addParameter($parameter, (new \Component\Validation\Parameter(($this->node->hasAttribute($attribute) ? \trim($this->node->getAttribute($attribute)) : ""), false, true))->getValidation($validators));
                 $this->mapping = [$attribute => $parameter];                
             }
 

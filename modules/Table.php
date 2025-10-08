@@ -69,7 +69,6 @@ namespace Modules {
                 foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
-
                     $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
@@ -90,7 +89,7 @@ namespace Modules {
                 }
             }
 
-            return (array) $this->statement((new Table\Find(\array_merge([new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this])], $validations)))->execute() . $query, $this->bind($validations, (new Table\Values($this))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {

@@ -31,7 +31,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
                                         //is or isnot on callback value
                                         //[is] or [isnot]
-                                        if ((isset($this->is->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->is->{$alias}->{$id}) != $this->auto->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->isnot->{$alias}->{$id}) == $this->auto->{$alias}->{$id})) {
+                                        if ((isset($this->is->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->is->{$alias}->{$id})) != $this->auto->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->isnot->{$alias}->{$id})) == $this->auto->{$alias}->{$id})) {
                                             unset($this->auto->{$alias}->{$id});
                                             return;
                                         }

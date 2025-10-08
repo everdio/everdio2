@@ -26,6 +26,18 @@ namespace Component\Core\Adapter {
 
             throw new \InvalidArgumentException($parameter);
         }
+        
+        final public function isPrimary(string $parameter): bool {
+            return (bool) (isset($this->primary) && \array_key_exists($parameter, $this->primary));
+        }
+        
+        final public function isParent(string $parameter): bool {
+            return (bool) (isset($this->parents) && \array_key_exists($parameter, $this->parents));
+        }
+        
+        final public function isKey(string $parameter):bool{
+            return (bool) (isset($this->keys) && \array_key_exists($parameter, $this->keys));
+        }
 
         final public function getMapping(): array {
             if (isset($this->mapping)) {
