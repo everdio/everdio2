@@ -4,8 +4,8 @@ namespace Modules\Table {
 
     final class GroupBy extends \Component\Validation {
 
-        public function __construct(\Component\Core\Adapter\Mapper $mapper) {
-            parent::__construct(\trim(\sprintf("GROUP BY %s", \implode(", ", \array_intersect($mapper->primary, $mapper->mapping)))), [new \Component\Validator\IsString\Contains(["GROUP BY"])], self::STRICT);
+        public function __construct(\Component\Core\Adapter\Mapper $mapper, array $parameters) {
+            parent::__construct(\sprintf("GROUP BY `%s`", (new Columns($mapper, $parameters))->execute()), [new \Component\Validator\IsString\Contains([","])], self::STRICT);
         }
     }
 

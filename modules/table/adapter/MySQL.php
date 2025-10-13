@@ -22,6 +22,7 @@ namespace Modules\Table\Adapter {
             $stm->execute();
 
             foreach ($stm->fetchAll(\PDO::FETCH_COLUMN) as $table) {
+
                 $model = new \Modules\Table\Model\MySQL;
                 $model->namespace = $this->namespace;
                 $model->dsn = $this->dsn;

@@ -22,6 +22,10 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         final public function minify(string $value): string {
             return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $value));
         }
+        
+        final public function redirect($url, int $status = 302 ){
+            \header("location:" . $url, true, $status);
+        }
 
         /*
          * dispatching a html (template) file if exists and adding to parent dispatch (controller)

@@ -5,9 +5,9 @@ namespace Modules\Table\Model {
     use Component\Validation,
         Component\Validator;
 
-    final class MySQL extends \Modules\Table\Model {
+    final class Mysql extends \Modules\Table\Model {
 
-        use \Modules\Table\MySQL;
+        use \Modules\Table\Mysql;
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
@@ -20,10 +20,10 @@ namespace Modules\Table\Model {
             $this->use = "\Modules\Table\MySQL";
         }
 
-        final public function setup(): void {                        
-            $model->label = $this->beautify($this->table);
-            $model->class = $this->beautify($this->table);            
-            $model->resource = \sprintf("%s.%s", $this->database, $this->table);
+        final public function setup(): void {                  
+            $this->label = $this->beautify($this->table);
+            $this->class = $this->beautify($this->table);            
+            $this->resource = \sprintf("`%s`.`%s`", $this->database, $this->table);
             
             $columns = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`COLUMNS`WHERE`information_schema`.`COLUMNS`.`TABLE_SCHEMA`='%s'AND`information_schema`.`COLUMNS`.`TABLE_NAME`='%s' ORDER BY `ORDINAL_POSITION` ASC", $this->database, $this->table));
             $columns->execute();

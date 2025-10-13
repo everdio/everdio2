@@ -18,7 +18,7 @@ namespace Modules\Table\Model {
         final public function setup(array $models = [], array $create = []): void {
             $this->label = $this->beautify($this->table);
             $this->class = $this->beautify($this->table);
-            $this->resource = \sprintf("%s", $this->table);
+            $this->resource = \sprintf("`%s`", $this->table);
             
             foreach ($this->mapping as $column => $parameter) {
                 if ($this->hasParameter($parameter)) {

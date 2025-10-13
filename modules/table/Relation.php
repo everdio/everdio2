@@ -28,10 +28,10 @@ namespace Modules\Table {
                 }
             }
             
-            if (isset($thatMapper->mapping) && \sizeof($thatMapper->restore($thatMapper->mapping))) {
-                $filter = \sprintf("%s %s", $operator, (new Filter([$thatMapper, $operator]))->execute());
+            if (isset($thatMapper->mapping) && \sizeof(\array_filter($thatMapper->restore($thatMapper->mapping)))) {
+                $filter = \sprintf("%s %s", $operator, (new Filter([$thatMapper], $operator))->execute());
             }            
-
+            
             return (string) \sprintf("%s %s ON %s %s", \strtoupper($join), $thatMapper->resource, \implode(\strtoupper($operator), $operators), $filter);
         }
     }
