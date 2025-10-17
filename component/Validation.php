@@ -18,8 +18,8 @@ namespace Component {
 
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
-                    $key = \get_class($validator);
-
+                    $key = (new \ReflectionClass($validator))->getShortName();
+                    
                     $this->_validators[$key] = $validator;
                     $this->_types[$key] = \strtolower($validator::TYPE);
                 }

@@ -52,7 +52,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
          * setting up controller reserved parameters to initiate start!
          */
 
-        final public function setup(): void {
+        public function setup(): void {
             if (isset($this->server["HTTP_REFERER"])) {
                 $this->referer = $this->server["HTTP_REFERER"];
             }

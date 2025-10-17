@@ -37,7 +37,6 @@ namespace Component {
                         return (int) $data;
                     }
                 }
-
                 return (string) $data;
             } elseif (\is_integer($data)) {
                 if (\floatval($data) != \intval($data)) {

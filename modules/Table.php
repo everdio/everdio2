@@ -14,7 +14,7 @@ namespace Modules {
             return (array) $values;
         }
 
-        private function statement(string $query, array $values = [], $stm = null): \PDOStatement {
+        private function statement(string $query, array $values = [], $stm = null): \PDOStatement {            
             try {
                 if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
@@ -51,8 +51,8 @@ namespace Modules {
                     unset($validations[$key]);
                 }
             }
-
-            return (int) $this->statement((new Table\Find(\array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filters($validations), (new Table\Values($this, $this->mapping))->execute()))->fetchColumn();
+    
+            return (int) $this->statement((new Table\Find(\array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Values($this, $this->mapping))->execute()))->fetchColumn();
         }
 
         public function find(array $validations = [], ?string $query = null): self {
@@ -76,7 +76,6 @@ namespace Modules {
             }
 
             if (\sizeof(\array_filter($orderby))) {
-
                 foreach ($orderby as $order => $parameters) {
                     $validations[] = new Table\OrderBy($this, [$order => $parameters]);
                 }
@@ -88,7 +87,7 @@ namespace Modules {
                 }
             }
 
-            return (array) $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Bind($this, $this->mapping))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Values($this, $this->mapping))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
