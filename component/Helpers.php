@@ -19,7 +19,7 @@ namespace Component {
         public function minify(string $content) : string {
             return (string) \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $content);
         }              
-
+        
         public function getSizeformat($size, int $precision = 2, $suffixes = ["B", "kB", "MB", "GB"]): string {
             $base = \log(\floatval($size)) / \log(1024);
             return (string) \round(\pow(1024, $base - \floor($base)), $precision) . $suffixes[\floor($base)];

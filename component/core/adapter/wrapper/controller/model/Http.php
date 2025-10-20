@@ -24,7 +24,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         }
         
         final public function redirect($url, int $status = 302 ){
-            \header("location:" . $url, true, $status);
+            \header("location:" . \urldecode($url), true, $status);
         }
 
         /*

@@ -4,7 +4,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
     trait Auto {
 
-        final public function auto(string $section): void {
+        final public function auto(string $section, string $property = "auto"): void {
             if (isset($this->{$section})) {
                 if (isset($this->request->{$this->debug})) {
                     echo \sprintf("<!-- [%s] -->\n", $section);
@@ -19,26 +19,26 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                 }
 
                                 if (\is_string($id)) {
-                                    $this->auto->store([$alias => [$id => $finder->callback($this->getCallbacks($callback))]]);
+                                    $this->{$property}->store([$alias => [$id => $finder->callback($this->getCallbacks($callback))]]);
 
                                     //[continue] or [break] on value
-                                    if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->auto->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->auto->{$alias}->{$id})) {
+                                    if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id})) {
                                         return;
                                     }
 
                                     //[is] or [isnot]
-                                    if ((isset($this->is->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->is->{$alias}->{$id})) != $this->auto->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->auto->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->isnot->{$alias}->{$id})) == $this->auto->{$alias}->{$id})) {
+                                    if ((isset($this->is->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->is->{$alias}->{$id})) != $this->{$property}->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->isnot->{$alias}->{$id})) == $this->{$property}->{$alias}->{$id})) {
                                         return;
                                     }
 
                                     //[foreach]
-                                    if (isset($this->foreach->{$alias}->{$id}) && (isset($this->auto->{$alias}->{$id}) && $this->auto->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
-                                        foreach ($this->auto->{$alias}->{$id}->restore() as $key => $foreach) {
-                                            unset($this->auto->{$alias}->{$id});
-                                            $this->auto->store([$alias => ["key" => $key, $id => $foreach]]);
+                                    if (isset($this->foreach->{$alias}->{$id}) && (isset($this->{$property}->{$alias}->{$id}) && $this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
+                                        foreach ($this->{$property}->{$alias}->{$id}->restore() as $key => $foreach) {
+                                            unset($this->{$property}->{$alias}->{$id});
+                                            $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);
                                             $this->callback($this->foreach->{$alias}->{$id});
-                                            unset($this->auto->{$alias}->{$id});
-                                            unset($this->auto->{$alias}->key);
+                                            unset($this->{$property}->{$alias}->{$id});
+                                            unset($this->{$property}->{$alias}->key);
                                         }
                                     }
                                 } else {
