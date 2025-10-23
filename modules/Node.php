@@ -43,17 +43,17 @@ namespace Modules {
         }
 
         public function findAll(array $validations = [], array $orderby = [], int $limit = 0, int $position = 0, ?string $query = null, array $records = []): array {
-            foreach ($this->query($this->prepare(\array_merge($validations, ($limit ? [new Node\Via($this, [new Node\Position($this->path, $limit, $position)])] : [new Node\Via($this)]))) . $query) as $node) {
+            foreach ($this->query($this->prepare(\array_merge(\array_filter($validations), ($limit ? [new Node\Via($this, [new Node\Position($this->path, $limit, $position)])] : [new Node\Via($this)]))) . $query) as $node) {
                 $records[] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent"] + $this->mapping);
             }
-
-            if (\sizeof($orderby)) {
+            
+            if (\sizeof(\array_filter($orderby))) {
                 foreach ($orderby as $parameter => $order) {
                     \array_multisort(\array_column($records, $parameter), $order, $records);
                 }
             }
 
-            return (array) \array_values($records);
+            return (array) \array_filter($records);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {

@@ -12,6 +12,7 @@ namespace Component\Core\Adapter\Mapper {
                 "label" => new Validation(false, [new Validator\IsString]),
                 "primary" => new Validation(false, [new Validator\IsArray]),
                 "parents" => new Validation(false, [new Validator\IsArray]),
+                "keys" => new Validation(false, [new Validator\IsArray]),
                 "mapping" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
 

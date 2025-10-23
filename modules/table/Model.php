@@ -12,7 +12,6 @@ namespace Modules\Table {
                 "dsn" => new Validation(false, array(new Validator\IsString)),
                 "resource" => new Validation(false, array(new Validator\IsString)),
                 "table" => new Validation(false, array(new Validator\IsString)),               
-                "keys" => new Validation(false, array(new Validator\IsArray))
                     ] + $_parameters);
         }
     }

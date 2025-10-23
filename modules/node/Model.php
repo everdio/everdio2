@@ -14,8 +14,10 @@ namespace Modules\Node {
                 "node" => new Validation(false, [new Validator\IsObject\Of("\DOMElement")]),
                 "tag" => new Validation(false, array(new Validator\IsString)),
                 "path" => new Validation(false, array(new Validator\IsString\IsPath)),
+                "index" => new Validation(false, array(new Validator\IsString)),
+                "Index" => new Validation(false, array(new Validator\IsString)),
                 "parent" => new Validation(false, array(new Validator\IsString)),
-                "index" => new Validation(false, array(new Validator\IsString))
+                "Parent" => new Validation(false, array(new Validator\IsString))
                     ] + $_parameters);
         }
         
@@ -24,10 +26,14 @@ namespace Modules\Node {
             $this->label = \ucFirst(\strtolower($this->node->tagName));
             $this->class = $this->label;
             $this->tag = $this->node->tagName;
+            $this->primary = ["Index"];
+            $this->mapping = ["index" => "Index"];
 
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
                 $this->namespace = $this->namespace . \implode("\\", \array_map("ucFirst", \explode(\DIRECTORY_SEPARATOR, \dirname($this->path))));
-                $this->parents = ["parent" => $this->namespace];
+                $this->parents = ["parent" => $this->namespace, "Parent" => $this->namespace];
+                $this->keys = ["Parent" => "Index"];
+                $this->mapping = ["parent" => "Parent"];
             }
             
             $parameters = [];
@@ -39,7 +45,6 @@ namespace Modules\Node {
             foreach ($parameters as $attribute => $validators) {
                 $this->mapping = [$attribute => ($parameter = $this->beautify($attribute))];                
                 $this->addParameter($parameter, new \Component\Validation(false, $validators));
-                
             }
 
             /*

@@ -19,10 +19,10 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                 }
 
                                 if (\is_string($id)) {
-                                    $this->{$property}->store([$alias => [$id => $finder->callback($this->getCallbacks($callback))]]);
-
+                                    $this->{$property}->store([$alias => [$id => $this->hydrate($finder->callback($this->getCallbacks($callback)))]]);
+                                    
                                     //[continue] or [break] on value
-                                    if ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id})) {
+                                    if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
                                         return;
                                     }
 
@@ -33,6 +33,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
                                     //[foreach]
                                     if (isset($this->foreach->{$alias}->{$id}) && (isset($this->{$property}->{$alias}->{$id}) && $this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
+
                                         foreach ($this->{$property}->{$alias}->{$id}->restore() as $key => $foreach) {
                                             unset($this->{$property}->{$alias}->{$id});
                                             $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);

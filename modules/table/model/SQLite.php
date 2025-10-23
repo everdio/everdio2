@@ -62,7 +62,7 @@ namespace Modules\Table\Model {
             if (isset($this->keys)) {
                 foreach ($this->keys as $key => $foreign) {
                     if (isset($this->parents) && $this->hasParameter($key)) {
-                        if (\array_key_exists($key, $this->parents)) {
+                        if (\array_key_exists($key, $this->parents) && \array_key_exists($key, $models) && \in_array($foreign, $models[$key]->mapping)) {
                             $create[] = \sprintf("FOREIGN KEY (\"%s\") REFERENCES \"%s\" (\"%s\")", \array_search($key, $this->mapping), \array_search($this->keys[$key], $this->mapping), $models[$key]->table, \array_search($foreign, $models[$key]->mapping));
                         }
                     }
