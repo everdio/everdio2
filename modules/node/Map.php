@@ -12,7 +12,7 @@ namespace Modules\Node {
             
             //temp fix
             if ($mapper->hasParameter("Index")) {
-                $mapper->Index = \end($parts);
+                $mapper->Index = $node->getNodePath();
             }
             
             

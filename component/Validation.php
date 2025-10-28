@@ -19,7 +19,7 @@ namespace Component {
             foreach ($validators as $validator) {
                 if ($validator instanceof Validator) {
                     $key = (new \ReflectionClass($validator))->getShortName();
-                    
+
                     $this->_validators[$key] = $validator;
                     $this->_types[$key] = \strtolower($validator::TYPE);
                 }
@@ -43,21 +43,25 @@ namespace Component {
 
             throw new \LogicException(\sprintf("UNKNOWN_VALIDATOR %s", $validator));
         }
-        
+
+        public function getValidators(): array {
+            return (array) $this->_validators;
+        }
+
+        public function getTypes(): array {
+            return (array) $this->_types;
+        }
+
         public function set($value): void {
             $this->value = $this->hydrate($value);
         }
 
         public function get() {
             return $this->value;
-        }        
+        }
 
         public function hasTypes(array $types, bool $match = false): bool {
             return (bool) ($match ? (\sizeof(\array_intersect($this->_types, $types)) === \sizeof($this->_types)) : \sizeof(\array_intersect($this->_types, $types)));
-        }
-        
-        public function getTypes(): array {
-            return (array) $this->_types;
         }
 
         public function validated(bool $validation = true): array {
@@ -96,7 +100,7 @@ namespace Component {
                     }
                 }
             }
-            
+
             throw new \BadFunctionCallException(\sprintf("UNKOWN_METHOD %s::%s (%s)", \get_class($this), $name, $this->dehydrate($arguments)));
         }
     }

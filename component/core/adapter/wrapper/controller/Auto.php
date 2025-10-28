@@ -33,7 +33,6 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
                                     //[foreach]
                                     if (isset($this->foreach->{$alias}->{$id}) && (isset($this->{$property}->{$alias}->{$id}) && $this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
-
                                         foreach ($this->{$property}->{$alias}->{$id}->restore() as $key => $foreach) {
                                             unset($this->{$property}->{$alias}->{$id});
                                             $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);

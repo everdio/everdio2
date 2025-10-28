@@ -5,7 +5,18 @@ namespace Modules {
     trait Node {
 
         public function prepare(array $validations = []): string {
-            if (isset($this->index) && isset($this->parent)) {
+            
+            if (isset($this->Index) && !isset($this->index)) {
+                $this->index = $this->Index;
+            }
+            
+            if (isset($this->Parent) && !isset($this->parent)) {
+                $this->parent = $this->Parent;
+            }
+            
+            if (isset($this->Index)) {
+                return (string) \sprintf("(%s)", $this->Index);
+            } elseif (isset($this->index) && isset($this->parent)) {
                 return (string) \sprintf("(%s)", $this->parent . \DIRECTORY_SEPARATOR . $this->index);
             } elseif (isset($this->parent)) {
                 return (string) \sprintf("(%s)", (new Node\Filter($this->parent . \DIRECTORY_SEPARATOR . $this->tag, [new Node\Condition($this)]))->execute());
@@ -22,7 +33,7 @@ namespace Modules {
             return (object) $xpath;
         }
 
-        public function query(string $query): \DOMNodeList {
+        public function query(string $query): \DOMNodeList {            
             return (object) $this->xpath($this->getAdapter())->query($query);
         }
 

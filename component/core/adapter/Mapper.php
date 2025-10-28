@@ -26,29 +26,29 @@ namespace Component\Core\Adapter {
 
             throw new \InvalidArgumentException($parameter);
         }
-        
+
         final public function isPrimary(string $parameter): bool {
             return (bool) (isset($this->primary) && \array_key_exists($parameter, $this->primary));
         }
-        
+
         final public function isParent(string $parameter): bool {
             return (bool) (isset($this->parents) && \array_key_exists($parameter, $this->parents));
         }
-        
-        final public function isKey(string $parameter):bool{
+
+        final public function isKey(string $parameter): bool {
             return (bool) (isset($this->keys) && \array_key_exists($parameter, $this->keys));
         }
 
         final public function getMapping(): array {
-            if (isset($this->mapping)) {
-                return (array) $this->restore($this->mapping);
-            }
+            return (array) $this->restore($this->mapping);
         }
-        
-        final public function getIdentifier() : array {
-            if (isset($this->mapping)) {
-                return (array) $this->restore((isset($this->primary) ? (isset($this->keys) ? $this->primary + $this->keys : $this->primary) : $this->mapping));
-            }
+
+        final public function getIdentifier(): array {
+            return (array) $this->restore((isset($this->primary) ? (isset($this->keys) ? $this->primary + $this->keys : $this->primary) : $this->mapping));
+        }
+
+        final public function getHumanized(string $seperator = ", "): string {
+            return (string) \implode($seperator, \array_filter($this->restore($this->mapping)));
         }
     }
 
