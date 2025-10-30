@@ -28,7 +28,7 @@ namespace Component\Core\Adapter {
         }
 
         final public function isPrimary(string $parameter): bool {
-            return (bool) (isset($this->primary) && \array_key_exists($parameter, $this->primary));
+            return (bool) (isset($this->primary) && \in_array($parameter, $this->primary));
         }
 
         final public function isParent(string $parameter): bool {
@@ -47,7 +47,13 @@ namespace Component\Core\Adapter {
             return (array) $this->restore((isset($this->primary) ? (isset($this->keys) ? $this->primary + $this->keys : $this->primary) : $this->mapping));
         }
 
-        final public function getHumanized(string $seperator = ", "): string {
+        final public function getHumanized(array $types = ["IsInteger", "IsDatetime", "InArray"], string $seperator = ", "): string {
+            foreach ($this->restore($this->mapping) as $parameter => $value) {
+                if (!$this->isPrimary($parameter) && !empty($value) && !\sizeof(\array_intersect($types, \array_keys($this->getParameter($parameter)->getTypes())))) {
+                    return (string) $value;
+                }
+            }
+
             return (string) \implode($seperator, \array_filter($this->restore($this->mapping)));
         }
     }

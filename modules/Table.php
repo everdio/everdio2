@@ -15,7 +15,7 @@ namespace Modules {
         }
 
         private function statement(string $query, array $values = [], $stm = null): \PDOStatement {            
-            try {
+            try {                
                 if (($stm = $this->prepare($query)) && $stm->execute($values)) {
                     return (object) $stm;
                 }
@@ -68,9 +68,12 @@ namespace Modules {
                 foreach ($this->parents as $key => $parent) {
                     $parent = new $parent;
                     $parent->reset($parent->mapping);
+                    
+                    $validations[] = new Table\Select([$parent]);                
                     $validations[] = new Table\Joins([new Table\Relation($this, [$parent], \strtoupper((isset($this->getParameter($key)->empty) ? "left join" : "join")))]);
                 }
             }
+            
             if ($limit) {
                 $validations[] = new Table\Limit($position, $limit);
             }

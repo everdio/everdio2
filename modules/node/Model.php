@@ -32,7 +32,6 @@ namespace Modules\Node {
             if (isset($this->namespace) && $this->node->parentNode->nodeName !== "#document") {
                 $this->namespace = $this->namespace . \implode("\\", \array_map("ucFirst", \explode(\DIRECTORY_SEPARATOR, \dirname($this->path))));
                 $this->parents = ["parent" => $this->namespace, "Parent" => $this->namespace];
-                $this->primary = ["Parent"];
                 $this->keys = ["Parent" => "Index"];
                 $this->mapping = ["parent" => "Parent"];
             }
