@@ -4,15 +4,15 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
     trait Auto {
 
-        final public function auto(string $section, string $property = "auto"): void {
+        final public function auto(string $section, string $property = "auto", string $library = "aliases"): void {
             if (isset($this->{$section})) {
                 if (isset($this->request->{$this->debug})) {
                     echo \sprintf("<!-- [%s] -->\n", $section);
                 }
 
                 foreach ($this->{$section}->restore() as $alias => $callbacks) {
-                    if (isset($this->aliases->{$alias}) || ($this->aliases->{$alias} = \implode("\\", \explode("_", $alias)))) {
-                        if (($finder = ($this->aliases->{$alias} === \get_class($this) ? $this : new $this->aliases->{$alias}))) {
+                    if (isset($this->{$library}->{$alias}) || ($this->{$library}->{$alias} = \implode("\\", \explode("_", $alias)))) {
+                        if (($finder = ($this->{$library}->{$alias} === \get_class($this) ? $this : new $this->{$library}->{$alias}))) {
                             foreach ($callbacks as $id => $callback) {
                                 if (isset($this->request->{$this->debug})) {
                                     echo \sprintf("<!-- %s[%s] = %s -->\n", $alias, $id, $this->getCallbacks($callback));
@@ -51,9 +51,9 @@ namespace Component\Core\Adapter\Wrapper\Controller {
             }
         }
 
-        final public function autocute(string $path): void {
+        final public function autocute(string $path, string $property = "auto"): void {
             $this->dispatch(\dirname($path));
-            $this->auto(\basename($path));
+            $this->auto(\basename($path), $property);
         }
     }
 

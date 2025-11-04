@@ -44,7 +44,6 @@ namespace Component {
                     } catch (\Error $ex) {
                         throw new \InvalidArgumentException($ex->getMessage());
                     }
-                    
                 }
             }
         }

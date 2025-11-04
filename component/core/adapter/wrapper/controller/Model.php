@@ -44,13 +44,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
          */
 
         public function dispatch(string $path): string|null|int {
-            try {
-                return parent::dispatch($this->getModel($path, false));
-            } catch (\Exception $ex) {
-                if (isset($this->request->{$this->debug})) {
-                    throw $ex;
-                }
-            }            
+            return parent::dispatch($this->getModel($path, false));
         }
 
         /*

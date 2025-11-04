@@ -25,6 +25,7 @@ try {
     echo $command->execute(\DIRECTORY_SEPARATOR . $command->arguments);
 } catch (\Exception | \Error $ex) {
     echo \sprintf("\n%s %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));
+
     if (isset($command->debug) && isset($command->request->{$command->debug})) {
         echo \sprintf("\n%s\n", $ex->getTraceAsString());
         if ($ex->getPrevious()) {

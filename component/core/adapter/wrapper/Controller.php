@@ -6,6 +6,7 @@ namespace Component\Core\Adapter\Wrapper {
         \Component\Validator;
 
     abstract class Controller extends \Component\Core\Adapter\Wrapper {
+
         public function __construct(array $_parameters = []) {
             parent::__construct(\array_merge([
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
@@ -16,7 +17,7 @@ namespace Component\Core\Adapter\Wrapper {
                 "arguments" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
-            
+
             $this->reserved = $this->diff();
         }
 
@@ -27,16 +28,7 @@ namespace Component\Core\Adapter\Wrapper {
         public function dispatch(string $path) {
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
                 \ob_start();
-
-                try {
-                    require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
-                } catch (\Exception $ex) {
-                    if (isset($this->request->{$this->debug})) {
-                        throw $ex;
-                    }
-                }
-                
-
+                require $this->path . \DIRECTORY_SEPARATOR . $path . ".php";
                 return \ob_get_clean();
             }
         }
@@ -78,7 +70,7 @@ namespace Component\Core\Adapter\Wrapper {
             if (isset($controller->path) && isset($controller->basename)) {
                 try {
                     return $controller->dispatch($controller->basename);
-                } catch (\InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
+                } catch (\LogicException | \InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
                     throw new \RuntimeException(\sprintf("ERROR %s %s %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
                 }
             }

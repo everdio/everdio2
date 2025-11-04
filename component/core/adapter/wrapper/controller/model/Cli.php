@@ -29,7 +29,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 $this->remove("server");                
            } else {
                 throw new \RuntimeException("ARGUMENTS_REQUIRED");
-            }
+           }
         }
     }
 
