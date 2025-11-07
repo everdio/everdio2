@@ -34,11 +34,11 @@ namespace Modules {
         }
 
         public function query(string $query): \DOMNodeList {            
-            return (object) $this->xpath($this->getAdapter())->query($query);
+            return (object) $this->xpath($this->getAdapter($this->getKey()))->query($query);
         }
 
         public function evaluate(string $query, string $function): int|float|string {
-            return $this->xpath($this->getAdapter())->evaluate($function . $query);
+            return $this->xpath($this->getAdapter($this->getKey()))->evaluate($function . $query);
         }
 
         public function count(array $validations = [], ?string $query = null): int {

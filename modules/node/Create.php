@@ -18,7 +18,7 @@ namespace Modules\Node {
             }
 
             foreach ($mapper->mapping as $attribute => $parameter) {
-                if (isset($mapper->{$parameter}) && $parameter !== $mapper->label) {
+                if (isset($mapper->{$parameter}) && ($parameter !== $mapper->label && !\in_array($attribute, ["index", "parent"]))) {
                     $element->setAttribute($attribute, $mapper->{$parameter});
                 }
             }

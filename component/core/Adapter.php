@@ -6,7 +6,7 @@ namespace Component\Core {
 
         static private $_adapters = [];
 
-        private function identifier(): string {
+        protected function getKey(): string {
             return (string) $this->unique($this->adapter, "adapter", "crc32");
         }
 
@@ -20,9 +20,7 @@ namespace Component\Core {
          * in order to save resources we store the adapter in a static array
          */
 
-        protected function getAdapter(): object {
-            $key = $this->identifier();
-
+        protected function getAdapter(string $key): object {
             if (!\array_key_exists($key, self::$_adapters)) {
                 self::$_adapters[$key] = $this->addAdapter();
             }
@@ -34,9 +32,7 @@ namespace Component\Core {
          * unsets the current adapter
          */
 
-        protected function delAdapter(): void {
-            $key = $this->identifier();
-
+        protected function delAdapter(string $key): void {
             if (\array_key_exists($key, self::$_adapters)) {
                 unset(self::$_adapters[$key]);
             }
@@ -48,7 +44,7 @@ namespace Component\Core {
 
         public function __call(string $name, array $arguments = []) {
             if (!\method_exists($this, $name)) {
-                return \call_user_func_array([$this->getAdapter(), $name], $arguments);
+                return \call_user_func_array([$this->getAdapter($this->getKey()), $name], $arguments);
             }
         }
     }

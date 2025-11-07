@@ -107,8 +107,8 @@ namespace Modules {
             } catch (\PDOException $ex) {
                 throw new \LogicException(\sprintf("%s (%s)", $ex->getMessage(), (new Table\Save($this))->execute()));
             }
-
-            return (object) $this;
+            
+            return (object) $this->find();
         }
 
         public function delete(): self {

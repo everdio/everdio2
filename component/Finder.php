@@ -24,18 +24,18 @@ namespace Component {
                 try {
                     return ($function && \is_callable($function) ? \call_user_func($function, \call_user_func_array([$this, $method], $arguments)) : \call_user_func_array([$this, $method], $arguments));
                 } catch (\TypeError $ex) {
-                    throw new \BadMethodCallException(\sprintf("%s::%s: %s", \get_class($this), $method, $ex->getMessage()), 0, $ex);
+                    throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($this), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException(\sprintf("%s::%s %s", \get_class($this), $method, $ex->getMessage()), 0, $ex);
+                    throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($this), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                 }
             } elseif ($function) {
                 if (\is_callable($function)) {
                     try {
                         return \call_user_func_array($function, $arguments);
                     } catch (\TypeError $ex) {
-                        throw new \BadFunctionCallException(\sprintf("%s (%s): %s", \get_class($this), $function, $ex->getMessage()), 0, $ex);
+                        throw new \BadFunctionCallException(\sprintf("%s %s(%s): %s", \get_class($this), $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                     } catch (\ErrorException $ex) {
-                        throw new \InvalidArgumentException(\sprintf("%s::%s %s", \get_class($this), $function, $ex->getMessage()), 0, $ex);
+                        throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($this), $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                     }
                 } elseif ($function === "eval") {
                     //deadly eval(); for artimetchi operators

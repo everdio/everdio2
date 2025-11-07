@@ -14,7 +14,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                     if (isset($this->{$library}->{$alias}) || ($this->{$library}->{$alias} = \implode("\\", \explode("_", $alias)))) {
                         if (($finder = ($this->{$library}->{$alias} === \get_class($this) ? $this : new $this->{$library}->{$alias}))) {
                             foreach ($callbacks as $id => $callback) {
-                                if (isset($this->request->{$this->debug})) {
+                                if (isset($this->request->{$this->debug}) && !(isset($this->hidden->{$alias}) && $this->hidden->{$alias} == $id)) {
                                     echo \sprintf("<!-- %s[%s] = %s -->\n", $alias, $id, $this->getCallbacks($callback));
                                 }
 
