@@ -24,6 +24,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         }
 
         final public function redirect($url, int $status = 302) {
+            \header("Cache-Control: no-store, private, no-cache, must-revalidate", true);
             \header("location:" . \urldecode($url), true, $status);
         }
 
