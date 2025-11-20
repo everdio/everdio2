@@ -4,7 +4,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
 
     trait Auto {
 
-        final public function auto(string $section, string $property = "auto", string $library = "aliases"): void {
+        final protected function auto(string $section, string $property = "auto", string $library = "aliases"): void {
             if (isset($this->{$section})) {
                 if (isset($this->request->{$this->debug})) {
                     echo \sprintf("<!-- [%s] -->\n", $section);
@@ -51,9 +51,9 @@ namespace Component\Core\Adapter\Wrapper\Controller {
             }
         }
 
-        final public function autocute(string $path, string $property = "auto"): void {
+        final protected function autocute(string $path, string $property = "auto"): void {
             $this->dispatch(\dirname($path));
-            $this->auto(\basename($path), $property);
+            $this->auto(\basename($path), $property);        
         }
     }
 
