@@ -5,15 +5,15 @@ namespace Modules {
     trait Node {
 
         public function prepare(array $validations = []): string {
-            
+
             if (isset($this->Index) && !isset($this->index)) {
                 $this->index = $this->Index;
             }
-            
+
             if (isset($this->Parent) && !isset($this->parent)) {
                 $this->parent = $this->Parent;
             }
-            
+
             if (isset($this->Index)) {
                 return (string) \sprintf("(%s)", $this->Index);
             } elseif (isset($this->index) && isset($this->parent)) {
@@ -33,7 +33,7 @@ namespace Modules {
             return (object) $xpath;
         }
 
-        public function query(string $query): \DOMNodeList {            
+        public function query(string $query): \DOMNodeList {
             return (object) $this->xpath($this->getAdapter($this->getKey()))->query($query);
         }
 
@@ -53,11 +53,16 @@ namespace Modules {
             return (object) $this;
         }
 
-        public function findAll(array $validations = [], array $orderby = [], int $limit = 0, int $position = 0, ?string $query = null, array $records = []): array {
-            foreach ($this->query($this->prepare(\array_merge(\array_filter($validations), ($limit ? [new Node\Via($this, [new Node\Position($this->path, $limit, $position)])] : [new Node\Via($this)]))) . $query) as $node) {
+        public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, ?string $query = null, array $records = []): array {
+
+            if ($position || $limit) {
+                $query = \sprintf("[%s]", (new Node\Position($limit, $position))->execute()) . $query;
+            }
+
+            foreach ($this->query($this->prepare(\array_merge(\array_filter($validations), [new Node\Via($this)])) . $query) as $node) {
                 $records[] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent"] + $this->mapping);
             }
-            
+
             if (\sizeof(\array_filter($orderby))) {
                 foreach ($orderby as $parameter => $order) {
                     \array_multisort(\array_column($records, $parameter), $order, $records);
@@ -84,25 +89,12 @@ namespace Modules {
         }
 
         public function delete(): self {
-            foreach ($this->query($this->prepare([new Node\Via($this)])) as $node){     
+            foreach ($this->query($this->prepare([new Node\Via($this)])) as $node) {
                 $node->parentNode->removeChild($node);
-            }            
-            unset ($this->index);
-            
-            /*
-            if (isset($this->index) && isset($this->parent)) {   
-                if (($node = $this->query($this->prepare())->item(0))) {   
-                    $node->parentNode->removeChild($node);
-                }
-                unset($this->index);
-            } else {
-                foreach ($this->query($this->prepare([new Node\Via($this)])) as $node){     
-                    $node->parentNode->removeChild($node);
-                }
             }
-             * 
-             */
-            
+
+            unset($this->index);
+
             return (object) $this;
         }
     }

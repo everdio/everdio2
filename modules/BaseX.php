@@ -16,8 +16,8 @@ namespace Modules {
             return (object) $curl;
         }
 
-        public function getResponse(string $query): string {
-            try {
+        public function getResponse(string $query): string {            
+            try {                
                 $this->setopt(\CURLOPT_URL, $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query));
                 return (string) $this->execute();
             } catch (\ErrorException $ex) {

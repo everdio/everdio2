@@ -22,9 +22,10 @@ namespace Modules\BaseX {
                     ] + $_parameters);
 
             $this->use = "\Modules\BaseX";
+            $this->adapter = ["host", "database"];
         }
 
-        public function setup(): void {
+        public function setup(array $models = []): array {
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($this->query), $this->root), \LIBXML_HTML_NODEFDTD | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS | \LIBXML_NOENT);
 
@@ -42,9 +43,12 @@ namespace Modules\BaseX {
                 }
 
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
-
                 $model->deploy();
+                
+                $models[(string) $model] = $model;
             }
+            
+            return (array) $models;
         }
 
         public function deploy(): void {

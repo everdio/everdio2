@@ -37,8 +37,7 @@ namespace Modules\Node {
             }
             
             $parameters = [];
-            
-            foreach ($this->query(\sprintf("%s/@*", $this->path)) as $attribute) {    
+            foreach ($this->query(\sprintf("%s[position() <= 1]/@*", $this->path)) as $attribute) { 
                 $parameters += [$attribute->nodeName => (new \Component\Validation\Parameter($attribute->value, false, true))->getValidators()];
             }
             
@@ -47,26 +46,6 @@ namespace Modules\Node {
                 $this->addParameter($parameter, new \Component\Validation(false, $validators));
             }
 
-            /*
-            if ($this->node->hasAttributes()) {
-                foreach ($this->node->attributes as $attribute) {
-                    $validators = [];
-                    
-                    $validation = (new \Component\Validation\Parameter(\trim($attribute->value), false, true));
-
-                    foreach ($this->query(\sprintf("%s/@%s", $this->path, $attribute->nodeName)) as $value) {
-                        $validation = new \Component\Validation\Parameter(\trim($value->value), false, true);
-                        $validators = $validation->getValidators($validators);
-                    }
-
-                    $parameter = $this->beautify($attribute->nodeName);
-                    $this->addParameter($parameter, $validation->getValidation($validators));
-                    $this->mapping = [$attribute->nodeName => $parameter];
-                }
-            }
-             * 
-             */
-            
             $parameter = [];
             
             foreach ($this->query(\sprintf("%s/text()", $this->path)) as $node) {

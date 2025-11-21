@@ -16,7 +16,7 @@ namespace Modules\BaseX {
         /*
          * automatically overriding query from Modules\Node and checkfor previous results to see if we can re-use fragments of those DOMs
          */
-        public function query(string $query): \DOMNodeList {
+        public function query(string $query): \DOMNodeList {            
             $api = new $this->api;
             foreach ($api::$_queries as $_query => $_dom) {
                 $fragment = new Node\Fragment($_query, $query);
