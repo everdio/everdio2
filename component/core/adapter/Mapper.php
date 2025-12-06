@@ -47,9 +47,9 @@ namespace Component\Core\Adapter {
             return (array) $this->restore((isset($this->primary) ? (isset($this->keys) ? $this->primary + $this->keys : $this->primary) : $this->mapping));
         }
 
-        final public function getHumanized(array $types = ["IsInteger", "IsDatetime", "InArray"], string $seperator = ", "): string {
+        final public function getHumanized(array $types = ["IsString"], string $seperator = ", "): string {
             foreach ($this->restore($this->mapping) as $parameter => $value) {
-                if (!$this->isPrimary($parameter) && !empty($value) && !\sizeof(\array_intersect($types, \array_keys($this->getParameter($parameter)->getTypes())))) {
+                if (!$this->isPrimary($parameter) && !empty($value) && \array_intersect($types, \array_keys($this->getParameter($parameter)->getTypes()))) {
                     return (string) $value;
                 }
             }

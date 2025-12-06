@@ -37,6 +37,7 @@ namespace Modules\Node {
             }
             
             $parameters = [];
+            
             foreach ($this->query(\sprintf("%s[position() <= 1]/@*", $this->path)) as $attribute) { 
                 $parameters += [$attribute->nodeName => (new \Component\Validation\Parameter($attribute->value, false, true))->getValidators()];
             }
@@ -46,13 +47,13 @@ namespace Modules\Node {
                 $this->addParameter($parameter, new \Component\Validation(false, $validators));
             }
 
-            $parameter = [];
+            $validators = [];
             
             foreach ($this->query(\sprintf("%s/text()", $this->path)) as $node) {
-                $parameter = (new \Component\Validation\Parameter(\trim($node->nodeValue), false, true))->getValidators($parameter);
+                $validators = \array_unique(\array_merge($validators, (new \Component\Validation\Parameter(\trim($node->nodeValue), false, true))->getValidators()));
             }
             
-            $this->addParameter($this->label, (new \Component\Validation\Parameter(false, false, true))->getValidation($parameter));
+            $this->addParameter($this->label, (new \Component\Validation\Parameter(false, false, true))->getValidation($validators));
             $this->mapping = [\strtolower($this->label) => $this->label];
 
             $this->remove("node");

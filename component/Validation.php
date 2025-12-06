@@ -36,14 +36,6 @@ namespace Component {
             return (bool) \in_array(\strtolower($type), $this->_types);
         }
 
-        public function __get(string $validator): \Component\Validator {
-            if (\array_key_exists($validator, $this->_validators)) {
-                return (object) $this->_validators[$validator];
-            }
-
-            throw new \LogicException(\sprintf("UNKNOWN_VALIDATOR %s", $validator));
-        }
-
         public function getValidators(): array {
             return (array) $this->_validators;
         }
