@@ -78,7 +78,6 @@ namespace Modules\Table\Model {
 
                 $this->addParameter($this->beautify($row["COLUMN_NAME"]), new Validation($default, $validators));
                 $this->mapping = [$row["COLUMN_NAME"] => $this->beautify($row["COLUMN_NAME"])];
-
             }
 
             $keys = $this->prepare(\sprintf("SELECT * FROM`information_schema`.`KEY_COLUMN_USAGE`WHERE`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_SCHEMA`='%s'AND`information_schema`.`KEY_COLUMN_USAGE`.`TABLE_NAME`='%s'", $this->database, $this->table));
