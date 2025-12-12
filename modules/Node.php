@@ -54,7 +54,6 @@ namespace Modules {
         }
 
         public function findAll(array $validations = [], array $orderby = [], int $position = 0, int $limit = 0, ?string $query = null, array $records = []): array {
-
             if ($position || $limit) {
                 $query = \sprintf("[%s]", (new Node\Position($limit, $position))->execute()) . $query;
             }

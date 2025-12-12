@@ -6,7 +6,7 @@ namespace Modules\Memcached {
         
         public function __construct(array $_parameters = []) {
             parent::__construct($_parameters);
-
+            
             if (!\sizeof($this->memcached->getServerList())) {
                 $this->memcached->addServer($this->memcached->server, $this->memcached->port);
             }

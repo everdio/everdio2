@@ -16,11 +16,8 @@ namespace Component\Core\Adapter {
                 "pids" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "adapter" => new Validation(false, [new Validator\IsArray])
                     ] + $_parameters);
-        }
+        }                
 
-        final public function __dry(): string {
-            return (string) \sprintf("new \%s(%s)", (string) $this, parent::__dry());
-        }
     }
 
 }

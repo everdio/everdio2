@@ -44,7 +44,7 @@ namespace Component\Core\Adapter {
                 return $thread;
             }
 
-            throw new \ParseError(\sprintf("PARSE_ERROR %s (%s)", $error, $thread));
+            throw new \ParseError(\sprintf("PARSE_ERROR %s FOR_THREAD %s", $error, $thread));
         }
 
         /*

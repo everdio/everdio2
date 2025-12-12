@@ -15,7 +15,6 @@ namespace Modules\BaseX {
                 "password" => new Validation(false, [new Validator\IsString]),
                 "database" => new Validation(false, [new Validator\IsString]),
                 "host" => new Validation(false, [new Validator\IsString\IsUrl]),
-                "log" => new Validation(false, [new Validator\IsString]),
                 "query" => new Validation(false, [new Validator\IsString]),
                 "root" => new Validation(false, [new Validator\IsString]),
                 "keys" => new Validation(false, [new Validator\IsArray])
@@ -25,7 +24,7 @@ namespace Modules\BaseX {
             $this->adapter = ["host", "database"];
         }
 
-        public function setup(array $models = []): array {
+        public function setup(): void {
             $dom = new \DOMDocument("1.0", "UTF-8");
             $dom->loadXML(\sprintf("<%s>%s</%s>", $this->root, $this->getResponse($this->query), $this->root), \LIBXML_HTML_NODEFDTD | \LIBXML_HTML_NOIMPLIED | \LIBXML_NOCDATA | \LIBXML_NOERROR | \LIBXML_NONET | \LIBXML_NOWARNING | \LIBXML_NSCLEAN | \LIBXML_COMPACT | \LIBXML_NOBLANKS | \LIBXML_NOENT);
 
@@ -44,14 +43,11 @@ namespace Modules\BaseX {
 
                 $model->api = \sprintf("%s\%s", $this->namespace, $this->class);
                 $model->deploy();
-                
-                $models[(string) $model] = $model;
             }
-            
-            return (array) $models;
         }
 
         public function deploy(): void {
+  
             $this->remove("query");
             $this->remove("keys");
 

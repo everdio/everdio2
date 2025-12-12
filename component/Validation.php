@@ -73,7 +73,7 @@ namespace Component {
                 return $this->value;
             }
 
-            throw new \ValueError(\sprintf("%s VALUE_MUST_BE_TYPE %s (%s)", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
+            throw new \ValueError(\sprintf("%s VALUE_MUST_BE_TYPE %s NOT %s", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
         public function __dry(array $validators = []): string {
@@ -93,7 +93,7 @@ namespace Component {
                 }
             }
 
-            throw new \BadFunctionCallException(\sprintf("UNKOWN_METHOD %s::%s (%s)", \get_class($this), $name, $this->dehydrate($arguments)));
+            throw new \BadFunctionCallException(\sprintf("UNKOWN_METHOD %s::%s ARGUMENTS %s", \get_class($this), $name, $this->dehydrate($arguments)));
         }
     }
 
