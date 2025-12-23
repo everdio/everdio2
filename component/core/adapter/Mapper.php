@@ -49,7 +49,7 @@ namespace Component\Core\Adapter {
 
         final public function getHumanized(array $types = ["IsString"], string $seperator = ", "): string {
             foreach ($this->restore($this->mapping) as $parameter => $value) {
-                if (!$this->isPrimary($parameter) && !empty($value) && \array_intersect($types, \array_keys($this->getParameter($parameter)->getTypes()))) {
+                if (!empty($value) && (\array_intersect($types, \array_keys($this->getParameter($parameter)->getTypes())) === $types)) { 
                     return (string) $value;
                 }
             }

@@ -50,7 +50,7 @@ namespace Modules\Table\Model {
                     case "tinytext":
                     case "text":
                     case "varchar":
-                        $values = [123, "test"];
+                        $values = ["test"];
                         break;
                     case "int":
                     case "bigint":
@@ -71,12 +71,12 @@ namespace Modules\Table\Model {
                         $values = $sample->fetchAll(\PDO::FETCH_COLUMN);
                         break;
                 }
-
+                
                 foreach ($values as $value) {
-                    $validators = \array_unique(\array_merge($validators, (new Validation\Parameter($value, !empty($row["COLUMN_DEFAULT"]), ($row["IS_NULLABLE"] === "YES" ? false : true), $row["CHARACTER_MAXIMUM_LENGTH"], $options))->getValidators()));
+                    $validators = \array_unique(\array_merge($validators, (new Validation\Parameter($value))->getValidators()));
                 }
-
-                $this->addParameter($this->beautify($row["COLUMN_NAME"]), new Validation($default, $validators));
+   
+                $this->addParameter($this->beautify($row["COLUMN_NAME"]), (new Validation\Parameter($default, !empty($row["COLUMN_DEFAULT"]), ($row["IS_NULLABLE"] === "YES" ? false : true), $row["CHARACTER_MAXIMUM_LENGTH"], $options))->getValidation($validators));
                 $this->mapping = [$row["COLUMN_NAME"] => $this->beautify($row["COLUMN_NAME"])];
             }
 

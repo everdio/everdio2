@@ -29,9 +29,6 @@ namespace Component\Validation {
                 foreach ($this->validated() as $validator) {
                     $validators[] = $validator;
                 }
-            } elseif (!$this->_length) {
-                $validators[] = new Validator\IsInteger;
-                $validators[] = new Validator\IsString;
             }
 
             if ($this->_mandatory === false) {
