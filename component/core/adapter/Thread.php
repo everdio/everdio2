@@ -9,7 +9,7 @@ namespace Component\Core\Adapter {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
-                "autoloader" => new Validation(\AUTOLOAD, [new Validator\IsString\IsFile]),
+                "autoload" => new Validation(\AUTOLOAD, [new Validator\IsString\IsFile]),
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Thread.tpl", [new Validator\IsString\IsFile]),
                 "thread" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "callback" => new Validation(false, [new Validator\IsString]),
@@ -22,7 +22,7 @@ namespace Component\Core\Adapter {
 
                 $this->parameters = $this->__dry();
 
-                (new \Component\Caller\File\Fopen($file, "w+"))->write($this->replace(\file_get_contents($this->model), ["autoloader", "class", "parameters", "callback"]));
+                (new \Component\Caller\File\Fopen($file, "w+"))->write($this->replace(\file_get_contents($this->model), ["autoload", "class", "parameters", "callback"]));
             }
         }
     }

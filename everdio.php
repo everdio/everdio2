@@ -2,6 +2,7 @@
 \libxml_use_internal_errors(false);
 
 \define("AUTOLOAD", __FILE__);
+\define("ROOT", __DIR__);
 
 \set_error_handler(function($errno, $errstr){
     throw new \Error($errstr, $errno);

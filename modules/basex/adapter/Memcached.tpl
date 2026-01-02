@@ -12,20 +12,19 @@ namespace {{namespace}} {
         
         final public function getResponse(string $query, bool $memcached = true): string {
             if ($memcached) {
-                $this->memcached->key = $this->memcached->prefix . \crc32($query);
+                $key = $this->memcached->prefix . \crc32($query);
 
-                if ($this->memcached->find()->code === 0) {
-                    return \unserialize($this->memcached->data);
+                if (($data = $this->memcached->get($key)) && $this->memcached->getResultCode() === 0) {
+                    return \unserialize($data);
                 }
 
-                $this->memcached->data = \serialize($this->getApiResponse($query));
-                $this->memcached->save();
+                $this->memcached->add($key, \serialize(($data = $this->getApiResponse($query))), $this->memcached->ttl);
 
-                return (string) \unserialize($this->memcached->data);
+                return $data;
             }
-            
+
             return (string) $this->getApiResponse($query);
-        }        
+        }    
     }
     
 }

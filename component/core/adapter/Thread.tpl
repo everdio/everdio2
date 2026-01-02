@@ -9,7 +9,7 @@ function terminate() {
 
 \register_shutdown_function("terminate");
 
-include_once("{{autoloader}}");
+include_once("{{autoload}}");
 
 try {
     $controller = new {{class}};

@@ -41,7 +41,7 @@ namespace Modules\OpenWeather {
             unset($this->lon);
             unset($this->lat);
             unset($this->lang);
-
+            
             parent::deploy();
         }
     }

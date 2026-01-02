@@ -47,7 +47,6 @@ namespace Modules\BaseX {
         }
 
         public function deploy(): void {
-  
             $this->remove("query");
             $this->remove("keys");
 

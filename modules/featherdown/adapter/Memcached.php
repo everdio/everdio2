@@ -1,18 +1,17 @@
 <?php
 
-namespace Modules\IpApi\Adapter {
+namespace Modules\Featherdown\Adapter {
 
     use \Component\Validation,
         \Component\Validator;
 
-    class Memcached extends \Modules\IpApi\Adapter {
+    final class Memcached extends \Modules\BaseX\Adapter {
 
         public function __construct() {
             parent::__construct([
                 "memcached" => new Validation(new \Modules\Memcached\Model, [new Validator\IsObject]),
-                "api" => new Validation("getResponse", [new Validator\IsString]),
             ]);
-
+            
             $this->model = __DIR__ . \DIRECTORY_SEPARATOR . "Memcached.tpl";
         } 
     }

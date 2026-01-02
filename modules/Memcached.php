@@ -12,7 +12,7 @@ namespace Modules {
         final protected function addAdapter(): object {
             return (object) new \Memcached($this->id);
         }
-
+        
         final public function find(): self {
             return $this->store(["data" => $this->get($this->key), "code" => (int) $this->getResultCode()]);
         }
