@@ -21,7 +21,7 @@ namespace Modules {
                 $this->setopt(\CURLOPT_URL, $this->host . \DIRECTORY_SEPARATOR . $this->database . \DIRECTORY_SEPARATOR . "?query=" . \urlencode($query));
                 return (string) $this->execute();
             } catch (\ErrorException $ex) {
-                throw new \LogicException("BASEX " . $this->host . ": " . $ex->getMessage());
+                throw new \LogicException("BASEX_CURL " . $this->host . ": " . $ex->getMessage());
             }
         }
         
