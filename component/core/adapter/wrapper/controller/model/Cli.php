@@ -12,11 +12,11 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                     ] + $_parameters);
         }
 
-        final public function setup(string $options = "--", array $request = [], array $arguments = []): void {
+        final public function setup(string $options = "--", array $request = [], array $routing = []): void {
             if (isset($this->server) && $this->server["argc"] > 1) {
                 foreach (\array_slice($this->server["argv"], 1) as $parameters) {
                     if (\strpos($parameters, $options) !== false) {
-                        $arguments[] = \str_replace($options, "", $parameters);
+                        $routing[] = \str_replace($options, "", $parameters);
                     } else {
                         \parse_str($parameters, $request);
                         $this->request->store(\array_merge_recursive($request, $this->request->restore()));
@@ -24,7 +24,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 }
            
                 $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
-                $this->arguments = \implode(\DIRECTORY_SEPARATOR, $arguments);
+                $this->routing = \implode(\DIRECTORY_SEPARATOR, $routing);
                 
                 $this->remove("server");                
            } else {

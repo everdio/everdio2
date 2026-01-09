@@ -67,7 +67,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
             $this->hostname = $this->server["HTTP_HOST"];
             $this->remote = $this->server["REMOTE_ADDR"];
             $this->method = \strtolower($this->server["REQUEST_METHOD"]);
-            $this->arguments = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
+            $this->routing = \DIRECTORY_SEPARATOR . \implode(\DIRECTORY_SEPARATOR, \array_filter(\explode(\DIRECTORY_SEPARATOR, \str_replace("?" . $this->server["QUERY_STRING"], false, \ltrim($this->server["REQUEST_URI"], \DIRECTORY_SEPARATOR)))));
 
             $this->remove("server");
         }

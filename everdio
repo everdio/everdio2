@@ -22,7 +22,7 @@ try {
 
     $command->setup();
     
-    echo $command->execute(\DIRECTORY_SEPARATOR . $command->arguments);
+    echo $command->execute(\DIRECTORY_SEPARATOR . $command->routing);
 } catch (\Exception | \Error $ex) {
     echo \sprintf("\n%s %s\n\n", \get_class($ex), \ucfirst($ex->getMessage()));
 
