@@ -12,7 +12,7 @@ namespace Component\Core\Adapter\Wrapper {
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
-                "debug" => new Validation(false, [new Validator\IsString]),
+                "debug" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "routing" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
