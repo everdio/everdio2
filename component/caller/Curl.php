@@ -41,12 +41,8 @@ namespace Component\Caller {
                 if (!$this->errno()) {
                     throw new \ErrorException("CURL_EMPTY_RESPONSE");
                 } else {
-                    throw new \LogicException(\sprintf("CURL_ERROR: %s", $this->error()));
+                    throw new \ErrorException(\sprintf("CURL_ERROR: %s", $this->error()));
                 }
-            }
-            
-            if (\in_array(($code = $this->getinfo(\CURLINFO_HTTP_CODE)), \range(400, 599), true)) {
-                throw new \RuntimeException(\sprintf("CURL_STATUS_CODE %s", $code));
             }
 
             return (string) \trim($response);

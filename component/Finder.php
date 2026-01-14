@@ -10,9 +10,9 @@ namespace Component {
             }
         }
         
-        final public function callback(string $url, array $arguments = []) {
+        final public function callback(string $url, array $arguments = [], bool $required = false) {
             $function = \parse_url($url, \PHP_URL_HOST);
-            
+
             if (($query = \parse_url($url, \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }
