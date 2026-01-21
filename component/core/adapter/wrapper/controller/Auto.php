@@ -17,7 +17,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                     
                     if (!(new \ReflectionClass($this->{$library}->{$alias}))->getConstructor()->getNumberOfRequiredParameters()) {
                         
-                        $object = ($this->{$library}->{$alias} === \get_class($this) ? $this : new $this->{$library}->{$alias});
+                        $auto = ($this->{$library}->{$alias} === \get_class($this) ? $this : new $this->{$library}->{$alias});
 
                         foreach ($callbacks as $id => $callback) {
                             if (isset($this->request->{$this->debug}) && !(isset($this->hidden->{$alias}) && $this->hidden->{$alias} == $id)) {
@@ -25,7 +25,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                             }
 
                             if (\is_string($id)) {
-                                $this->{$property}->store([$alias => [$id => $this->hydrate($object->callback($this->getCallbacks($callback)))]]);
+                                $this->{$property}->store([$alias => [$id => $this->hydrate($auto->callback($this->getCallbacks($callback)))]]);
 
                                 //[continue] or [break] on value
                                 if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {                                      
@@ -48,7 +48,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                     }
                                 }
                             } else {
-                                $object->callback($this->getCallbacks($callback));
+                                $auto->callback($this->getCallbacks($callback));
                             }
                         }
                     }
