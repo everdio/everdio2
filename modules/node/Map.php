@@ -7,20 +7,19 @@ namespace Modules\Node {
     final class Map extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, \DOMElement $node) {
+            //later: parent => Parent
             $parts = \explode(\DIRECTORY_SEPARATOR, $node->getNodePath());
             $mapper->index = \end($parts);
             
-            //temp fix
+            //later: parent => Parent
             if ($mapper->hasParameter("Index")) {
                 $mapper->Index = $node->getNodePath();
             }
             
-            
-            
             if (isset($node->parentNode)) {
                 $mapper->parent = $node->parentNode->getNodePath();
                 
-                //temp fix
+                //later: parent => Parent
                 if ($mapper->hasParameter("Parent")) {
                     $mapper->Parent = $node->parentNode->getNodePath();
                 }

@@ -41,7 +41,7 @@ namespace Component\Caller {
                 if (!$this->errno()) {
                     throw new \ErrorException("CURL_EMPTY_RESPONSE");
                 } else {
-                    throw new \ErrorException(\sprintf("CURL_ERROR: %s", $this->error()));
+                    throw new \ErrorException("CURL_ERROR: " . $this->error());
                 }
             }
 

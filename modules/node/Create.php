@@ -7,16 +7,18 @@ namespace Modules\Node {
     final class Create extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, string|null $cdata = null) {
-            if (isset($mapper->parent) && isset($mapper->index)) {
+            //later: parent => Parent
+            if (isset($mapper->parent) && isset($mapper->index)) {                
                 $element = $mapper->query($mapper->parent . \DIRECTORY_SEPARATOR . $mapper->index)->item(0);
             } else {
                 $element = $mapper->createElement(\strtolower($mapper->label));
             }
-
+            
             if ($cdata) {
                 $element->appendChild($mapper->createCDATASection(\preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $cdata)));
             }
 
+            //later: parent => Parent
             foreach ($mapper->mapping as $attribute => $parameter) {
                 if (isset($mapper->{$parameter}) && ($parameter !== $mapper->label && !\in_array($attribute, ["index", "parent"]))) {
                     $element->setAttribute($attribute, $mapper->{$parameter});

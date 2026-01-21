@@ -6,6 +6,23 @@ namespace Component {
 
         final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             foreach (\explode($seperator, $path) as $part) {
+                /*
+                if (isset($this->{$part})) {
+                    if ($this->{$part} instanceof self) {
+                        return $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments);
+                    } else {
+                        if (\is_array(($value = $this->{$part})) && \array_key_exists(($end = \implode($seperator, \array_diff(\explode($seperator, $path), [$part]))), $value)) {
+                            return $value[$end];
+                        } else {
+                            return $this->{$part};
+                        }
+                    }
+                } else {
+                    return $this->callback($part, $arguments);
+                }
+                 * 
+                 */
+                
                 return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : (\is_array(($value = $this->{$part})) && \array_key_exists(($end = \implode($seperator, \array_diff(\explode($seperator, $path), [$part]))), $value) ? $value[$end] : $this->{$part})) : $this->callback($part, $arguments));
             }
         }

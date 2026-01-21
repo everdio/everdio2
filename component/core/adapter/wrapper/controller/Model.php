@@ -14,6 +14,8 @@ namespace Component\Core\Adapter\Wrapper\Controller {
          */
 
         abstract public function setup(): void;
+        
+        abstract public function echo(int|float|string $content): void;
 
         /*
          * parsing ini contents and set as Parameters container(s)

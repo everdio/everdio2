@@ -5,7 +5,7 @@ namespace Modules {
     trait Node {
 
         public function prepare(array $validations = []): string {
-
+            //later: parent => Parent
             if (isset($this->Index) && !isset($this->index)) {
                 $this->index = $this->Index;
             }
@@ -57,9 +57,9 @@ namespace Modules {
             if ($position || $limit) {
                 $query = \sprintf("[%s]", (new Node\Position($limit, $position))->execute()) . $query;
             }
-
+            //later: parent => Parent
             foreach ($this->query($this->prepare(\array_merge(\array_filter($validations), [new Node\Via($this)])) . $query) as $node) {
-                $records[] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent"] + $this->mapping);
+                $records[] = (new Node\Map(new $this, $node))->execute()->restore(["index", "parent", "Parent", "Index"] + $this->mapping);
             }
 
             if (\sizeof(\array_filter($orderby))) {
@@ -72,6 +72,7 @@ namespace Modules {
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
+            //later: parent => Parent
             if (isset($mapper->index) && isset($this->parents) && \in_array((string) $mapper, $this->parents)) {
                 $this->parent = (isset($mapper->parent) ? $mapper->parent : $mapper->path) . \DIRECTORY_SEPARATOR . $mapper->index;
             }

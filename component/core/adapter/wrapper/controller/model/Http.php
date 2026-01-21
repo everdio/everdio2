@@ -18,6 +18,11 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),
                     ] + $_parameters);
         }
+        
+        final public function echo(int|float|string $content): void {
+            (new \Component\Caller\File\Fopen("php://output"))->puts($content);
+
+        }
 
         final public function minify(string $value): string {
             return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $value));

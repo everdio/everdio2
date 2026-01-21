@@ -4,18 +4,16 @@ namespace Component\Caller {
 
     class Dir extends \Component\Caller {
 
-        public function __construct(public string $dir, int $mode = 0776, string $group = "www-data") {
+        public function __construct() {
             parent::__construct("%sdir");
-            
-            if (!\is_dir($this->dir) && \mkdir($this->dir, $mode, true)) {
-                \chgrp($this->dir, $group);
-            }
-
-            $this->handle = $this->open($this->dir);
         }
-        
-        public function __destruct() {
-            $this->close();
+
+        final public function create(string $dir, int $permissions = 0776, bool $recursive = true): bool {
+            return (bool) (!\is_dir($dir) && \mkdir($dir, $permissions, $recursive)) && $this->open($dir);
+        }
+
+        final public function open($dir): bool {
+            return (bool) $this->handle = \opendir($dir);
         }
     }
 

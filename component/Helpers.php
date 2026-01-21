@@ -71,8 +71,8 @@ namespace Component {
             return (array) $keywords;
         }
         
-        public function hasWords(string $haystack, array $needles) : bool {
-            return (bool) \sizeof(\array_intersect($this->getWords($haystack), $needles));
+        public function hasWords(string $haystack, array $needles, bool $lowercase = false) : bool {
+            return (bool) \sizeof(\array_intersect($this->getWords(($lowercase ? \strtolower($haystack) : $haystack)), $needles));
         }
         
         public function hasInString(string $haystack, array $needles): bool {
