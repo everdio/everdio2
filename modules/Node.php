@@ -94,6 +94,10 @@ namespace Modules {
             }
 
             unset($this->index);
+            
+            if ($this->hasParameter("Index")) {
+                unset ($this->Index);
+            }
 
             return (object) $this;
         }
