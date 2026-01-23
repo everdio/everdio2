@@ -33,7 +33,7 @@ namespace Component {
             if (($query = \parse_url($url, \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }
-            
+
             $arguments = $this->hydrate(\array_values($arguments));
                         
             //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        

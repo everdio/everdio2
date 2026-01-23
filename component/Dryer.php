@@ -24,7 +24,7 @@ namespace Component {
             } elseif (\is_resource($data)) {
                 return (string) \get_resource_type($data);
             } else {
-                throw new \ValueError(\sprintf("UNEXPECTED_DATA_TYPE %s", \gettype($data)));
+                throw new \ValueError(\sprintf("UNKNOWN_DATA_TYPE %s", \gettype($data)));
             }
         }
 
