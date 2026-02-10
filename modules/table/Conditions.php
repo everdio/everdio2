@@ -6,7 +6,7 @@ namespace Modules\Table {
     final class Conditions extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $parameters, string $expression = "=", array $conditions = []) {
-            foreach ((new Params($mapper, $parameters))->execute() as $parameter => $param) {
+            foreach ((new BindParams($mapper, $parameters))->execute() as $parameter => $param) {
                 $conditions[$parameter] = \sprintf("%s.`%s` %s %s", $mapper->resource, $mapper->getField($parameter), $expression, $param);
             }
 

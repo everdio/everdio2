@@ -6,7 +6,7 @@ namespace Modules {
 
         private function bind(array $validations, array $values = []): array {
             foreach ($validations as $validation) {
-                if ($validation instanceof Table\Values) {
+                if ($validation instanceof Table\BindValues) {
                     $values = \array_merge($values, $validation->execute());
                 }
             }
@@ -52,11 +52,11 @@ namespace Modules {
                 }
             }
     
-            return (int) $this->statement((new Table\Find(\array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Values($this, $this->mapping))->execute()))->fetchColumn();
+            return (int) $this->statement((new Table\Find(\array_merge([new Table\Count, new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\BindValues($this, $this->mapping))->execute()))->fetchColumn();
         }
 
         public function find(array $validations = [], ?string $query = null): self {
-            if (($row = $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Values($this, $this->mapping))->execute()))->fetch(\PDO::FETCH_ASSOC))) {
+            if (($row = $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\BindValues($this, $this->mapping))->execute()))->fetch(\PDO::FETCH_ASSOC))) {
                 $this->store($this->desanitize($row));
             }
 
@@ -90,7 +90,7 @@ namespace Modules {
                 }
             }
 
-            return (array) $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\Values($this, $this->mapping))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
+            return (array) $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\BindValues($this, $this->mapping))->execute()))->fetchAll(\PDO::FETCH_ASSOC);
         }
 
         public function connect(\Component\Core\Adapter\Mapper $mapper): self {
@@ -103,7 +103,7 @@ namespace Modules {
 
         public function save(): self {
             try {
-                $this->prepare((new Table\Save($this))->execute())->execute((new Table\Values($this, $this->mapping))->execute());
+                $this->prepare((new Table\Save($this))->execute())->execute((new Table\BindValues($this, $this->mapping))->execute());
             } catch (\PDOException $ex) {
                 throw new \LogicException(\sprintf("%s (%s)", $ex->getMessage(), (new Table\Save($this))->execute()));
             }
@@ -114,7 +114,7 @@ namespace Modules {
         public function delete(): self {
             if (\sizeof($this->restore($this->mapping))) {
                 try {
-                    $this->prepare(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this], $this->mapping))->execute()]))->execute()))->execute((new Table\Values($this, $this->mapping))->execute());
+                    $this->prepare(\sprintf("DELETE FROM %s %s", $this->resource, (new Table\Operators([(new Table\Filter([$this], $this->mapping))->execute()]))->execute()))->execute((new Table\BindValues($this, $this->mapping))->execute());
                 } catch (\PDOException $ex) {
                     throw new \LogicException($ex->getMessage());
                 }

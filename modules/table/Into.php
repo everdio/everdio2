@@ -7,7 +7,7 @@ namespace Modules\Table {
     final class Into extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $columns = []) {
-            $params = (new Params($mapper, $mapper->mapping))->execute();
+            $params = (new BindParams($mapper, $mapper->mapping))->execute();
             
             foreach (\array_keys($params) as $parameter) {
                 $columns[] = \sprintf("`%s`", $mapper->getField($parameter));

@@ -1,18 +1,15 @@
 <?php
-
 namespace Modules\Table {
 
     use \Component\Validator;
 
-    class Values extends \Component\Validation {
+    final class BindValues extends \Component\Validation {
 
         public function __construct(\Component\Core\Adapter\Mapper $mapper, array $parameters, array $values = []) {
-            foreach ($mapper->restore($parameters) as $parameter => $value) {
-                if (!empty($value) || !\is_bool($value)) {                
-                    $values[$parameter] = $value;
-                }
+            foreach ((new Values($mapper, $parameters))->execute() as $parameter => $value) {
+                $values[$mapper->label . $parameter] = $value;
             }
-   
+            
             parent::__construct($values, [new Validator\IsArray]);
         }
     }
