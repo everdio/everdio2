@@ -54,13 +54,17 @@ namespace Component {
                     } catch (\ErrorException $ex) {
                         throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($this), $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                     }
-                } elseif ($function === "eval") {
-                    //deadly eval(); for artimetchi operators
+                } else {
                     try {
-                        return eval(\sprintf("return %s;", \implode(false, $arguments)));
+                        switch ($function) {
+                            case "eval":
+                                return eval(\sprintf("return %s;", \implode(false, $arguments)));
+                            default:
+                                return $function(\implode(false, $arguments));
+                        }
                     } catch (\Error $ex) {
                         throw new \InvalidArgumentException($ex->getMessage());
-                    }
+                    }                    
                 }
             }
         }

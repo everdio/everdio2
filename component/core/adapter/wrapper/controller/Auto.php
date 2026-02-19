@@ -28,7 +28,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                 $this->{$property}->store([$alias => [$id => $this->hydrate($auto->callback($this->getCallbacks($callback)))]]);
 
                                 //[continue] or [break] on value
-                                if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {                                      
+                                if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
                                     return;
                                 }
 

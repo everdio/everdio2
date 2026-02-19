@@ -10,7 +10,7 @@ namespace Component\Caller {
         }
 
         final public function get($handle) {
-            $this->setopt_array([
+            $this->setopt_array([            
                 \CURLOPT_FILE => $handle,
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
         }

@@ -18,10 +18,9 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),
                     ] + $_parameters);
         }
-        
+
         final public function echo(int|float|string $content): void {
             (new \Component\Caller\File\Fopen("php://output"))->puts($content);
-
         }
 
         final public function minify(string $value): string {
@@ -30,7 +29,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
 
         final public function redirect($url, int $status = 302) {
             \header("Cache-Control: no-store, private, no-cache, must-revalidate", true);
-            \header("location:" . \urldecode($url), true, $status);
+            \header("location: " . \urldecode($url), true, $status);
         }
 
         final public function setcookie(string $name, ?string $value = NULL, $ttl = 0): bool {
