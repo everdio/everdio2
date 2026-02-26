@@ -16,8 +16,8 @@ namespace Component {
             return (string) \preg_replace("/[^A-Za-z]/", false, \implode("", \array_map("ucFirst", \explode($replace, \strtolower($this->slugify($string))))));
         }
 
-        public function minify(string $content) : string {
-            return (string) \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $content);
+        public function minify(string $value) : string {
+            return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $value));
         }              
         
         public function getSizeformat($size, int $precision = 2, $suffixes = ["B", "kB", "MB", "GB"]): string {

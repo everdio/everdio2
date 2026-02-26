@@ -15,16 +15,8 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 "scheme" => new Validation(false, [new IsString\InArray(["http://", "https://"])]),
                 "referer" => new Validation(false, [new IsString\IsUrl]),
                 "remote" => new Validation(false, [new IsString]),
-                "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])]),
+                "method" => new Validation(false, [new IsString\InArray(["get", "post", "head", "put", "delete", "connect"])])
                     ] + $_parameters);
-        }
-
-        final public function echo(int|float|string $content): void {
-            (new \Component\Caller\File\Fopen("php://output"))->puts($content);
-        }
-
-        final public function minify(string $value): string {
-            return (string) \str_replace(["</source>"], "", \preg_replace(["~\Q/*\E[\s\S]+?\Q*/\E~m", "~(?:http|ftp)s?://(*SKIP)(*FAIL)|//.+~m", "~^\s+|\R\s*~m"], false, $value));
         }
 
         final public function redirect($url, int $status = 302) {
@@ -66,6 +58,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                 $this->referer = $this->server["HTTP_REFERER"];
             }
 
+            $this->output = "php://output";
             $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
             $this->scheme = $this->server["REQUEST_SCHEME"] . "://";
             $this->hostname = $this->server["HTTP_HOST"];
@@ -78,4 +71,3 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
     }
 
 }
-

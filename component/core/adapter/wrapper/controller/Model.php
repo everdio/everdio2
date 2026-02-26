@@ -7,15 +7,18 @@ namespace Component\Core\Adapter\Wrapper\Controller {
         \Component\Core\Parameters;
 
     abstract class Model extends \Component\Core\Adapter\Wrapper\Controller {
+
         use Auto;
-        
-        /*
+
+/*
          * A required setup function to process the basic server input for the controller
          */
 
         abstract public function setup(): void;
-        
-        abstract public function echo(int|float|string $content): void;
+
+        final public function echo(int|float|string $content): void {
+            (new \Component\Caller\File\Fopen($this->output))->puts($content);
+        }
 
         /*
          * parsing ini contents and set as Parameters container(s)

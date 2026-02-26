@@ -15,6 +15,7 @@ namespace Component\Core\Adapter\Wrapper {
                 "debug" => new Validation(false, [new Validator\IsString, new Validator\IsInteger]),
                 "request" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),
                 "routing" => new Validation(false, [new Validator\IsString, new Validator\IsString\IsPath]),
+                "output" => new Validation(false, [new Validator\IsString]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
 
@@ -32,10 +33,10 @@ namespace Component\Core\Adapter\Wrapper {
                 return \ob_get_clean();
             }
         }
-        
-        final public function isRoute(string $route) : bool {
+
+        final public function isRoute(string $route): bool {
             return (bool) (isset($this->routing) && ((string) \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, $route), \explode(\DIRECTORY_SEPARATOR, $this->routing))) === $route));
-        }                
+        }
 
         /*
          * processing callbacks from $value {{string}}

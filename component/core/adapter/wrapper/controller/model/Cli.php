@@ -6,6 +6,7 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
         \Component\Validator;
 
     abstract class Cli extends \Component\Core\Adapter\Wrapper\Controller\Model {
+
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "server" => new Validation(false, [new Validator\IsArray\Intersect\Key(["argv", "argc", "REQUEST_TIME_FLOAT"])])
@@ -22,16 +23,16 @@ namespace Component\Core\Adapter\Wrapper\Controller\Model {
                         $this->request->store(\array_merge_recursive($request, $this->request->restore()));
                     }
                 }
-           
+
+                $this->output = "php://stdout";
                 $this->time = (int) $this->server["REQUEST_TIME_FLOAT"];
                 $this->routing = \implode(\DIRECTORY_SEPARATOR, $routing);
-                
-                $this->remove("server");                
-           } else {
+
+                $this->remove("server");
+            } else {
                 throw new \RuntimeException("ROUTING_REQUIRED");
-           }
+            }
         }
     }
 
 }
-
