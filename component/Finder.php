@@ -27,7 +27,11 @@ namespace Component {
             }
         }
         
-        final public function callback(string $url, array $arguments = [], bool $required = false) {
+        final public function callback(string $url, array $arguments = []) {
+            return $this->caller($url, $this, $arguments);
+        }        
+        
+        final public function caller(string $url, object $object, array $arguments = []) {
             $function = \parse_url($url, \PHP_URL_HOST);
 
             if (($query = \parse_url($url, \PHP_URL_QUERY))) {
@@ -39,20 +43,20 @@ namespace Component {
             //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        
             if (($method = \strstr($url, ":", true))) {
                 try {
-                    return ($function && \is_callable($function) ? \call_user_func($function, \call_user_func_array([$this, $method], $arguments)) : \call_user_func_array([$this, $method], $arguments));
+                    return ($function && \is_callable($function) ? \call_user_func($function, \call_user_func_array([$object, $method], $arguments)) : \call_user_func_array([$object, $method], $arguments));
                 } catch (\TypeError $ex) {
-                    throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($this), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
+                    throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($object), $method, $object->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException $ex) {
-                    throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($this), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
+                    throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($object), $method, $object->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                 }
             } elseif ($function) {
                 if (\is_callable($function)) {
                     try {
                         return \call_user_func_array($function, $arguments);
                     } catch (\TypeError $ex) {
-                        throw new \BadFunctionCallException(\sprintf("%s %s(%s): %s", \get_class($this), $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
+                        throw new \BadFunctionCallException(\sprintf("%s %s(%s): %s", \get_class($object), $function, $object->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                     } catch (\ErrorException $ex) {
-                        throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($this), $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
+                        throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($object), $function, $object->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                     }
                 } else {
                     try {
@@ -66,8 +70,8 @@ namespace Component {
                         throw new \InvalidArgumentException($ex->getMessage());
                     }                    
                 }
-            }
-        }
+            }            
+        }        
     }
 
 }

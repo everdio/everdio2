@@ -83,7 +83,6 @@ namespace Component {
             return (bool) \array_reduce($needles, fn($a, $n) => $a && \str_contains($haystack, $n), true);
         }        
         
-
         public function getSummary(string $content, int $min = 0, int $total = 99999, string $implode = ". ", string $eol = ".", array $sentences = [], int $count = 0): string {
             foreach (\array_unique(\preg_split('/(?<=[.?!])\s+(?=[a-z])/i', \strip_tags(\html_entity_decode($content)))) as $sentence) {
                 if (\strlen($sentence) >= $min && (\strlen($sentence) + $count) <= $total && \sizeof($this->getWords($sentence))) {

@@ -25,7 +25,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                             }
 
                             if (\is_string($id)) {
-                                $this->{$property}->store([$alias => [$id => $this->hydrate($auto->callback($this->getCallbacks($callback)))]]);
+                                $this->{$property}->store([$alias => [$id => $this->hydrate($this->caller($this->getCallbacks($callback), $auto))]]);
 
                                 //[continue] or [break] on value
                                 if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
@@ -48,7 +48,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                     }
                                 }
                             } else {
-                                $auto->callback($this->getCallbacks($callback));
+                                $this->caller($this->getCallbacks($callback), $auto);
                             }
                         }
                     }
