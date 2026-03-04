@@ -16,7 +16,7 @@ namespace Component\Core\Adapter {
 
         abstract protected function models(array $models = []): array;
 
-        public function deploy(array $models = []): array {
+        final public function deploy(array $models = []): array {
             foreach ($this->models($models) as $key => $model) {
                 if ($model instanceof Model) {
                     $model->deploy();

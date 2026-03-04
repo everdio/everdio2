@@ -25,7 +25,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                             }
 
                             if (\is_string($id)) {
-                                $this->{$property}->store([$alias => [$id => $this->hydrate($this->caller($this->getCallbacks($callback), $auto))]]);
+                                $this->{$property}->store([$alias => [$id => $this->hydrate($this->callurl($this->getCallbacks($callback), $auto))]]);
 
                                 //[continue] or [break] on value
                                 if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
@@ -38,8 +38,8 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                 }
 
                                 //[foreach]
-                                if (isset($this->foreach->{$alias}->{$id}) && (isset($this->{$property}->{$alias}->{$id}) && $this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters)) {
-                                    foreach ($this->{$property}->{$alias}->{$id}->restore() as $key => $foreach) {
+                                if (isset($this->foreach->{$alias}->{$id}) && (isset($this->{$property}->{$alias}->{$id}))) {
+                                    foreach (($this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters ? $this->{$property}->{$alias}->{$id}->restore() : $this->{$property}->{$alias}->{$id}) as $key => $foreach) {
                                         unset($this->{$property}->{$alias}->{$id});
                                         $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);
                                         $this->callback($this->foreach->{$alias}->{$id});
@@ -48,7 +48,7 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                     }
                                 }
                             } else {
-                                $this->caller($this->getCallbacks($callback), $auto);
+                                $this->callurl($this->getCallbacks($callback), $auto);
                             }
                         }
                     }

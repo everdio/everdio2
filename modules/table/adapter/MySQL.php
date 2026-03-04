@@ -17,7 +17,7 @@ namespace Modules\Table\Adapter {
                     ] + $_parameters);            
         }
 
-        public function models(array $models = []): array {
+        final protected function models(array $models = []): array {
             $stm = $this->prepare(\sprintf("SHOW TABLES FROM %s", $this->database));
             $stm->execute();
 

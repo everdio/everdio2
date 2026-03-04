@@ -6,7 +6,7 @@ namespace Modules\Table\Adapter {
 
         use \Modules\Table\SQLite;
 
-        final public function models(array $tables = [], array $models = []): array {
+        final protected function models(array $tables = [], array $models = []): array {
             $path = \strtolower(\implode(\DIRECTORY_SEPARATOR, \explode("\\", $this->namespace)));
             $dsn = \sprintf("sqlite:%s/%s.db", \dirname((new \Component\Path(\dirname($path)))->getRealPath()), \basename($path));
 
