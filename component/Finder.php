@@ -4,7 +4,7 @@ namespace Component {
 
     trait Finder {
 
-        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
+        final public function findetr(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             foreach (\explode($seperator, $path) as $part) {
                 if (isset($this->{$part})) {
                     if ($this->{$part} instanceof self) {
@@ -17,11 +17,70 @@ namespace Component {
                         }
                     }
                 } else {
+
                     return $this->callback($part, $arguments);
                 }
-                
+
                 //return (isset($this->{$part}) ? ($this->{$part} instanceof self ? $this->{$part}->finder(\implode($seperator, \array_diff(\explode($seperator, $path), [$part])), $arguments) : (\is_array(($value = $this->{$part})) && \array_key_exists(($end = \implode($seperator, \array_diff(\explode($seperator, $path), [$part]))), $value) ? $value[$end] : $this->{$part})) : $this->callback($part, $arguments));
             }
+        }
+
+        final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
+            foreach (\explode($seperator, $path) as $part) {
+                if (isset($this->{$part})) {
+                    return $this->found($this->{$part}, $this->finderpath($path, $part), $arguments, $seperator);
+                } else {
+                    return $this->callback($part, $arguments);
+                }
+            }
+        }
+        
+        private function finderpath(string $path, string $part, string $seperator = \DIRECTORY_SEPARATOR): string {
+            return (string) \implode($seperator, \array_diff(\explode($seperator, $path), [$part]));
+        }          
+
+        private function found(mixed $value, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
+            if ($path) {
+                if ($value instanceof self) {
+                    return $value->finder($path, $arguments, $seperator);
+                } elseif (\is_object($value)) {
+                    return $this->foundobj($value, $path, $arguments, $seperator);
+                } elseif (\is_array($value)) {
+                    return $this->foundarr($value, $path, $arguments, $seperator);
+                }
+            }
+            
+            return $value;
+        }              
+
+        private function foundobj(object $object, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
+            if ($path) {
+                foreach (\explode($seperator, $path) as $part) {
+                    if (isset($object->{$part})) {
+                        return $this->found($object->{$part}, $this->finderpath($path, $part), $arguments, $seperator);
+                    }
+                    
+                    return $this->callurl($part, $object, $arguments);
+                }
+            }
+            
+            return $object;
+        }
+
+        private function foundarr(array $array, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
+            if ($path) {
+                foreach (\explode($seperator, $path) as $part) {
+                    if (\array_key_exists($array, $part)) {
+                        return $this->found($array[$part], $this->finderpath($path, $part), $arguments, $seperator);
+                    }
+                }
+            }
+            
+            return $array;
+        }
+
+        final public function callback(string $url, array $arguments = []) {
+            return $this->callurl($url, $this, $arguments);
         }
 
         final public function callurl(string $url, object $object, array $arguments = []) {
@@ -39,10 +98,6 @@ namespace Component {
             } elseif ($function) {
                 return $this->callfunction($function, $arguments);
             }
-        }
-
-        final public function callback(string $url, array $arguments = []) {
-            return $this->callurl($url, $this, $arguments);
         }
 
         final public function callmethod(string $method, object $object, array $arguments = [], ?string $function = NULL) {
