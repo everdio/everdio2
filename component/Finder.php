@@ -13,10 +13,10 @@ namespace Component {
                 }
             }
         }
-        
+
         private function finderpath(string $path, string $part, string $seperator = \DIRECTORY_SEPARATOR): string {
             return (string) \implode($seperator, \array_diff(\explode($seperator, $path), [$part]));
-        }          
+        }
 
         private function found(mixed $value, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
@@ -28,9 +28,9 @@ namespace Component {
                     return $this->foundarr($value, $path, $arguments, $seperator);
                 }
             }
-            
+
             return $value;
-        }              
+        }
 
         private function foundobj(object $object, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
@@ -38,11 +38,11 @@ namespace Component {
                     if (isset($object->{$part})) {
                         return $this->found($object->{$part}, $this->finderpath($path, $part), $arguments, $seperator);
                     }
-                    
+
                     return $this->callurl($part, $object, $arguments);
                 }
             }
-            
+
             return $object;
         }
 
@@ -54,7 +54,7 @@ namespace Component {
                     }
                 }
             }
-            
+
             return $array;
         }
 
@@ -64,25 +64,28 @@ namespace Component {
 
         final public function callurl(string $url, object $object, array $arguments = []) {
             $function = \parse_url($url, \PHP_URL_HOST);
-
+    
             if (($query = \parse_url($url, \PHP_URL_QUERY))) {
                 \parse_str($query, $arguments);
             }
 
             $arguments = $this->hydrate(\array_values($arguments));
-
-            //if (($method = \parse_url($url, \PHP_URL_SCHEME))) {                                        
-            if (($method = \strstr($url, ":", true))) {
-                return $this->callmethod($method, $object, $arguments, $function);
+            $method = \strstr($url, ":", true);
+            //$method = \parse_url($url, \PHP_URL_SCHEME);
+                
+            if ($method && $function) {
+                return $this->callfunction($function, [$this->callmethod($method, $object, $arguments)]);
+            } elseif ($method) {
+                return $this->callmethod($method, $object, $arguments);
             } elseif ($function) {
                 return $this->callfunction($function, $arguments);
             }
         }
 
-        final public function callmethod(string $method, object $object, array $arguments = [], ?string $function = NULL) {
+        final public function callmethod(string $method, object $object, array $arguments = []) {
             try {
-                return ($function && \is_callable($function) ? \call_user_func($function, \call_user_func_array([$object, $method], $arguments)) : \call_user_func_array([$object, $method], $arguments));
-            } catch (\TypeError $ex) {
+                return \call_user_func_array([$object, $method], $arguments);
+            } catch (\Errror $ex) {
                 throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
             } catch (\ErrorException $ex) {
                 throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
@@ -93,7 +96,7 @@ namespace Component {
             if (\is_callable($function)) {
                 try {
                     return \call_user_func_array($function, $arguments);
-                } catch (\TypeError $ex) {
+                } catch (\Error $ex) {
                     throw new \BadFunctionCallException(\sprintf("%s(%s): %s", $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
                 } catch (\ErrorException $ex) {
                     throw new \InvalidArgumentException(\sprintf("%s(%s) %s", $function, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
@@ -106,6 +109,8 @@ namespace Component {
                         case "echo":
                             echo \implode(false, $arguments);
                             break;
+                        case "empty":
+                            return empty(\implode(false, $arguments));
                         default:
                             return $function(\implode(false, $arguments));
                     }
