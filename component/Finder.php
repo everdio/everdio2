@@ -72,7 +72,6 @@ namespace Component {
             $arguments = $this->hydrate(\array_values($arguments));
             $method = \strstr($url, ":", true);
             //$method = \parse_url($url, \PHP_URL_SCHEME);
-                
             if ($method && $function) {
                 return $this->callfunction($function, [$this->callmethod($method, $object, $arguments)]);
             } elseif ($method) {
@@ -109,13 +108,11 @@ namespace Component {
                         case "echo":
                             echo \implode(false, $arguments);
                             break;
-                        case "empty":
-                            return empty(\implode(false, $arguments));
                         default:
                             return $function(\implode(false, $arguments));
                     }
                 } catch (\Error $ex) {
-                    throw new \InvalidArgumentException($ex->getMessage());
+                    throw new \BadFunctionCallException($ex->getMessage());
                 }
             }
         }
