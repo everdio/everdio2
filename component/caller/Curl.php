@@ -10,7 +10,7 @@ namespace Component\Caller {
         }
 
         final public function get($handle) {
-            $this->setopt_array([            
+            $this->setopt_array([
                 \CURLOPT_FILE => $handle,
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
         }
@@ -36,7 +36,25 @@ namespace Component\Caller {
                 \CURLOPT_CUSTOMREQUEST => "DELETE"]);
         }
 
-        public function execute() {            
+        final public function exists(string $url) {
+            $this->setopt_array([
+                \CURLOPT_NOBODY => true,
+                \CURLOPT_FOLLOWLOCATION => true,
+                \CURLOPT_URL => $url
+            ]);
+
+            return (bool) ($this->exec() && $this->getinfo(\CURLINFO_HTTP_CODE) === 200);
+        }
+
+        final public function download(string $url): string {
+            $this->setopt_array([
+                \CURLOPT_NOBODY => false,
+                \CURLOPT_FOLLOWLOCATION => true,
+                \CURLOPT_URL => $url
+            ]);
+        }
+
+        public function execute() {
             if (($response = $this->exec()) === false) {
                 if (!$this->errno()) {
                     throw new \ErrorException("CURL_EMPTY_RESPONSE");
