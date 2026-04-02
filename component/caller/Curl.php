@@ -4,18 +4,19 @@ namespace Component\Caller {
 
     class Curl extends \Component\Caller {
 
-        public function __construct() {
+        public function __construct(array $options = []) {
             parent::__construct("curl_%s");
             $this->handle = $this->init();
+            $this->setopt_array($options);
         }
 
-        final public function get($handle) {
+        final public function get($handle): void {
             $this->setopt_array([
                 \CURLOPT_FILE => $handle,
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
         }
 
-        final public function put($handle, int $size = 0) {
+        final public function put($handle, int $size = 0): void {
             $this->setopt_array([
                 \CURLOPT_INFILE => $handle,
                 \CURLOPT_INFILESIZE => $size,
@@ -24,19 +25,19 @@ namespace Component\Caller {
             \fseek($handle, 0);
         }
 
-        final public function post(string $content) {
+        final public function post(string $content): void {
             $this->setopt_array([
                 \CURLOPT_POSTFIELDS => $content,
                 \CURLOPT_INFILESIZE => \strlen($content),
                 \CURLOPT_CUSTOMREQUEST => "POST"]);
         }
 
-        final public function delete() {
+        final public function delete(): void {
             $this->setopt_array([
                 \CURLOPT_CUSTOMREQUEST => "DELETE"]);
         }
 
-        final public function exists(string $url) {
+        final public function exists(string $url): bool {
             $this->setopt_array([
                 \CURLOPT_NOBODY => true,
                 \CURLOPT_FOLLOWLOCATION => true,
@@ -46,15 +47,7 @@ namespace Component\Caller {
             return (bool) ($this->exec() && $this->getinfo(\CURLINFO_HTTP_CODE) === 200);
         }
 
-        final public function download(string $url): string {
-            $this->setopt_array([
-                \CURLOPT_NOBODY => false,
-                \CURLOPT_FOLLOWLOCATION => true,
-                \CURLOPT_URL => $url
-            ]);
-        }
-
-        public function execute() {
+        public function execute(): mixed {
             if (($response = $this->exec()) === false) {
                 if (!$this->errno()) {
                     throw new \ErrorException("CURL_EMPTY_RESPONSE");
@@ -63,7 +56,7 @@ namespace Component\Caller {
                 }
             }
 
-            return (string) \trim($response);
+            return $response;
         }
 
         public function __destruct() {

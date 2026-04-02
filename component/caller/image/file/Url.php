@@ -5,12 +5,17 @@ namespace Component\Caller\Image\File {
     class Url extends \Component\Caller\Image\File {
 
         public function __construct(string $url) {
-            $file = \sys_get_temp_dir() . \DIRECTORY_SEPARATOR . \basename($url);
-            if (\file_put_contents($file, \file_get_contents($url))) {
-                parent::__construct($file);
-            }
+            $file = new \Component\Caller\File\Fopen(\sys_get_temp_dir() . \DIRECTORY_SEPARATOR . \basename($url), "c+");
 
-            \unlink($file);
+            $curl = new \Component\Caller\Curl([
+                \CURLOPT_URL => $url,
+             ]);
+            $curl->get($file());
+            $curl->execute();
+
+            parent::__construct($file->getPath());
+
+            $file->delete();
         }
     }
 
