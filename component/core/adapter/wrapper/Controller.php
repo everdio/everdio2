@@ -38,28 +38,32 @@ namespace Component\Core\Adapter\Wrapper {
             return (bool) (isset($this->routing) && ((string) \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, $route), \explode(\DIRECTORY_SEPARATOR, $this->routing))) === $route));
         }
 
+        final public function getDebug(): bool {
+            return (bool) isset($this->request->{$this->debug});
+        }
+
         /*
-         * processing callbacks from $value {{string}}
+         * processing callbacks from $content {{string}}
          */
 
-        final public function getCallbacks(string $value, array $matches = []): string {
-            if (\is_string($value) && \preg_match_all("!\{\{(.+?)\}\}!", $value, $matches, \PREG_PATTERN_ORDER)) {
+        final public function getCallbacks(string $content, array $matches = []): string {
+            if (\is_string($content) && \preg_match_all("!\{\{(.+?)\}\}!", $content, $matches, \PREG_PATTERN_ORDER)) {
                 foreach ($matches[1] as $key => $match) {
                     try {
                         if (!\is_string(($data = $this->callback($match)))) {
                             $data = \str_replace("false", "", $this->dehydrate($data));
                         }
                     } catch (\BadMethodCallException $ex) {
-                        throw new \RuntimeException(\sprintf("BAD_METHOD_CALL %s (%s)", $ex->getMessage(), $match));
+                        throw new \LogicException(\sprintf("BAD_METHOD_CALL: %s", $match), 0, $ex);
                     } catch (\BadFunctionCallException $ex) {
-                        throw new \RuntimeException(\sprintf("BAD_FUNCTION_CALL %s (%s)", $ex->getMessage(), $match));
+                        throw new \LogicException(\sprintf("BAD_FUNCTION_CALL: %s", $match), 0, $ex);
                     }
 
-                    $value = \str_replace($matches[0][$key], $data, $value);
+                    $content = \str_replace($matches[0][$key], $data, $content);
                 }
             }
 
-            return (string) $value;
+            return (string) $content;
         }
 
         /*
@@ -75,8 +79,8 @@ namespace Component\Core\Adapter\Wrapper {
             if (isset($controller->path) && isset($controller->basename)) {
                 try {
                     return $controller->dispatch($controller->basename);
-                } catch (\LogicException | \InvalidArgumentException | \UnexpectedValueException | \ValueError | \ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("ERROR %s %s %s(%s)", \get_class($ex), $ex->getMessage(), $ex->getFile(), $ex->getLine()), 0, $ex);
+                } catch (\LogicException | \InvalidArgumentException | \UnexpectedValueException | \Error | \ValueError | \ErrorException $ex) {
+                    throw new \RuntimeException(\sprintf("ERROR: %s", $ex->getMessage()), 0, $ex);
                 }
             }
         }
