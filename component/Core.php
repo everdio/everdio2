@@ -7,21 +7,39 @@ namespace Component {
         use Helpers,
             Dryer,
             Finder;
-
+        /**
+         * 
+         * @param array $_parameters
+         */
         public function __construct(private array $_parameters = []) {
             //nothing here
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return bool
+         */
         public function __isset(string $parameter): bool {
             return (bool) ($this->hasParameter($parameter) && $this->_parameters[$parameter]->isValid());
         }
 
+        /*
+         * 
+         */
         public function __unset(string $parameter) {
             if ($this->hasParameter($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set(false);
             }
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return mixed
+         * @throws \UnexpectedValueException
+         * @throws \InvalidArgumentException
+         */
         public function __get(string $parameter): mixed {
             if ($this->hasParameter($parameter)) {
                 try {
@@ -34,6 +52,13 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @param type $value
+         * @return type
+         * @throws \InvalidArgumentException
+         */
         public function __set(string $parameter, $value) {
             if ($this->hasParameter($parameter)) {
                 return (bool) $this->_parameters[$parameter]->set((\is_array($value) && \is_array($this->_parameters[$parameter]->get()) ? \array_merge($this->_parameters[$parameter]->get(), $value) : $value));
@@ -42,6 +67,10 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
+        /**
+         * 
+         * @return string
+         */
         public function __toString(): string {
             return (string) \get_class($this);
         }
@@ -136,6 +165,14 @@ namespace Component {
             return (array) $validations;
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @param string $salt
+         * @param string $algo
+         * @return string
+         * @throws \InvalidArgumentException
+         */
         final public function unique(array $parameters = [], string $salt = "", string $algo = "sha256"): string {
             if (\in_array($algo, \hash_algos())) {
                 return (string) \hash($algo, $this->querystring($parameters) . $salt);
@@ -143,7 +180,14 @@ namespace Component {
 
             throw new \InvalidArgumentException(\sprintf("INVALID_HASH_ALGORITHM %s->%s", \get_class($this), $algo));
         }
-
+        /**
+         * 
+         * @param string $content
+         * @param array $parameters
+         * @param string $replace
+         * @param int $instances
+         * @return string
+         */
         final public function replace(string $content, array $parameters = [], string $replace = "{{%s}}", int $instances = 99): string {
             foreach ($this->restore($parameters) as $parameter => $value) {
                 if (\is_float($value) || \is_numeric($value) || \is_string($value)) {
@@ -154,13 +198,10 @@ namespace Component {
             return (string) $content;
         }
 
-        /*
-          public function __clone() {
-          return (object) \unserialize(\serialize($this));
-          }
+        /**
          * 
+         * @return string
          */
-
         public function __dry(): string {
             return (string) $this->dehydrate($this->_parameters);
         }
