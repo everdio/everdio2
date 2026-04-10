@@ -6,7 +6,9 @@
 *.txt
 *.out
 *.db
+.php-cs-fixer.dist
 **/cache
 **/images
 **/data
 /application
+phpstan

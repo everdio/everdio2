@@ -11,7 +11,6 @@ namespace Component {
         protected $handle;
 
         /**
-         * 
          * @param string $_call
          */
         public function __construct(private string $_call) {
@@ -19,7 +18,6 @@ namespace Component {
         }
 
         /**
-         * 
          * @return type
          */
         final public function __invoke() {
@@ -27,7 +25,6 @@ namespace Component {
         }
 
         /**
-         * 
          * @return string
          */
         final public function __toString(): string {
@@ -35,11 +32,12 @@ namespace Component {
         }
 
         /**
-         * 
          * @param type $name
          * @param type $arguments
-         * @return mixed
+         *
          * @throws \BadFunctionCallException
+         *
+         * @return mixed
          */
         final public function __call($name, $arguments): mixed {
             if (\function_exists(\sprintf($this->_call, $name))) {
@@ -54,7 +52,6 @@ namespace Component {
         }
 
         /**
-         * 
          * @return string
          */
         public function __dry(): string {
