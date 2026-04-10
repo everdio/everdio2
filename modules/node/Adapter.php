@@ -2,7 +2,7 @@
 
 namespace Modules\Node {
 
-    abstract class Adapter extends \Component\Core\Adapter\Models {
+    abstract class Adapter extends \Component\Core\Adapter\Library {
 
         final protected function models(array $models = [], string $query = "//*"): array {
             foreach ($this->query($query) as $node) {

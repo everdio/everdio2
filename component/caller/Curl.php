@@ -13,6 +13,7 @@ namespace Component\Caller {
         final public function get($handle): void {
             $this->setopt_array([
                 \CURLOPT_FILE => $handle,
+                \CURLOPT_ENCODING => "",
                 \CURLOPT_CUSTOMREQUEST => "GET"]);
         }
 

@@ -5,7 +5,7 @@ namespace Component\Core\Adapter {
     use Component\Validation,
         Component\Validator;
 
-    abstract class Models extends \Component\Core\Adapter {
+    abstract class Library extends \Component\Core\Adapter {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([

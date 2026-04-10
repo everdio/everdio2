@@ -5,7 +5,7 @@ namespace Modules\Table {
     use Component\Validation,
         Component\Validator;
 
-    abstract class Adapter extends \Component\Core\Adapter\Models {
+    abstract class Adapter extends \Component\Core\Adapter\Library {
 
         public function __construct(array $_parameters = []) {
             parent::__construct([
