@@ -146,7 +146,7 @@ namespace Component {
                 return \call_user_func_array([$object, $method], $arguments);
             } catch (\Errror $ex) {
                 throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
-            } catch (\ErrorException $ex) {
+            } catch (\Exception $ex) {
                 throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
             }
         }

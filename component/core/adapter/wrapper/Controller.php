@@ -80,8 +80,8 @@ namespace Component\Core\Adapter\Wrapper {
             if (isset($controller->path) && isset($controller->basename)) {
                 try {
                     return $controller->dispatch($controller->basename);
-                } catch (\LogicException | \InvalidArgumentException | \UnexpectedValueException | \Error | \ValueError | \ErrorException $ex) {
-                    throw new \RuntimeException(\sprintf("ERROR: %s", $ex->getMessage()), 0, $ex);
+                } catch (\Exception | \Error $ex) {
+                    throw new \RuntimeException(\sprintf("%s: %s", \strtoupper(\get_class($ex)), $ex->getMessage()), 0, $ex);
                 }
             }
         }
