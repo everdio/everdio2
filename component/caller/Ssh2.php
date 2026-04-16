@@ -10,14 +10,6 @@ namespace Component\Caller {
         }
 
         /*
-         * allows easy reconnects
-         */
-
-        final public function connect(string $host, int $port = 22) {
-            return \ssh2_connect($host, $port);
-        }
-
-        /*
          * sending a command and wait for output;
          */
 

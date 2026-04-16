@@ -9,6 +9,7 @@ namespace Component\Core\Adapter\Wrapper {
 
         public function __construct(array $_parameters = []) {
             parent::__construct(\array_merge([
+                "ip" => new Validation(false, [new Validator\IsString, new Validator\Len\Smaller(15)]),                
                 "time" => new Validation(false, [new Validator\IsFloat, new Validator\IsInteger]),
                 "path" => new Validation(false, [new Validator\IsString\IsDir]),
                 "basename" => new Validation(false, [new Validator\IsString]),
@@ -18,8 +19,8 @@ namespace Component\Core\Adapter\Wrapper {
                 "output" => new Validation(false, [new Validator\IsString]),
                 "reserved" => new Validation(false, [new Validator\IsArray])
                             ], $_parameters));
-
             $this->reserved = $this->diff();
+            $this->adapter = ["ip"];            
         }
 
         /*

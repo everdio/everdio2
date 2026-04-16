@@ -4,6 +4,13 @@ namespace Component {
 
     trait Finder {
 
+        /**
+         * 
+         * @param string $path
+         * @param array $arguments
+         * @param string $seperator
+         * @return mixed
+         */
         final public function finder(string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             foreach (\explode($seperator, $path) as $part) {
                 if (isset($this->{$part})) {
@@ -14,10 +21,25 @@ namespace Component {
             }
         }
 
+        /**
+         * 
+         * @param string $path
+         * @param string $part
+         * @param string $seperator
+         * @return string
+         */
         private function finderpath(string $path, string $part, string $seperator = \DIRECTORY_SEPARATOR): string {
             return (string) \implode($seperator, \array_diff(\explode($seperator, $path), [$part]));
         }
 
+        /**
+         * 
+         * @param mixed $value
+         * @param string $path
+         * @param array $arguments
+         * @param string $seperator
+         * @return mixed
+         */
         private function found(mixed $value, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
                 if ($value instanceof self) {
@@ -32,6 +54,14 @@ namespace Component {
             return $value;
         }
 
+        /**
+         * 
+         * @param object $object
+         * @param string $path
+         * @param array $arguments
+         * @param string $seperator
+         * @return mixed
+         */
         private function foundobj(object $object, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
                 foreach (\explode($seperator, $path) as $part) {
@@ -46,6 +76,14 @@ namespace Component {
             return $object;
         }
 
+        /**
+         * 
+         * @param array $array
+         * @param string $path
+         * @param array $arguments
+         * @param string $seperator
+         * @return mixed
+         */
         private function foundarr(array $array, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
                 foreach (\explode($seperator, $path) as $part) {
@@ -58,10 +96,23 @@ namespace Component {
             return $array;
         }
 
+        /**
+         * 
+         * @param string $url
+         * @param array $arguments
+         * @return type
+         */
         final public function callback(string $url, array $arguments = []) {
             return $this->callurl($url, $this, $arguments);
         }
 
+        /**
+         * 
+         * @param string $url
+         * @param object $object
+         * @param array $arguments
+         * @return type
+         */
         final public function callurl(string $url, object $object, array $arguments = []) {
             $function = \parse_url($url, \PHP_URL_HOST);
     
@@ -81,6 +132,15 @@ namespace Component {
             }
         }
 
+        /**
+         * 
+         * @param string $method
+         * @param object $object
+         * @param array $arguments
+         * @return type
+         * @throws \BadMethodCallException
+         * @throws \InvalidArgumentException
+         */
         final public function callmethod(string $method, object $object, array $arguments = []) {
             try {
                 return \call_user_func_array([$object, $method], $arguments);
@@ -91,6 +151,14 @@ namespace Component {
             }
         }
 
+        /**
+         * 
+         * @param string $function
+         * @param array $arguments
+         * @return type
+         * @throws \BadFunctionCallException
+         * @throws \InvalidArgumentException
+         */
         final public function callfunction(string $function, array $arguments = []) {
             if (\is_callable($function)) {
                 try {

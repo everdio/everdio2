@@ -10,6 +10,10 @@ namespace Component\Core\Adapter {
         use Threading;
         use Unix;
 
+        /**
+         * 
+         * @param array $_parameters
+         */
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "pool" => new Validation(new \Component\Core\Parameters, [new Validator\IsObject]),

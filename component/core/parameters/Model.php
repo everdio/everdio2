@@ -9,6 +9,10 @@ namespace Component\Core\Parameters {
 
         use \Component\Core\Model;
 
+        /**
+         * 
+         * @param array $_parameters
+         */
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "model" => new Validation(__DIR__ . \DIRECTORY_SEPARATOR . "Model.tpl", [new Validator\IsString\IsFile]),

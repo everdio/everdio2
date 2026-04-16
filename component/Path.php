@@ -4,6 +4,13 @@ namespace Component {
 
     class Path extends \RecursiveIteratorIterator {
 
+        /**
+         * 
+         * @param string $path
+         * @param int $mode
+         * @return type
+         * @throws \UnexpectedValueException
+         */
         public function __construct(string $path, int $mode = 0770) {
             try {
                 parent::__construct(new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS), \RecursiveIteratorIterator::CHILD_FIRST);

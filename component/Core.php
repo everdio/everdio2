@@ -75,6 +75,12 @@ namespace Component {
             return (string) \get_class($this);
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return Validation
+         * @throws \InvalidArgumentException
+         */
         public function __invoke(string $parameter): Validation {
             if ($this->hasParameter($parameter)) {
                 return (object) $this->getParameter($parameter);
@@ -83,16 +89,34 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return bool
+         */
         final public function hasParameter(string $parameter): bool {
             return (bool) (\array_key_exists($parameter, $this->_parameters) && $this->_parameters[$parameter] instanceof Validation);
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @param Validation $validation
+         * @param bool|null $reset
+         * @return type
+         */
         final public function addParameter(string $parameter, Validation $validation, ?bool $reset = null) {
             if (!$this->hasParameter($parameter) || $reset) {
                 return (bool) $this->_parameters[$parameter] = $validation;
             }
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return Validation
+         * @throws \InvalidArgumentException
+         */
         final public function getParameter(string $parameter): Validation {
             if ($this->hasParameter($parameter)) {
                 return (object) $this->_parameters[$parameter];
@@ -101,34 +125,69 @@ namespace Component {
             throw new \InvalidArgumentException(\sprintf("INVALID_PARAMETER %s->%s", \get_class($this), $parameter));
         }
 
+        /**
+         * 
+         * @param string $parameter
+         * @return void
+         */
         final public function remove(string $parameter): void {
             if ($this->hasParameter($parameter)) {
                 unset($this->_parameters[$parameter]);
             }
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return array
+         */
         final public function export(array $parameters = []): array {
             return (array) \array_intersect_key($this->_parameters, \array_flip($this->inter($parameters)));
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return void
+         */
         final public function import(array $parameters): void {
             foreach ($parameters as $parameter => $validation) {
                 $this->addParameter($parameter, $validation, true);
             }
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return array
+         */
         final public function inter(array $parameters): array {
             return (array) \array_diff(\array_keys($this->_parameters), $this->diff($parameters));
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return array
+         */
         final public function diff(array $parameters = []): array {
             return (array) \array_diff(\array_keys($this->_parameters), $parameters);
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return int
+         */
         final public function sizeof(array $parameters = []): int {
             return (int) \sizeof($this->inter($parameters));
         }
 
+        /**
+         * 
+         * @param array $values
+         * @return self
+         */
         public function store(array $values): self {
             foreach ($values as $parameter => $value) {
                 if ($this->hasParameter($parameter)) {
@@ -139,6 +198,12 @@ namespace Component {
             return (object) $this;
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @param array $values
+         * @return array
+         */
         public function restore(array $parameters = [], array $values = []): array {
             foreach ($this->inter($parameters) as $parameter) {
                 if (isset($this->{$parameter})) {
@@ -149,14 +214,30 @@ namespace Component {
             return (array) $values;
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return string
+         */
         public function querystring(array $parameters = []): string {
             return (string) \http_build_query($this->restore($parameters));
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @return self
+         */
         public function reset(array $parameters = []): self {
             return (object) $this->store(\array_fill_keys($this->inter($parameters), false));
         }
 
+        /**
+         * 
+         * @param array $parameters
+         * @param array $validations
+         * @return array
+         */
         final public function validations(array $parameters = [], array $validations = []): array {
             foreach ($this->inter($parameters) as $parameter) {
                 $validations[$parameter] = (bool) isset($this->{$parameter});

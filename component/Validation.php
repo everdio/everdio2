@@ -13,6 +13,12 @@ namespace Component {
 
         private $_validated = [], $_validators = [], $_types = [];
 
+        /**
+         * 
+         * @param type $value
+         * @param array $validators
+         * @param string $validate
+         */
         public function __construct(protected $value = false, array $validators = [], public string $validate = self::NORMAL) {
             $this->set($value);
 
@@ -28,38 +34,79 @@ namespace Component {
             $this->validate = \strtolower($validate);
         }
 
+        /**
+         * 
+         * @return string
+         */
         public function __toString(): string {
             return (string) \get_class($this);
         }
 
+        /**
+         * 
+         * @param type $type
+         * @return bool
+         */
         public function __isset($type): bool {
             return (bool) \in_array(\strtolower($type), $this->_types);
         }
 
+        /**
+         * 
+         * @return array
+         */
         public function getValidators(): array {
             return (array) $this->_validators;
         }
 
+        /**
+         * 
+         * @return array
+         */
         public function getTypes(): array {
             return (array) $this->_types;
         }
 
+        /**
+         * 
+         * @param type $value
+         * @return void
+         */
         public function set($value): void {
             $this->value = $this->hydrate($value);
         }
 
+        /**
+         * 
+         * @return type
+         */
         public function get() {
             return $this->value;
         }
 
+        /**
+         * 
+         * @param array $types
+         * @param bool $match
+         * @return bool
+         */
         public function hasTypes(array $types, bool $match = false): bool {
             return (bool) ($match ? (\sizeof(\array_intersect($this->_types, $types)) === \sizeof($this->_types)) : \sizeof(\array_intersect($this->_types, $types)));
         }
 
+        /**
+         * 
+         * @param bool $validation
+         * @return array
+         */
         public function validated(bool $validation = true): array {
             return (array) \array_intersect_key($this->_validators, \array_flip(\array_keys($this->_validated, $validation)));
         }
 
+        /**
+         * 
+         * @return bool
+         */
         public function isValid(): bool {
             foreach ($this->_validators as $key => $validator) {
                 $this->_validated[$key] = $validator->execute($this->value);
@@ -68,6 +115,11 @@ namespace Component {
             return (bool) (\sizeof($this->_validated) && (($this->validate === self::NORMAL && \in_array(true, $this->_validated)) || ($this->validate === self::STRICT && !\in_array(false, $this->_validated))));
         }
 
+        /**
+         * 
+         * @return mixed
+         * @throws \ValueError
+         */
         public function execute(): mixed {
             if ($this->isValid()) {
                 return $this->value;
@@ -76,6 +128,11 @@ namespace Component {
             throw new \ValueError(\sprintf("%s VALUE_MUST_BE_TYPE %s NOT %s", $this->dehydrate($this->value), \implode("|", \array_intersect_key($this->_types, \array_flip(\array_keys($this->_validated, false)))), \gettype($this->value), $this->validate));
         }
 
+        /**
+         * 
+         * @param array $validators
+         * @return string
+         */
         public function __dry(array $validators = []): string {
             foreach ($this->_validators as $validator) {
                 $validators[] = $validator->__dry();
@@ -84,6 +141,13 @@ namespace Component {
             return (string) \sprintf("new \%s(%s, [%s], \Component\Validation::%s)", (string) $this, $this->dehydrate($this->value), \implode(", ", $validators), \strtoupper($this->validate));
         }
 
+        /**
+         * 
+         * @param string $name
+         * @param array $arguments
+         * @return type
+         * @throws \BadFunctionCallException
+         */
         public function __call(string $name, array $arguments) {
             if (!\method_exists($this, $name)) {
                 foreach ($this->_validators as $validator) {

@@ -4,6 +4,13 @@ namespace Component {
 
     trait Dryer {
 
+        /**
+         * 
+         * @param type $data
+         * @param array $array
+         * @return string
+         * @throws \ValueError
+         */
         public function dehydrate($data, array $array = []): string {
             if (\is_integer($data) || \is_numeric($data)) {
                 return (string) $data;
@@ -28,6 +35,11 @@ namespace Component {
             }
         }
 
+        /**
+         * 
+         * @param type $data
+         * @return mixed
+         */
         public function hydrate($data): mixed {
             if (\is_string($data)) {
                 if (\is_numeric($data)) {

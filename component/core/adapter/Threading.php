@@ -21,9 +21,16 @@ namespace Component\Core\Adapter {
 
         abstract public function exec(string $thread, int $sleep = 0, int $timeout = 300, bool|string $output = false): int;
 
-        /*
+        /**
          * creates the PHP thread to be executed and checks the syntax and
          * callback executed as seperate thread at local machine
+         * @param string $callback
+         * @param bool $queue
+         * @param int $sleep
+         * @param int $timeout
+         * @param bool|string $output
+         * @return string
+         * @throws \ParseError
          */
 
         final public function thread(string $callback, bool $queue = false, int $sleep = 0, int $timeout = 300, bool|string $output = false): string {
@@ -49,6 +56,10 @@ namespace Component\Core\Adapter {
 
         /*
          * retrieves a single response from the pool
+         * @param string $thread
+         * @param array $response
+         * @param int $usleep
+         * @return type
          */
 
         final public function retrieve(string $thread, array $response = [], int $usleep = 10000) {
@@ -59,6 +70,10 @@ namespace Component\Core\Adapter {
 
         /*
          * retrieves an array of responses based on an array of threads
+         * @param array $threads
+         * @param array $response
+         * @param int $usleep
+         * @return array
          */
 
         final public function pool(array $threads, array $response = [], int $usleep = 1000): array {
@@ -85,8 +100,10 @@ namespace Component\Core\Adapter {
 
         /*
          * terminates any known pids if they are still running and any known output
+         * 
+         * @param type $signal
+         * @return void
          */
-
         final public function terminate($signal): void {
             foreach ($this->pids->restore() as $thread => $pid) {
                 $this->kill($pid, $signal);

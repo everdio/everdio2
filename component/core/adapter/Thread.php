@@ -7,6 +7,10 @@ namespace Component\Core\Adapter {
 
     class Thread extends \Component\Core {
 
+        /**
+         * 
+         * @param array $_parameters
+         */
         public function __construct(array $_parameters = []) {
             parent::__construct([
                 "autoload" => new Validation(\AUTOLOAD, [new Validator\IsString\IsFile]),
