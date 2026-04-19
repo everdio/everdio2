@@ -25,8 +25,9 @@ namespace Component\Core\Adapter\Wrapper {
 
         /*
          * dispatching the Controller if exists!
+         * @param string $path
+         * @return type
          */
-
         public function dispatch(string $path) {
             if (\is_file($this->path . \DIRECTORY_SEPARATOR . $path . ".php")) {
                 \ob_start();
@@ -35,16 +36,29 @@ namespace Component\Core\Adapter\Wrapper {
             }
         }
 
+        /**
+         *  path intersector for routing
+         * @param string $route
+         * @return bool
+         */
         final public function isRoute(string $route): bool {
             return (bool) (isset($this->routing) && ((string) \implode(\DIRECTORY_SEPARATOR, \array_intersect_assoc(\explode(\DIRECTORY_SEPARATOR, $route), \explode(\DIRECTORY_SEPARATOR, $this->routing))) === $route));
         }
 
+        /**
+         * Easy/quick debug mode checker
+         * @return bool
+         */
         final public function getDebug(): bool {
             return (bool) isset($this->request->{$this->debug});
         }
 
         /*
-         * processing callbacks from $content {{string}}
+         * Finding and executing(->callback) potentional callbacks from $content {{string}}
+         * @param string $content
+         * @param array $matches
+         * @return string
+         * @throws \LogicException
          */
 
         final public function getCallbacks(string $content, array $matches = []): string {
@@ -68,7 +82,11 @@ namespace Component\Core\Adapter\Wrapper {
         }
 
         /*
-         * executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
+         * Executing this controller by dispatching a path and setting that path as a new reference pointer for dispatches
+         * @param string $path
+         * @param array $request
+         * @return type
+         * @throws \RuntimeException
          */
 
         final public function execute(string $path, array $request = []) {
@@ -81,7 +99,7 @@ namespace Component\Core\Adapter\Wrapper {
                 try {
                     return $controller->dispatch($controller->basename);
                 } catch (\Exception | \Error $ex) {
-                    throw new \RuntimeException(\sprintf("%s: %s", \strtoupper(\get_class($ex)), $ex->getMessage()), 0, $ex);
+                    throw new \RuntimeException(\sprintf("%s: %s", \get_class($ex), $ex->getMessage()), 0, $ex);
                 }
             }
         }

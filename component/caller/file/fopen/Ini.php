@@ -4,8 +4,8 @@ namespace Component\Caller\File\Fopen {
 
     class Ini extends \Component\Caller\File\Fopen {
 
-        public function __construct(string $path, string $mode = "r") {
-            parent::__construct(\sprintf("%s.ini", $path), $mode);
+        public function __construct(string $file, string $mode = "r") {
+            parent::__construct(\sprintf("%s.ini", $file), $mode);
         }
 
         final public function writeSection(string $section) {

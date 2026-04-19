@@ -14,10 +14,10 @@ namespace Application {
 
             $this->adapter = ["ip"];
         }
-        
+ 
         final protected function addAdapter(): object {
             return (object) new \Component\Caller\Ssh2($this->ip);
-        }              
+        }
 
         final public function break(int $breaks = 1): void {
             $this->echo(\str_repeat(\PHP_EOL, $breaks));

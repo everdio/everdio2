@@ -59,7 +59,7 @@ namespace Modules {
             if (($row = $this->statement((new Table\Find(\array_merge([new Table\Select([$this]), new Table\From([$this]), new Table\Filter([$this], $this->mapping)], \array_filter($validations))))->execute() . $query, $this->bind(\array_filter($validations), (new Table\BindValues($this, $this->mapping))->execute()))->fetch(\PDO::FETCH_ASSOC))) {
                 $this->store($this->desanitize($row));
             }
-
+            
             return (object) $this;
         }
 

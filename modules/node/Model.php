@@ -39,13 +39,12 @@ namespace Modules\Node {
             $parameters = [];
             
             foreach ($this->query(\sprintf("%s[position() <= 1]/@*", $this->path)) as $attribute) { 
-                $parameters += [$attribute->nodeName => (new \Component\Validation\Parameter(\trim($attribute->value), false, true))->getValidators()];
+                $parameters = \array_merge_recursive($parameters, [$attribute->nodeName => (new \Component\Validation\Parameter(\trim($this->hydrate($attribute->value)), false, true))->getValidators()]);
             }
-            
             
             foreach ($parameters as $attribute => $validators) {
                 $this->mapping = [$attribute => ($parameter = $this->beautify($attribute))];                
-                $this->addParameter($parameter, new \Component\Validation(false, $validators));
+                $this->addParameter($parameter, new \Component\Validation(false, \array_unique($validators)));
             }
 
             $validators = [];

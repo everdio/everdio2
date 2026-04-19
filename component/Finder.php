@@ -87,7 +87,7 @@ namespace Component {
         private function foundarr(array $array, string $path, array $arguments = [], string $seperator = \DIRECTORY_SEPARATOR): mixed {
             if ($path) {
                 foreach (\explode($seperator, $path) as $part) {
-                    if (\array_key_exists($array, $part)) {
+                    if (\array_key_exists($part, $array)) {
                         return $this->found($array[$part], $this->finderpath($path, $part), $arguments, $seperator);
                     }
                 }
@@ -146,7 +146,7 @@ namespace Component {
                 return \call_user_func_array([$object, $method], $arguments);
             } catch (\Errror $ex) {
                 throw new \BadMethodCallException(\sprintf("%s->%s(%s): %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
-            } catch (\Exception $ex) {
+            } catch (\ErrorException $ex) {
                 throw new \InvalidArgumentException(\sprintf("%s->%s(%s) %s", \get_class($object), $method, $this->dehydrate($arguments), $ex->getMessage()), 0, $ex);
             }
         }

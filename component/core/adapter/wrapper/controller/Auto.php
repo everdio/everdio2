@@ -24,31 +24,39 @@ namespace Component\Core\Adapter\Wrapper\Controller {
                                 $this->echo(\sprintf("<!-- %s[%s] = %s -->\n", $alias, $id, $this->getCallbacks($callback)));
                             }
 
-                            if (\is_string($id)) {
-                                $this->{$property}->store([$alias => [$id => $this->hydrate($this->callurl($this->getCallbacks($callback), $auto))]]);
-
-                                //[continue] or [break] on value
-                                if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
-                                    return;
-                                }
-
-                                //[is] or [isnot]
-                                if ((isset($this->is->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->is->{$alias}->{$id})) != $this->{$property}->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->isnot->{$alias}->{$id})) == $this->{$property}->{$alias}->{$id})) {
-                                    return;
-                                }
-
-                                //[foreach]
-                                if (isset($this->foreach->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id})) {
-                                    foreach (($this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters ? $this->{$property}->{$alias}->{$id}->restore() : $this->{$property}->{$alias}->{$id}) as $key => $foreach) {
-                                        unset($this->{$property}->{$alias}->{$id});
-                                        $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);
-                                        $this->callback($this->foreach->{$alias}->{$id});
-                                        unset($this->{$property}->{$alias}->{$id});
-                                        unset($this->{$property}->{$alias}->key);
+                            try {
+                                if (\is_string($id)) {
+                                    if (!\is_object($this->{$property})) {
+                                        print_r($this->{$property});
                                     }
+                                    
+                                    $this->{$property}->store([$alias => [$id => $this->hydrate($this->callurl($this->getCallbacks($callback), $auto))]]);
+
+                                    //[continue] or [break] on value
+                                    if (isset($this->{$property}->{$alias}->{$id}) && ((isset($this->continue->{$alias}->{$id}) && $this->continue->{$alias}->{$id} != $this->{$property}->{$alias}->{$id}) || (isset($this->break->{$alias}->{$id}) && $this->break->{$alias}->{$id} == $this->{$property}->{$alias}->{$id}))) {
+                                        return;
+                                    }
+
+                                    //[is] or [isnot]
+                                    if ((isset($this->is->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->is->{$alias}->{$id})) != $this->{$property}->{$alias}->{$id}) || (isset($this->isnot->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id}) && $this->callback($this->getCallbacks($this->isnot->{$alias}->{$id})) == $this->{$property}->{$alias}->{$id})) {
+                                        return;
+                                    }
+
+                                    //[foreach]
+                                    if (isset($this->foreach->{$alias}->{$id}) && isset($this->{$property}->{$alias}->{$id})) {
+                                        foreach (($this->{$property}->{$alias}->{$id} instanceof \Component\Core\Parameters ? $this->{$property}->{$alias}->{$id}->restore() : $this->{$property}->{$alias}->{$id}) as $key => $foreach) {
+                                            unset($this->{$property}->{$alias}->{$id});
+                                            $this->{$property}->store([$alias => ["key" => $key, $id => $foreach]]);
+                                            $this->callback($this->foreach->{$alias}->{$id});
+                                            unset($this->{$property}->{$alias}->{$id});
+                                            unset($this->{$property}->{$alias}->key);
+                                        }
+                                    }
+                                } else {
+                                    $this->callurl($this->getCallbacks($callback), $auto);
                                 }
-                            } else {
-                                $this->callurl($this->getCallbacks($callback), $auto);
+                            } catch (\ErrorException | \Error $ex) {
+                                throw new \LogicException(\sprintf("%s IN %s[%s] = %s", $ex->getMessage(), $alias, $id, $callback), 0, $ex);
                             }
                         }
                     }
