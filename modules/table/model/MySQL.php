@@ -75,7 +75,7 @@ namespace Modules\Table\Model {
                 foreach ($values as $value) {
                     $validators = \array_unique(\array_merge($validators, (new Validation\Parameter($value))->getValidators()));
                 }
-   
+                
                 $this->addParameter($this->beautify($row["COLUMN_NAME"]), (new Validation\Parameter($default, !empty($row["COLUMN_DEFAULT"]), ($row["IS_NULLABLE"] === "YES" ? false : true), $row["CHARACTER_MAXIMUM_LENGTH"], $options))->getValidation($validators));
                 $this->mapping = [$row["COLUMN_NAME"] => $this->beautify($row["COLUMN_NAME"])];
             }

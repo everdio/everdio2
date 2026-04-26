@@ -35,6 +35,10 @@ namespace Component\Core\Adapter\Wrapper {
                 return \ob_get_clean();
             }
         }
+        
+        protected function addAdapter(): object {
+            return (object) new \Component\Caller\Ssh2($this->ip);
+        }        
 
         /**
          *  path intersector for routing
@@ -49,7 +53,7 @@ namespace Component\Core\Adapter\Wrapper {
          * Easy/quick debug mode checker
          * @return bool
          */
-        final public function getDebug(): bool {
+        final public function isDebug(): bool {
             return (bool) isset($this->request->{$this->debug});
         }
 
